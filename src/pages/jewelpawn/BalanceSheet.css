@@ -1,0 +1,84 @@
+.balance-sheet-container {
+    padding: 20px;
+  }
+  
+  .balance-form {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+  }
+  
+  .custom-btn {
+    background-color: #007bff !important;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .add-btn {
+    background-color: #28a745 !important;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+  }
+  
+  .custom-table {
+    margin-top: 20px;
+  }
+  .balance-sheet-container .custom-btn {
+    background-color: #007bff !important;
+}
+
+  .table-header {
+    background-color: #343a40 !important;
+    color: white !important;
+  }
+  .table-header1 {
+    color: white !important;
+  }
+  
+  .edit-btn {
+    background-color: #ffc107 !important;
+    color: black;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+  }
+  
+  .delete-btn {
+    background-color: #dc3545 !important;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+  }
+  .custom-toggle .btn {
+    border-radius: 20px;
+    padding: 8px 16px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .custom-toggle .btn-check:checked + .btn {
+    background-color: #0d6efd; /* Bootstrap primary color */
+    color: white;
+    border-color: #0d6efd;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+  }
+  
+  .custom-toggle .btn:hover {
+    background-color: #0b5ed7;
+    color: white;
+  }
+  
+  .close-btn {
+    background-color: #6c757d !important;
+    color: white;
+  }
+  
+  .save-btn {
+    background-color: #007bff !important;
+    color: white;
+  }
+  

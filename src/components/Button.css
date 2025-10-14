@@ -1,0 +1,67 @@
+.openstock {
+  font-size: 10px;
+}
+button {
+  background: none !important;
+  border: none !important;
+}
+.whatsapp-btn {
+  margin-left: 8px;
+  background-color: #25d366 !important;
+  color: #fff;
+  border: none !important;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.create-btn {
+  border: 1px solid#0757df !important;
+  width: 120px;
+  height: 46px;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+  transition: 0.5s all;
+  font-family: "regular" !important;
+  background: #0757df !important;
+  padding: 1px;
+  margin-top: 20px;
+}
+.choosefilebtn {
+  border: 1px solid#0757df !important;
+  width: 120px;
+  height: 46px;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+  transition: 0.5s all;
+  font-family: "regular" !important;
+  background: #0757df !important;
+  margin-left: 20px !important;
+}
+.add-new {
+  background-color: #0757df;
+  display: inline-block;
+}
+.close button,
+.dlt button {
+  background: none !important;
+  border: none !important;
+  color: #252525 !important;
+}
+.add-more button {
+  background: none !important;
+  border: none !important;
+  color: #0757df !important;
+}
+
+.delete {
+  color: #0757df !important;
+  border-radius: 6px !important;
+  font-weight: 800 !important;
+  transition: 0.5s all;
+  font-size: 28px !important;
+  font-family: "regular" !important;
+  background: none !important;
+  border-radius: 0px 8px 8px 0px !important;
+  padding: 6.1px 12px !important;
+}

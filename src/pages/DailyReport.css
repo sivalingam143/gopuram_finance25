@@ -1,0 +1,182 @@
+.daily-report-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.financial-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.financial-table th,
+.financial-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+.financial-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.form-select {
+  width: 250px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-container label {
+  font-weight: bold;
+  color: #333;
+}
+
+.date-input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.clear-button {
+  padding: 6px 12px !important;
+  background-color: #0f487a !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  transition: background-color 0.3s !important;
+}
+
+.clear-button:hover {
+  background-color: #5a6268 !important;
+}
+/* DailyReport.css */
+.export-buttons {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  padding-left: 800px;
+}
+
+.pdf-download-link,
+.excel-button {
+  background-color: #0056b3 !important;
+  color: #fff;
+  padding: 6px 12px;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pdf-download-link:hover,
+.excel-button:hover {
+  background-color: #0056b3;
+}
+
+/* FinalReport.css */
+
+.final-report-table {
+  background: #f9f9fb;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.report-heading {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+  font-weight: bold;
+}
+
+.report-flex {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.credit-section,
+.debit-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 48%;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.credit-section h4,
+.debit-section h4 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.text-red {
+  color: #d63031;
+  font-weight: bold;
+}
+
+.text-green {
+  color: #00b894;
+  font-weight: bold;
+}
+
+.bg-yellow {
+  background-color: #ffeaa7;
+  font-weight: bold;
+}
+
+.financial-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.financial-table td,
+.financial-table th {
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 14px;
+  text-align: left;
+}
+
+.financial-table tr:nth-child(even) {
+  background-color: #f1f2f6;
+}
+
+.financial-table tr:hover {
+  background-color: #dfe6e9;
+}
+
+.mt-30 {
+  margin-top: 30px;
+}
