@@ -68,15 +68,15 @@ const Login = ({ onLogin }) => {
         <Row className="justify-content-center">
           <Col lg="3" md="6" xs="12" className="align-self-center p-0 m-0">
             <div className="shadow login-box">
-              <div className="text-center">
+              <div className="text-center py-3">
                 <img
                   src={require("../components/sidebar/images/pngegg.png")}
                   className="img-fluid logo"
                   alt="Tirupathi Balaji"
                 />
               </div>
-              <div className="text-center">GOPURAM FINANCE</div>
-              <div className="text-center">JEWELL PAWN SHOP</div>
+              {/* <div className="text-center">GOPURAM FINANCE</div> */}
+              <div className="text-center">JEWEL PAWN SHOP</div>
 
               <div className="py-3">
                 <TextInputForm
