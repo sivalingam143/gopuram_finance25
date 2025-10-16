@@ -76,7 +76,7 @@ const Login = ({ onLogin }) => {
                 />
               </div>
               {/* <div className="text-center">GOPURAM FINANCE</div> */}
-              <div className="text-center">JEWEL PAWN SHOP</div>
+              {/* <div className="text-center">JEWEL PAWN SHOP</div> */}
 
               <div className="py-3">
                 <TextInputForm
