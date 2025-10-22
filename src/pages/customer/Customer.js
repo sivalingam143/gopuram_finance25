@@ -189,12 +189,12 @@ const Customer = () => {
                 onClick={() => navigate("/console/master/customer/create")}
               />
             </span>
-            <span className="mx-2">
+            {/* <span className="mx-2">
               <ClickButton label={<> PDF</>} onClick={handleDownloadPDF} />
             </span>
             <span className="mx-2">
               <ClickButton label={<> Excel</>} onClick={handleDownloadExcel} />
-            </span>
+            </span> */}
           </Col>
 
           <Col lg="3" md="5" xs="12" className="py-1">
