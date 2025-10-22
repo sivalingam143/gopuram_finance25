@@ -5,7 +5,22 @@ import { ClickButton } from "../../components/Buttons";
 import { useLocation } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import { useNavigate } from "react-router-dom";
+import TableUI from "../../components/Table";
 import "./Customer.css";
+
+const UserTablehead = [
+  "Loan Date",
+  "Loan No",
+  "Customer No",
+  "Customer Name",
+  "Mobile Number",
+  "Principal Amount",
+  "Interest Rate",
+  "Total Weight",
+  "Pledge Items",
+  "Status",
+  "Action",
+];
 
 const CustomerDetails = () => {
   const location = useLocation();
@@ -13,6 +28,7 @@ const CustomerDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [customerDetailsData, setCustomerDetailsData] = useState(null);
+  const [pawnData, setpawnData] = useState([]);
 
   const fetchCustomerDetails = async () => {
     if (!rowData.customer_no) return;
@@ -44,9 +60,40 @@ const CustomerDetails = () => {
     }
   };
 
+  const fetchDatapawn = async () => {
+    try {
+      const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer_no: rowData.customer_no,
+        }),
+      });
+
+      const responseData = await response.json();
+      setLoading(false);
+      if (responseData.head.code === 200) {
+        let sortedData = responseData.body.pawnjewelry.map((user) => ({
+          ...user,
+          jewel_product: JSON.parse(user.jewel_product || "[]"),
+        }));
+
+        setpawnData(sortedData);
+      } else {
+        throw new Error(responseData.head.msg);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching data:", error.message);
+    }
+  };
+
   useEffect(() => {
     if (rowData) {
       fetchCustomerDetails();
+      fetchDatapawn();
     }
   }, [rowData]);
 
@@ -160,6 +207,20 @@ const CustomerDetails = () => {
               </div>
             </Col>
           </Row>
+
+          {/* Jewel Pawning Listing for this Customer */}
+          {pawnData.length > 0 && (
+            <Row className="mb-4">
+              <Col lg={12}>
+                <TableUI
+                  headers={UserTablehead}
+                  body={pawnData}
+                  type="jewelPawning"
+                  pageview="no"
+                />
+              </Col>
+            </Row>
+          )}
 
           <Col lg="12">
             <div className="text-center mb-3">
