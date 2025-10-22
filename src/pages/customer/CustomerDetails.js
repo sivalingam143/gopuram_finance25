@@ -218,6 +218,16 @@ const CustomerDetails = () => {
             </Col>
           </Row>
 
+          <Row>
+            <Col lg="12" md="12" xs="12" className="text-end py-3">
+              <span className="px-1">
+                <ClickButton
+                  label={<>Add New</>}
+                  onClick={() => navigate("/console/pawn/jewelpawning/create")}
+                ></ClickButton>
+              </span>
+            </Col>
+          </Row>
           {/* Jewel Pawning Listing for this Customer */}
           {pawnData.length > 0 && (
             <Row className="mb-4">
