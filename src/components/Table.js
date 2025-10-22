@@ -17,6 +17,7 @@ const TableUI = ({
   rowData,
   planViewAction,
   pageview,
+  customActions,
 }) => {
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -915,6 +916,17 @@ const TableUI = ({
                               }
                             >
                               OfficeCopy View
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={() => customActions?.interest?.(rowData)}
+                              t
+                            >
+                              Interest
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={() => customActions?.recovery?.(rowData)}
+                            >
+                              Recovery
                             </Dropdown.Item>
                             {isAdmin && (
                               <Dropdown.Item

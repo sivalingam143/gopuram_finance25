@@ -90,6 +90,17 @@ const CustomerDetails = () => {
     }
   };
 
+  // New handlers for dropdown clicks
+  const handleInterestClick = (pawnRow) => {
+    navigate("/console/interest/pay", { state: { rowData: pawnRow } });
+  };
+
+  const handleRecoveryClick = (pawnRow) => {
+    navigate("/console/master/jewelrecovery/pay", {
+      state: { rowData: pawnRow },
+    });
+  };
+
   useEffect(() => {
     if (rowData) {
       fetchCustomerDetails();
@@ -212,11 +223,19 @@ const CustomerDetails = () => {
           {pawnData.length > 0 && (
             <Row className="mb-4">
               <Col lg={12}>
+                <div className="page-nav py-3">
+                  <span className="nav-list">Jewel Pawning Listing</span>
+                </div>
                 <TableUI
                   headers={UserTablehead}
                   body={pawnData}
                   type="jewelPawning"
                   pageview="no"
+                  // Pass handlers for custom actions
+                  customActions={{
+                    interest: handleInterestClick,
+                    recovery: handleRecoveryClick,
+                  }}
                 />
               </Col>
             </Row>

@@ -15,6 +15,9 @@ import ActionCreation from "../pages/action/ActionCreation";
 import BankPledgeCreation from "../pages/bankpledge/BankPledgeCreation";
 import CategoryTwoCreation from "../pages/categorytwo/CategoryTwoCreation";
 import ExpenseTwoCreation from "../pages/expensetwo/ExpenseTwoCreation";
+import InterestPayment from "../pages/customer/InterestPayment";
+import RecoveryPayment from "../pages/customer/RecoveryPayment";
+
 ///////////////////// Pdf preview /////////////////////////////
 
 import JewelPawnPreview from "../pdf/JewelPawnPreview";
@@ -134,6 +137,8 @@ const routes = [
   { path: "/console/report/bledge", element: <BankPledgeReport /> },
   { path: "/console/report/dailyreport", element: <DailyReport /> },
   { path: "/console/report/government", element: <GovernmentReport /> },
+  { path: "/console/interest/pay", element: <InterestPayment /> },
+  { path: "/console/master/jewelrecovery/pay", element: <RecoveryPayment /> },
 ];
 
 export default routes;
