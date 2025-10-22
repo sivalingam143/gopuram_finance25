@@ -19,6 +19,7 @@ const Customer = () => {
   const navigate = useNavigate();
   const CustomerTablehead = [
     "No",
+    "customer img",
     "customer No",
     "Customer Name",
     "Mobile No.",
@@ -67,19 +68,79 @@ const Customer = () => {
   };
 
   const handleDownloadPDF = () => {
-  // Create jsPDF instance in landscape mode (A4)
-  const doc = new jsPDF({
-    orientation: "landscape", // landscape mode
-    unit: "mm",
-    format: "a4"
-  });
+    // Create jsPDF instance in landscape mode (A4)
+    const doc = new jsPDF({
+      orientation: "landscape", // landscape mode
+      unit: "mm",
+      format: "a4",
+    });
 
-  doc.setFontSize(16);
-  doc.text("Customer List", 14, 15); // title at top
+    doc.setFontSize(16);
+    doc.text("Customer List", 14, 15); // title at top
 
-  doc.autoTable({
-    startY: 25, // start table below title
-    head: [
+    doc.autoTable({
+      startY: 25, // start table below title
+      head: [
+        [
+          "NO",
+          "CUSTOMER NO",
+          "NAME",
+          "ADDRESS",
+          "PLACE",
+          "PINCODE",
+          "PHONE NO",
+          "ADDITIONAL NO",
+          "REFERENCE",
+          "PROOF TYPE",
+          "PROOF NO",
+        ],
+      ],
+      body: customerData.map((item, index) => [
+        index + 1,
+        item.customer_no,
+        item.name,
+        item.customer_details,
+        item.place,
+        item.pincode,
+        item.mobile_number,
+        item.addtionsonal_mobile_number,
+        item.reference,
+        item.upload_type,
+        item.proof_number,
+      ]),
+      styles: {
+        fontSize: 10, // reduce font to fit more columns
+        cellPadding: 2,
+      },
+      headStyles: {
+        fillColor: [22, 160, 133], // optional: header color
+        textColor: 255,
+        fontStyle: "bold",
+      },
+      columnStyles: {
+        3: { cellWidth: 40 }, // ADDRESS column wider
+        4: { cellWidth: 25 }, // PLACE column
+        8: { cellWidth: 30 }, // REFERENCE column
+      },
+      theme: "grid",
+      didDrawPage: (data) => {
+        // optional: page numbers
+        const pageCount = doc.getNumberOfPages();
+        doc.setFontSize(10);
+        doc.text(
+          `Page ${pageCount}`,
+          doc.internal.pageSize.getWidth() - 20,
+          doc.internal.pageSize.getHeight() - 10
+        );
+      },
+    });
+
+    doc.save("Customer_List.pdf");
+  };
+
+  const handleDownloadExcel = () => {
+    const wb = XLSX.utils.book_new();
+    const wsData = [
       [
         "NO",
         "CUSTOMER NO",
@@ -91,53 +152,8 @@ const Customer = () => {
         "ADDITIONAL NO",
         "REFERENCE",
         "PROOF TYPE",
-        "PROOF NO"
-      ]
-    ],
-    body: customerData.map((item, index) => [
-      index + 1,
-      item.customer_no,
-      item.name,
-      item.customer_details,
-      item.place,
-      item.pincode,
-      item.mobile_number,
-      item.addtionsonal_mobile_number,
-      item.reference,
-      item.upload_type,
-      item.proof_number,
-    ]),
-    styles: {
-      fontSize: 10, // reduce font to fit more columns
-      cellPadding: 2,
-    },
-    headStyles: {
-      fillColor: [22, 160, 133], // optional: header color
-      textColor: 255,
-      fontStyle: "bold",
-    },
-    columnStyles: {
-      3: { cellWidth: 40 }, // ADDRESS column wider
-      4: { cellWidth: 25 }, // PLACE column
-      8: { cellWidth: 30 }, // REFERENCE column
-    },
-    theme: "grid",
-    didDrawPage: (data) => {
-      // optional: page numbers
-      const pageCount = doc.getNumberOfPages();
-      doc.setFontSize(10);
-      doc.text(`Page ${pageCount}`, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10);
-    }
-  });
-
-  doc.save("Customer_List.pdf");
-};
-
-
-  const handleDownloadExcel = () => {
-    const wb = XLSX.utils.book_new();
-    const wsData = [
-      ["NO", "CUSTOMER NO", "NAME", "ADDRESS", "PLACE", "PINCODE", "PHONE NO", "ADDITIONAL NO", "REFERENCE", "PROOF TYPE", "PROOF NO"],
+        "PROOF NO",
+      ],
       ...customerData.map((item, index) => [
         index + 1,
         item.customer_no,
@@ -174,16 +190,10 @@ const Customer = () => {
               />
             </span>
             <span className="mx-2">
-              <ClickButton
-                label={<> PDF</>}
-                onClick={handleDownloadPDF}
-              />
+              <ClickButton label={<> PDF</>} onClick={handleDownloadPDF} />
             </span>
             <span className="mx-2">
-              <ClickButton
-                label={<> Excel</>}
-                onClick={handleDownloadExcel}
-              />
+              <ClickButton label={<> Excel</>} onClick={handleDownloadExcel} />
             </span>
           </Col>
 
@@ -223,7 +233,6 @@ const Customer = () => {
             </>
           )}
         </Row>
-
       </Container>
     </div>
   );

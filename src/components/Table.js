@@ -1202,6 +1202,17 @@ const TableUI = ({
               {type === "customer" && (
                 <>
                   <td>{rowIndex + 1}</td>
+                  <td>
+                    {rowData.proof && rowData.proof.length > 0 ? (
+                      <img
+                        src={rowData.proof[0]}
+                        alt="Proof"
+                        className="customer-listing-img"
+                      />
+                    ) : (
+                      "-"
+                    )}
+                  </td>
                   <td>{rowData.customer_no}</td>
                   <td>{rowData.name}</td>
                   <td>{rowData.mobile_number}</td>
