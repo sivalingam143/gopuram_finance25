@@ -862,11 +862,10 @@ const TableUI = ({
 
                   return (
                     <>
+                      <td>{rowIndex + 1}</td>
                       <td>{formatDate(rowData.pawnjewelry_date)}</td>
                       <td>{rowData.receipt_no}</td>
-                      <td>{rowData.customer_no}</td>
-                      <td>{rowData.name}</td>
-                      <td>{rowData.mobile_number}</td>
+
                       <td>{rowData.original_amount}</td>
                       <td>{rowData.interest_rate}</td>
                       <td>{totalWeight.toFixed(2)}</td>
@@ -903,7 +902,7 @@ const TableUI = ({
                             </Button>
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
-                            <Dropdown.Item
+                            {/* <Dropdown.Item
                               onClick={() =>
                                 handleJewelPawningprintviewClick(rowData)
                               }
@@ -916,7 +915,7 @@ const TableUI = ({
                               }
                             >
                               OfficeCopy View
-                            </Dropdown.Item>
+                            </Dropdown.Item> */}
                             <Dropdown.Item
                               onClick={() => customActions?.interest?.(rowData)}
                               t

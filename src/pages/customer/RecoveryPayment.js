@@ -217,11 +217,11 @@ const RecoveryPayment = () => {
           </Col>
 
           {/* Editable Inputs */}
-          <Col lg={6}>
+          <Col lg={12} className="py-3">
             <div className="customer-card bg-light border rounded p-3">
               <h5 className="mb-3">Recovery Details</h5>
               <Row>
-                <Col lg={6}>
+                <Col lg={3}>
                   <Calender
                     setLabel={(date) =>
                       setLabel(date, "pawnjewelry_recovery_date")

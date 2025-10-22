@@ -9,11 +9,10 @@ import TableUI from "../../components/Table";
 import "./Customer.css";
 
 const UserTablehead = [
+  "S.No",
   "Loan Date",
   "Loan No",
-  "Customer No",
-  "Customer Name",
-  "Mobile Number",
+
   "Principal Amount",
   "Interest Rate",
   "Total Weight",
@@ -223,9 +222,6 @@ const CustomerDetails = () => {
           {pawnData.length > 0 && (
             <Row className="mb-4">
               <Col lg={12}>
-                <div className="page-nav py-3">
-                  <span className="nav-list">Jewel Pawning Listing</span>
-                </div>
                 <TableUI
                   headers={UserTablehead}
                   body={pawnData}

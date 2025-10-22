@@ -199,18 +199,18 @@ const InterestPayment = () => {
           </Col>
 
           {/* Editable Inputs */}
-          <Col lg={6}>
+          <Col lg={12} className="py-3">
             <div className="customer-card bg-light border rounded p-3">
               <h5 className="mb-3">Payment Details</h5>
               <Row>
-                <Col lg={6}>
+                <Col lg={3}>
                   <Calender
                     setLabel={(date) => setLabel(date, "interest_receive_date")}
                     initialDate={formData.interest_receive_date}
                     calenderlabel="Payment Date"
                   />
                 </Col>
-                <Col lg={6}>
+                <Col lg={3}>
                   <TextInputForm
                     placeholder={"Interest Amount"}
                     labelname={"Interest Amount"}
