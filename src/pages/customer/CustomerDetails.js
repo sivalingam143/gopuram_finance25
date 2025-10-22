@@ -91,11 +91,11 @@ const CustomerDetails = () => {
 
   // New handlers for dropdown clicks
   const handleInterestClick = (pawnRow) => {
-    navigate("/console/interest/pay", { state: { rowData: pawnRow } });
+    navigate("/console/customer/interest", { state: { rowData: pawnRow } });
   };
 
   const handleRecoveryClick = (pawnRow) => {
-    navigate("/console/master/jewelrecovery/pay", {
+    navigate("/console/customer/jewelrecovery", {
       state: { rowData: pawnRow },
     });
   };
@@ -223,7 +223,7 @@ const CustomerDetails = () => {
               <span className="px-1">
                 <ClickButton
                   label={<>Add New</>}
-                  onClick={() => navigate("/console/pawn/jewelpawning/create")}
+                  onClick={() => navigate("/console/customer/loancreation")}
                 ></ClickButton>
               </span>
             </Col>

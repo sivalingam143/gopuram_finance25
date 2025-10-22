@@ -17,6 +17,7 @@ import CategoryTwoCreation from "../pages/categorytwo/CategoryTwoCreation";
 import ExpenseTwoCreation from "../pages/expensetwo/ExpenseTwoCreation";
 import InterestPayment from "../pages/customer/InterestPayment";
 import RecoveryPayment from "../pages/customer/RecoveryPayment";
+import LoanCreation from "../pages/customer/LoanCreation";
 
 ///////////////////// Pdf preview /////////////////////////////
 
@@ -137,8 +138,9 @@ const routes = [
   { path: "/console/report/bledge", element: <BankPledgeReport /> },
   { path: "/console/report/dailyreport", element: <DailyReport /> },
   { path: "/console/report/government", element: <GovernmentReport /> },
-  { path: "/console/interest/pay", element: <InterestPayment /> },
-  { path: "/console/master/jewelrecovery/pay", element: <RecoveryPayment /> },
+  { path: "/console/customer/interest", element: <InterestPayment /> },
+  { path: "/console/customer/jewelrecovery", element: <RecoveryPayment /> },
+  { path: "/console/customer/loancreation", element: <LoanCreation /> },
 ];
 
 export default routes;
