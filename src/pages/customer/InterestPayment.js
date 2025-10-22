@@ -19,6 +19,7 @@ const InterestPayment = () => {
   const [error, setError] = useState("");
 
   const initialState = {
+    customer_no: rowData?.customer_no || "",
     receipt_no: rowData?.receipt_no || "",
     interest_receive_date: today.toISOString().substr(0, 10),
     name: rowData?.name || "",
@@ -100,7 +101,7 @@ const InterestPayment = () => {
       });
 
       const responseData = await response.json();
-
+      console.log(responseData);
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg);
         setTimeout(() => {
@@ -136,7 +137,7 @@ const InterestPayment = () => {
               <ul className="list-unstyled">
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Customer No:</strong>
-                  <span>{formData.receipt_no}</span>
+                  <span>{formData.customer_no}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Name:</strong>
