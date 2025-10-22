@@ -9,6 +9,7 @@ import { ClickButton } from "../../components/Buttons";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./Customer.css";
 const CustomerDetails = () => {
   const location = useLocation();
   const { type, rowData } = location.state || {};
@@ -56,7 +57,7 @@ const CustomerDetails = () => {
       });
       console.log(
         JSON.stringify({
-          edit_customer_id: rowData.Group_id, // Include the company ID in the request
+          edit_customer_id: rowData.customer_id, // Include the company ID in the request
           customer_no: formData.customer_no,
           customer_name: formData.CustomerName,
           gurdian_name: formData.name_of_guardians,
@@ -165,9 +166,9 @@ const CustomerDetails = () => {
   useEffect(() => {
     if (rowData) {
       setFormData({
-        CustomerName: rowData.customer_name || "",
-        Address: rowData.address || "",
-        Place: "",
+        CustomerName: rowData.name || "",
+        Address: rowData.customer_details || "",
+        Place: rowData.place || "",
         MobileNo: rowData.mobile_number || "",
         customer_no: rowData.customer_no || "",
         name_of_guardians: rowData.name_of_guardians || "",
@@ -178,310 +179,95 @@ const CustomerDetails = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowData]);
-  const handleChange = (e, fieldName) => {
-    const value = e.target ? e.target.value : e.value;
-
-    setFormData({
-      ...formData,
-      [fieldName]: value,
-    });
-  };
 
   return (
     <div>
-      {type == "edit" ? (
-        <>
-          <Container>
-            <Row className="regular">
-              <Col lg="12" md="12" xs="12" className="py-3">
-                <PageNav pagetitle={"Customer Details"}></PageNav>
-              </Col>
-
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"வாடிக்கையாளர் எண்."}
-                  labelname={"வாடிக்கையாளர் எண்."}
-                  value={formData.customer_no}
-                  onChange={(e) => handleChange(e, "customer_no")}
-                ></TextInputForm>
-              </Col>
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"வாடிக்கையாளர் பெயர்"}
-                  labelname={"வாடிக்கையாளர் பெயர்"}
-                  value={formData.CustomerName}
-                  onChange={(e) => handleChange(e, "CustomerName")}
-                ></TextInputForm>
-              </Col>
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"தந்தை அல்லது கணவர் பெயர்"}
-                  labelname={"தந்தை அல்லது கணவர் பெயர்"}
-                  value={formData.name_of_guardians}
-                  onChange={(e) => handleChange(e, "name_of_guardians")}
-                ></TextInputForm>
-              </Col>
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"முகவரி"}
-                  labelname={"முகவரி"}
-                  value={formData.Address}
-                  onChange={(e) => handleChange(e, "Address")}
-                ></TextInputForm>
-              </Col>
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"தொலைபேசி எண்."}
-                  labelname={"தொலைபேசி எண்."}
-                  value={formData.MobileNo}
-                  onChange={(e) => handleChange(e, "MobileNo")}
-                ></TextInputForm>
-              </Col>
-              <Col lg="12">
-                <div className="text-center mb-3">
-                  {type === "view" ? (
-                    <span className="mx-2">
-                      <ClickButton
-                        label={<>back</>}
-                        onClick={() => navigate("/console/master/customer")}
-                      />
-                    </span>
+      <>
+        <Container>
+          <Row className="regular">
+            <Col lg="12" md="12" xs="12" className="py-3">
+              <PageNav pagetitle={"Customer Details"}></PageNav>
+            </Col>
+            <Row className="mb-4">
+              <Col lg={4}>
+                <div className="customer-card bg-dard border rounded p-3 h-100 d-flex flex-column align-items-center justify-content-center">
+                  <h5 className="mb-3 text-center">Customer Image</h5>
+                  {rowData.proof && rowData.proof.length > 0 ? (
+                    <img
+                      src={rowData.proof[0]}
+                      alt="Customer Proof"
+                      className="img-fluid rounded"
+                    />
                   ) : (
-                    <>
-                      {type === "edit" && (
-                        <>
-                          <ToastContainer
-                            position="top-center"
-                            autoClose={2000}
-                            hideProgressBar={false}
-                            newestOnTop={false}
-                            closeOnClick
-                            rtl={false}
-                            pauseOnFocusLoss
-                            draggable
-                            pauseOnHover
-                            theme="colored"
-                          />
-                          <span className="mx-2">
-                            <ClickButton
-                              label={<>Update</>}
-                              onClick={handleUpdateSubmit}
-                            />
-                          </span>
-                          <span className="mx-2">
-                            <ClickButton
-                              label={<>cancle</>}
-                              onClick={() =>
-                                navigate("/console/master/customer")
-                              }
-                            />
-                          </span>
-                        </>
-                      )}
-                    </>
+                    <div className="text-center text-muted">
+                      No Image Available
+                    </div>
                   )}
                 </div>
               </Col>
-            </Row>
-          </Container>
-        </>
-      ) : (
-        <>
-          <Container>
-            <Row className="regular">
-              <Col lg="12" md="12" xs="12" className="py-3">
-                <PageNav pagetitle={"Customer Details"}></PageNav>
-              </Col>
-
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"வாடிக்கையாளர் எண்."}
-                  labelname={"வாடிக்கையாளர் எண்."}
-                  value={formData.customer_no}
-                  onChange={(e) => handleChange(e, "customer_no")}
-                ></TextInputForm>
-              </Col>
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"வாடிக்கையாளர் பெயர்"}
-                  labelname={"வாடிக்கையாளர் பெயர்"}
-                  value={formData.CustomerName}
-                  onChange={(e) => handleChange(e, "CustomerName")}
-                ></TextInputForm>
-              </Col>
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"தந்தை அல்லது கணவர் பெயர்"}
-                  labelname={"தந்தை அல்லது கணவர் பெயர்"}
-                  value={formData.name_of_guardians}
-                  onChange={(e) => handleChange(e, "name_of_guardians")}
-                ></TextInputForm>
-              </Col>
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"முகவரி"}
-                  labelname={"முகவரி"}
-                  value={formData.Address}
-                  onChange={(e) => handleChange(e, "Address")}
-                ></TextInputForm>
-              </Col>
-              <Col lg="3" md="4" xs="12" className="py-3">
-                <TextInputForm
-                  placeholder={"தொலைபேசி எண்."}
-                  labelname={"தொலைபேசி எண்."}
-                  value={formData.MobileNo}
-                  onChange={(e) => handleChange(e, "MobileNo")}
-                ></TextInputForm>
-              </Col>
-
-              <Col lg="12">
-                {pawnData.length > 0 && (
-                  <>
-                    <Col lg="7" md="6" xs="6">
-                      <div className="page-nav py-3">
-                        <span class="nav-list">நகை அடகு</span>
-                      </div>
-                    </Col>
-                    <Table>
-                      <thead>
-                        <tr>
-                          <td>No</td>
-                          <td>ரசீது எண்</td>
-                          <td>அடகு ரூபாய் (ரூ)</td>
-                          <td>வட்டி விகிதம் (%)</td>
-                          <td>வட்டி ரூபாய் (ரூ)</td>
-                          <td>சுமார் மதிப்பு (ரூ)</td>
-                          <td>நகை மீட்ட தேதி</td>
-                          <td>Action</td>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pawnData.map((item, index) => (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{item.recipt_no}</td>
-                            <td>{item.pawn_rate}</td>
-                            <td>{item.pawn_interest}</td>
-                            <td>{item.pawn_interest_amount}</td>
-                            <td>{item.jewel_original_rate}</td>
-                            <td>{item.pawnjewelry_recovery_finshed_date}</td>
-                            <td>
-                              <button onClick={toggleDetails}>
-                                <FaAngleDown />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-                <div
-                  className={`jewel-details ${showDetails ? "open" : "close"}`}
-                >
-                  <Table>
-                    <thead>
-                      <tr>
-                        <td>No</td>
-                        <td>நகை பெயர்</td>
-                        <td>எண்ணிக்கை</td>
-                        <td>தரம்</td>
-                        <td>எடை</td>
-                        <td>குறிப்பு</td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pawnData.length > 0 &&
-                        pawnData[0].jewel_product.map((product, index) => (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{product.JewelName}</td>
-                            <td>{product.count}</td>
-                            <td>{product.qlty}</td>
-                            <td>{product.weight}</td>
-                            <td>{product.remark}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </Table>
+              <Col lg={4}>
+                <div className="customer-card bg-light border rounded p-3 h-100">
+                  <h5 className="mb-3">Customer Information</h5>
+                  <ul className="list-unstyled">
+                    <li className="mb-2 d-flex justify-content-between">
+                      <strong>Customer No:</strong>
+                      <span>{rowData.customer_no}</span>
+                    </li>
+                    <li className="mb-2 d-flex justify-content-between">
+                      <strong>Name:</strong>
+                      <span>{rowData.name}</span>
+                    </li>
+                    <li className="mb-2 d-flex justify-content-between">
+                      <strong>Address:</strong>
+                      <span>{rowData.customer_details}</span>
+                    </li>
+                    <li className="mb-2 d-flex justify-content-between">
+                      <strong>Place:</strong>
+                      <span>{rowData.place}</span>
+                    </li>
+                    <li className="mb-2 d-flex justify-content-between">
+                      <strong>Mobile Number:</strong>
+                      <span>{rowData.mobile_number}</span>
+                    </li>
+                  </ul>
                 </div>
               </Col>
-              <Col lg="12">
-                {pawngData.length > 0 && (
-                  <>
-                    <Col lg="7" md="6" xs="6">
-                      <div className="page-nav py-3">
-                        <span class="nav-list">நகை அடகு - G</span>
-                      </div>
-                    </Col>
-                    <Table>
-                      <thead>
-                        <tr>
-                          <td>No</td>
-                          <td>ரசீது எண்</td>
-                          <td>அடகு ரூபாய் (ரூ)</td>
-                          <td>வட்டி விகிதம் (%)</td>
-                          <td>வட்டி ரூபாய் (ரூ)</td>
-                          <td>சுமார் மதிப்பு (ரூ)</td>
-                          <td>நகை மீட்ட தேதி</td>
-                          <td>Action</td>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pawngData.map((item, index) => (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{item.recipt_no}</td>
-                            <td>{item.pawn_rate}</td>
-                            <td>{item.pawn_interest}</td>
-                            <td>{item.pawn_interest_amount}</td>
-                            <td>{item.jewel_original_rate}</td>
-                            <td>{item.pawnjewelryg_recovery_finshed_date}</td>
-                            <td>
-                              <button onClick={toggleDetails1}>
-                                <FaAngleDown />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-                <div
-                  className={`jewel-details ${showDetails1 ? "open" : "close"}`}
-                >
-                  <Table>
-                    <thead>
-                      <tr>
-                        <td>No</td>
-                        <td>நகை பெயர்</td>
-                        <td>எண்ணிக்கை</td>
-                        <td>தரம்</td>
-                        <td>எடை</td>
-                        <td>குறிப்பு</td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pawngData.length > 0 &&
-                        pawngData[0].jewel_product.map((product, index) => (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{product.JewelName}</td>
-                            <td>{product.count}</td>
-                            <td>{product.qlty}</td>
-                            <td>{product.weight}</td>
-                            <td>{product.remark}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </Table>
+              <Col lg={4}>
+                <div className="customer-card bg-light border rounded p-3 h-100">
+                  <h5 className="mb-3">Additional Details</h5>
+                  <ul className="list-unstyled">
+                    <li className="mb-2 d-flex justify-content-between">
+                      <strong>Proof Number:</strong>
+                      <span>{rowData.proof_number}</span>
+                    </li>
+                    <li className="mb-2 d-flex justify-content-between">
+                      <strong>Additional Mobile:</strong>
+                      <span>{rowData.addtionsonal_mobile_number}</span>
+                    </li>
+                    <li className="mb-2 d-flex justify-content-between">
+                      <strong>Reference:</strong>
+                      <span>{rowData.reference}</span>
+                    </li>
+                    <li className="mb-2 d-flex justify-content-between">
+                      <strong>Pincode:</strong>
+                      <span>{rowData.pincode}</span>
+                    </li>
+                  </ul>
                 </div>
               </Col>
             </Row>
-          </Container>
-        </>
-      )}
+
+            <Col lg="12">
+              <div className="text-center mb-3">
+                <ClickButton
+                  label={<>Back</>}
+                  onClick={() => navigate("/console/master/customer")}
+                />
+              </div>
+            </Col>
+          </Row>
+        </Container>
+      </>
     </div>
   );
 };
