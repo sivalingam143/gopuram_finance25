@@ -12,11 +12,11 @@ const UserTablehead = [
   "S.No",
   "Loan Date",
   "Loan No",
-
   "Principal Amount",
   "Interest Rate",
   "Total Weight",
   "Pledge Items",
+  "Jewelry recovery period",
   "Status",
   "Action",
 ];

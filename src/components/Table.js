@@ -870,6 +870,7 @@ const TableUI = ({
                       <td>{rowData.interest_rate}</td>
                       <td>{totalWeight.toFixed(2)}</td>
                       <td>{jewelNames}</td>
+                      <td>{rowData.Jewelry_recovery_agreed_period}</td>
                       <td>
                         <span
                           style={{
