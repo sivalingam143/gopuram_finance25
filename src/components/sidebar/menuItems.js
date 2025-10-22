@@ -65,43 +65,43 @@ const sidebarConfig = [
     text: "customer",
     icon: <FiUsers />,
   },
-  {
-    path: "/console/pawn/jewelpawning",
-    text: "Loan",
-    icon: <AiFillGolden />,
-    // subMenu: [
-    //   {
-    //     path: "/console/pawn/jewelpawning",
-    //     icon: <AiFillGolden />,
-    //     text: "Jewelry pawn",
-    //   },
-    //   // {
-    //   //   path: "/console/pawn/jewelpawng",
-    //   //   icon: <AiFillGolden />,
-    //   //   text: "நகை அடகு - G",
-    //   // },
-    // ],
-  },
+  // {
+  //   path: "/console/pawn/jewelpawning",
+  //   text: "Loan",
+  //   icon: <AiFillGolden />,
+  //   subMenu: [
+  //     {
+  //       path: "/console/pawn/jewelpawning",
+  //       icon: <AiFillGolden />,
+  //       text: "Jewelry pawn",
+  //     },
+  //     // {
+  //     //   path: "/console/pawn/jewelpawng",
+  //     //   icon: <AiFillGolden />,
+  //     //   text: "நகை அடகு - G",
+  //     // },
+  //   ],
+  // },
   {
     path: "/console/pawn/bankpledge",
     text: "Bank Pledge",
     icon: <AiFillGolden />,
   },
 
-  {
-    text: "Interest | Closing",
-    icon: <IoMdCash />,
-    subMenu: [
-      {
-        path: "/console/interest",
-        text: "Interest",
-      },
-      {
-        path: "/console/master/jewelrecovery",
-        text: "Loan Closing",
-      },
-    ],
-  },
+  // {
+  //   text: "Interest | Closing",
+  //   icon: <IoMdCash />,
+  //   subMenu: [
+  //     {
+  //       path: "/console/interest",
+  //       text: "Interest",
+  //     },
+  //     {
+  //       path: "/console/master/jewelrecovery",
+  //       text: "Loan Closing",
+  //     },
+  //   ],
+  // },
 
   {
     path: "/console/transaction",
