@@ -1,4 +1,3 @@
-/* eslint-disable eqeqeq */
 import React, { useState, useEffect } from "react";
 import { Col, Container, Row, Table } from "react-bootstrap";
 import PageNav from "../../components/PageNav";

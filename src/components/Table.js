@@ -336,7 +336,11 @@ const TableUI = ({
   //     state: { type: "view", rowData: rowData },
   //   });
   // };
-
+  const handleJewelcustomerViewClick = (rowData) => {
+    navigate("/console/master/customerdetails", {
+      state: { type: "view", rowData: rowData },
+    });
+  };
   const handleJewelcustomerEditClick = (rowData) => {
     navigate("/console/master/customer/create", {
       state: { type: "edit", rowData: rowData },
@@ -1231,6 +1235,11 @@ const TableUI = ({
                         >
                           View
                         </Dropdown.Item> */}
+                        <Dropdown.Item
+                          onClick={() => handleJewelcustomerViewClick(rowData)}
+                        >
+                          Customer Details
+                        </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => handleJewelcustomerEditClick(rowData)}
                         >
