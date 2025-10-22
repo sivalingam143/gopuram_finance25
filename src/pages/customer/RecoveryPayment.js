@@ -205,28 +205,14 @@ const RecoveryPayment = () => {
           <Col lg={4}>
             <div className="customer-card bg-light border rounded p-3 h-100">
               <h5 className="mb-3">Pledge Items</h5>
-              <table className="table table-bordered w-100 small">
-                <thead>
-                  <tr>
-                    <th>S.No</th>
-                    <th>நகை பெயர்</th>
-                    <th>எண்ணிக்கை</th>
-                    <th>எடை</th>
-                    <th>குறிப்பு</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {formData.jewel_product.map((row, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{row.JewelName}</td>
-                      <td>{row.count}</td>
-                      <td>{row.weight}</td>
-                      <td>{row.remark}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <ul className="list-unstyled small">
+                {formData.jewel_product.map((row, index) => (
+                  <li key={index} className="mb-2 p-2 border rounded bg-white">
+                    <strong>S.No {index + 1}:</strong> {row.JewelName} -{" "}
+                    {row.count} pcs, {row.weight} gm ({row.remark})
+                  </li>
+                ))}
+              </ul>
             </div>
           </Col>
 
