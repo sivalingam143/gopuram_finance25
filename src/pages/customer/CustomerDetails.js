@@ -72,6 +72,7 @@ const CustomerDetails = () => {
       });
 
       const responseData = await response.json();
+      console.log(responseData);
       setLoading(false);
       if (responseData.head.code === 200) {
         let sortedData = responseData.body.pawnjewelry.map((user) => ({

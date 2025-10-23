@@ -917,17 +917,26 @@ const TableUI = ({
                             >
                               OfficeCopy View
                             </Dropdown.Item> */}
-                            <Dropdown.Item
-                              onClick={() => customActions?.interest?.(rowData)}
-                              t
-                            >
-                              Interest
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                              onClick={() => customActions?.recovery?.(rowData)}
-                            >
-                              Recovery
-                            </Dropdown.Item>
+                            {rowData?.status !== "நகை மீட்கபட்டது" && (
+                              <>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    customActions?.interest?.(rowData)
+                                  }
+                                >
+                                  Interest
+                                </Dropdown.Item>
+
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    customActions?.recovery?.(rowData)
+                                  }
+                                >
+                                  Recovery
+                                </Dropdown.Item>
+                              </>
+                            )}
+
                             {isAdmin && (
                               <Dropdown.Item
                                 onClick={() =>
