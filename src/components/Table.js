@@ -144,7 +144,7 @@ const TableUI = ({
       const responseData = await response.json();
 
       if (responseData.head.code === 200) {
-        navigate("/console/pawn/jewelpawning");
+        navigate("/console/master/customer");
         window.location.reload();
       } else {
         console.log(responseData.head.msg);
