@@ -1606,6 +1606,79 @@ const LoanCreation = () => {
             </table>
           </Col>
 
+          {/* New Bank Pledge Details Section */}
+          {/* <Col lg="12" className="py-3">
+            <h4 className="mb-3">Bank Pledge Details</h4>
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <Calender
+              setLabel={(date) => setLabel(date, "bank_pledge_date")}
+              initialDate={formData.bank_pledge_date}
+              calenderlabel="Pledge Date"
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Bank Assessor Name"}
+              labelname={"Bank Assessor Name"}
+              name="bank_assessor_name"
+              value={formData.bank_assessor_name}
+              onChange={(e) => handleChange(e, "bank_assessor_name")}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Bank Name"}
+              labelname={"Bank Name"}
+              name="bank_name"
+              value={formData.bank_name}
+              onChange={(e) => handleChange(e, "bank_name")}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Bank Loan Value"}
+              labelname={"Bank Loan Value"}
+              name="bank_pawn_value"
+              value={formData.bank_pawn_value}
+              onChange={(e) => handleChange(e, "bank_pawn_value")}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Bank Interest"}
+              labelname={"Bank Interest"}
+              name="bank_interest"
+              value={formData.bank_interest}
+              onChange={(e) => handleChange(e, "bank_interest")}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <Calender
+              setLabel={(date) => setLabel(date, "bank_duration")}
+              initialDate={formData.bank_duration}
+              calenderlabel="Due Date"
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Additional Charges"}
+              labelname={"Additional Charges"}
+              name="bank_additional_charges"
+              value={formData.bank_additional_charges}
+              onChange={(e) => handleChange(e, "bank_additional_charges")}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Bank Loan No"}
+              labelname={"Bank Loan No"}
+              name="location"
+              value={formData.location}
+              onChange={(e) => handleChange(e, "location")}
+            />
+          </Col> */}
+
           <Col lg="12">
             <div className="text-center mb-3">
               <ToastContainer
