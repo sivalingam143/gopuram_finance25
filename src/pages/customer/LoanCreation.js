@@ -1006,7 +1006,7 @@ const LoanCreation = () => {
             <Calender
               setLabel={(date) => setLabel(date, "pawnjewelry_date")}
               initialDate={formData.pawnjewelry_date}
-              calenderlabel="Date"
+              calenderlabel="Loan Date"
             />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
