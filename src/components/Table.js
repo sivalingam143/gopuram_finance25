@@ -106,7 +106,7 @@ const TableUI = ({
   };
 
   const handleJewelPawningEditClick = (rowData) => {
-    navigate("/console/pawn/jewelpawning/create", {
+    navigate("/console/customer/loancreation", {
       state: { type: "edit", rowData: rowData },
     });
   };

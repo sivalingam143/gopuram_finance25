@@ -15,7 +15,7 @@ import { MdDeleteForever } from "react-icons/md";
 
 const LoanCreation = () => {
   const location = useLocation();
-  const { rowData } = location.state || {};
+  const { type, rowData } = location.state || {};
   const fileInputRef = useRef(null);
   const aadharFileInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -33,44 +33,91 @@ const LoanCreation = () => {
   const today = new Date();
   const defaultDate = today.toISOString().substr(0, 10);
 
-  const initialState = {
-    customer_no: rowData?.customer_no || "",
-    receipt_no: "",
-    pawnjewelry_date: defaultDate,
-    name: rowData?.name || "",
-    customer_details: rowData?.customer_details || "",
-    place: rowData?.place || "",
-    mobile_number: rowData?.mobile_number || "",
-    dateofbirth: "",
-    proof_number: "",
-    upload_type: "",
-    original_amount: "",
-    interest_rate: "",
-    Jewelry_recovery_agreed_period: "",
-    proof: [],
-    aadharproof: [],
-    group_type: "Gold",
-    jewel_product: [
-      {
-        JewelName: "",
-        count: "",
-        weight: "",
-        deduction_weight: "",
-        net: "",
-        remark: "",
-        carrat: "",
-      },
-    ],
-    // New bank pledge fields
-    bank_pledge_date: defaultDate,
-    bank_assessor_name: "",
-    bank_name: "",
-    bank_pawn_value: "",
-    bank_interest: "",
-    bank_duration: "",
-    bank_additional_charges: "",
-    location: "",
-  };
+  const initialState =
+    type === "edit"
+      ? {
+          ...rowData,
+          pawnjewelry_date: rowData.pawnjewelry_date || defaultDate,
+          dateofbirth: rowData.dateofbirth || "",
+          proof_number: rowData.proof_number || "",
+          upload_type: rowData.upload_type || "",
+          proof: rowData.proof.map((url, index) => {
+            const extension = url.split(".").pop()?.toLowerCase();
+            const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+            return {
+              name: `file_${index + 1}.${extension}`,
+              data: url,
+              type: isImage ? "image" : "file",
+            };
+          }),
+          aadharproof: rowData.aadharproof.map((url, index) => {
+            const extension = url.split(".").pop()?.toLowerCase();
+            const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+            return {
+              name: `file_${index + 1}.${extension}`,
+              data: url,
+              type: isImage ? "image" : "file",
+            };
+          }),
+          jewel_product: rowData.jewel_product || [
+            {
+              JewelName: "",
+              count: "",
+              weight: "",
+              deduction_weight: "",
+              net: "",
+              remark: "",
+              carrat: "",
+            },
+          ],
+          // New bank pledge fields
+          bank_pledge_date: rowData.bank_pledge_date || defaultDate,
+          bank_assessor_name: rowData.bank_assessor_name || "",
+          bank_name: rowData.bank_name || "",
+          bank_pawn_value: rowData.bank_pawn_value || "",
+          bank_interest: rowData.bank_interest || "",
+          bank_duration: rowData.bank_duration || "",
+          bank_additional_charges: rowData.bank_additional_charges || "",
+          location: rowData.location || "",
+        }
+      : {
+          customer_no: rowData?.customer_no || "",
+          receipt_no: "",
+          pawnjewelry_date: defaultDate,
+          name: rowData?.name || "",
+          customer_details: rowData?.customer_details || "",
+          place: rowData?.place || "",
+          mobile_number: rowData?.mobile_number || "",
+          dateofbirth: "",
+          proof_number: "",
+          upload_type: "",
+          original_amount: "",
+          interest_rate: "",
+          Jewelry_recovery_agreed_period: "",
+          proof: [],
+          aadharproof: [],
+          group_type: "Gold",
+          jewel_product: [
+            {
+              JewelName: "",
+              count: "",
+              weight: "",
+              deduction_weight: "",
+              net: "",
+              remark: "",
+              carrat: "",
+            },
+          ],
+          // New bank pledge fields
+          bank_pledge_date: defaultDate,
+          bank_assessor_name: "",
+          bank_name: "",
+          bank_pawn_value: "",
+          bank_interest: "",
+          bank_duration: "",
+          bank_additional_charges: "",
+          location: "",
+        };
 
   const [formData, setFormData] = useState(initialState);
   const [error, setError] = useState("");
@@ -204,6 +251,7 @@ const LoanCreation = () => {
   };
 
   const handleGroupTypeChange = (e) => {
+    if (type === "edit") return;
     const selectedGroupType = e.target.value;
     setFormData((prevData) => ({
       ...prevData,
@@ -364,7 +412,6 @@ const LoanCreation = () => {
           position: "top-center",
           autoClose: 2000,
         });
-        setLoading(false);
         // Calculate first month interest
         const originalAmount = parseFloat(formData.original_amount || 0);
         const interestRate = parseFloat(formData.interest_rate || 0);
@@ -429,6 +476,7 @@ const LoanCreation = () => {
           position: "top-center",
           autoClose: 2000,
         });
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -438,6 +486,93 @@ const LoanCreation = () => {
       });
       setLoading(false);
     }
+  };
+
+  const handleUpdateSubmit = async () => {
+    setLoading(true);
+    const convertToBase64IfUrl = async (file) => {
+      const { data } = file;
+      if (typeof data === "string" && data.startsWith("http")) {
+        const response = await fetch(data);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve({ data: reader.result });
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+      return file;
+    };
+
+    const proofBase64Array = await Promise.all(
+      formData.proof.map(convertToBase64IfUrl)
+    );
+    const aadharproofBase64Array = await Promise.all(
+      formData.aadharproof.map(convertToBase64IfUrl)
+    );
+
+    try {
+      const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          edit_pawnjewelry_id: rowData.pawnjewelry_id,
+          customer_no: formData.customer_no,
+          receipt_no: formData.receipt_no,
+          pawnjewelry_date: formData.pawnjewelry_date,
+          name: formData.name,
+          customer_details: formData.customer_details,
+          place: formData.place,
+          mobile_number: formData.mobile_number,
+          dateofbirth: formData.dateofbirth,
+          proof_number: formData.proof_number,
+          upload_type: formData.upload_type,
+          original_amount: formData.original_amount,
+          interest_rate: formData.interest_rate,
+          jewel_product: formData.jewel_product,
+          Jewelry_recovery_agreed_period:
+            formData.Jewelry_recovery_agreed_period,
+          group_type: formData.group_type,
+          proof: proofBase64Array,
+          aadharproof: aadharproofBase64Array,
+          // New bank pledge fields
+          bank_pledge_date: formData.bank_pledge_date,
+          bank_assessor_name: formData.bank_assessor_name,
+          bank_name: formData.bank_name,
+          bank_pawn_value: formData.bank_pawn_value,
+          bank_interest: formData.bank_interest,
+          bank_duration: formData.bank_duration,
+          bank_additional_charges: formData.bank_additional_charges,
+          location: formData.location,
+        }),
+      });
+
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        toast.success(responseData.head.msg, {
+          position: "top-center",
+          autoClose: 2000,
+        });
+        setTimeout(() => {
+          navigate(-1);
+        }, 2000);
+      } else {
+        toast.error(responseData.head.msg, {
+          position: "top-center",
+          autoClose: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating data:", error);
+      toast.error("Failed to update data. Please try again.", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    }
+    setLoading(false);
   };
 
   const fetchDatacategory = async () => {
@@ -547,6 +682,7 @@ const LoanCreation = () => {
   };
 
   const fetchPawnJewelry = async (groupType) => {
+    const groupTypeUpper = groupType ? groupType.toUpperCase() : "";
     try {
       const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
         method: "POST",
@@ -563,9 +699,9 @@ const LoanCreation = () => {
 
         // Determine prefix based on group_type
         let prefix = "A"; // Default fallback
-        if (groupType === "GOLD") {
+        if (groupTypeUpper === "GOLD") {
           prefix = "G";
-        } else if (groupType === "SLIVER") {
+        } else if (groupTypeUpper === "SILVER") {
           prefix = "S";
         }
 
@@ -597,7 +733,11 @@ const LoanCreation = () => {
         console.error("Failed to fetch pawn jewelry:", responseData.head.msg);
         // Set default initial receipt number based on group_type
         const defaultPrefix =
-          groupType === "GOLD" ? "G" : groupType === "SLIVER" ? "S" : "A";
+          groupTypeUpper === "GOLD"
+            ? "G"
+            : groupTypeUpper === "SILVER"
+            ? "S"
+            : "A";
         setFormData((prev) => ({
           ...prev,
           receipt_no: defaultPrefix + "0001",
@@ -606,7 +746,11 @@ const LoanCreation = () => {
     } catch (error) {
       console.error("Error fetching pawn jewelry:", error);
       const defaultPrefix =
-        groupType === "GOLD" ? "G" : groupType === "SLIVER" ? "S" : "A";
+        groupTypeUpper === "GOLD"
+          ? "G"
+          : groupTypeUpper === "SILVER"
+          ? "S"
+          : "A";
       setFormData((prev) => ({
         ...prev,
         receipt_no: defaultPrefix + "0001",
@@ -722,11 +866,13 @@ const LoanCreation = () => {
     fetchuser();
     fetchData();
     fetchDatajewelpawncustomer();
-    fetchPawnJewelry(formData.group_type);
+    if (type !== "edit") {
+      fetchPawnJewelry(formData.group_type);
+    }
     return () => {
       stopWebcam();
     };
-  }, [formData.group_type]);
+  }, [type, formData.group_type]);
 
   if (showCapturePage) {
     return (
@@ -873,7 +1019,9 @@ const LoanCreation = () => {
       <Container fluid>
         <Row className="regular">
           <Col lg="12" md="6" xs="12" className="py-3">
-            <PageNav pagetitle={"Loan Creation"} />
+            <PageNav
+              pagetitle={`Loan${type === "edit" ? " Edit" : " Creation"}`}
+            />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
@@ -928,6 +1076,7 @@ const LoanCreation = () => {
               name="receipt_no"
               value={formData.receipt_no}
               onChange={(e) => handleChange(e, "receipt_no")}
+              readOnly={type === "edit"}
             />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
@@ -1075,6 +1224,7 @@ const LoanCreation = () => {
                 name="group_type"
                 value={formData.group_type}
                 onChange={handleGroupTypeChange}
+                disabled={type === "edit"}
               >
                 <option value="">Select group</option>
                 {grupData.map((group) => (
@@ -1124,7 +1274,9 @@ const LoanCreation = () => {
           </Col>
           <Col lg="4" md="4" xs="12" className="py-5">
             <div className="file-upload">
-              <label>Upload Ornament</label>
+              <label>
+                {type === "edit" ? "Preview Ornament" : "Upload Ornament"}
+              </label>
               <input
                 type="file"
                 id="proof"
@@ -1229,7 +1381,9 @@ const LoanCreation = () => {
           </Col>
           <Col lg="4" md="4" xs="12" className="py-5">
             <div className="file-upload">
-              <label>Upload Proof</label>
+              <label>
+                {type === "edit" ? "Preview Proof Files" : "Upload Proof"}
+              </label>
               {formData.aadharproof && formData.aadharproof.length > 0 && (
                 <div className="file-preview mt-2">
                   {formData.aadharproof.map((file, index) => (
@@ -1450,8 +1604,16 @@ const LoanCreation = () => {
               />
               <span className="px-2">
                 <ClickButton
-                  label={loading ? <>Submitting...</> : <> Submit</>}
-                  onClick={handleSubmit}
+                  label={
+                    type === "edit" ? (
+                      <>Update</>
+                    ) : loading ? (
+                      <>Submitting...</>
+                    ) : (
+                      <>Submit</>
+                    )
+                  }
+                  onClick={type === "edit" ? handleUpdateSubmit : handleSubmit}
                   disabled={loading}
                 />
               </span>
