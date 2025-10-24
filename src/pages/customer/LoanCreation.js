@@ -138,6 +138,7 @@ const LoanCreation = () => {
         };
 
   const [formData, setFormData] = useState(initialState);
+  console.log(formData);
   const [error, setError] = useState("");
   const [grupData, setGrupData] = useState([]);
   const [userData, setUserData] = useState([]);
