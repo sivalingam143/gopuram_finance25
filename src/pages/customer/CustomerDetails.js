@@ -259,6 +259,49 @@ const CustomerDetails = () => {
             </Row>
           )}
 
+          {/* Bank Details Container */}
+          <Row className="mb-4">
+            <Col lg={4}>
+              <div className="customer-card bg-light border rounded p-3 h-100">
+                <h5 className="mb-3">Bank Details</h5>
+                <ul className="list-unstyled">
+                  <li className="mb-2 d-flex justify-content-between">
+                    <strong>Account Holder Name:</strong>
+                    <span>
+                      {customerDetailsData?.customer_info
+                        ?.account_holder_name || "N/A"}
+                    </span>
+                  </li>
+                  <li className="mb-2 d-flex justify-content-between">
+                    <strong>Bank Name:</strong>
+                    <span>
+                      {customerDetailsData?.customer_info?.bank_name || "N/A"}
+                    </span>
+                  </li>
+                  <li className="mb-2 d-flex justify-content-between">
+                    <strong>Account Number:</strong>
+                    <span>
+                      {customerDetailsData?.customer_info?.account_number ||
+                        "N/A"}
+                    </span>
+                  </li>
+                  <li className="mb-2 d-flex justify-content-between">
+                    <strong>IFSC Code:</strong>
+                    <span>
+                      {customerDetailsData?.customer_info?.ifsc_code || "N/A"}
+                    </span>
+                  </li>
+                  <li className="mb-2 d-flex justify-content-between">
+                    <strong>Branch Name:</strong>
+                    <span>
+                      {customerDetailsData?.customer_info?.branch_name || "N/A"}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </Col>
+          </Row>
+
           <Col lg="12">
             <div className="text-center mb-3">
               <ClickButton
