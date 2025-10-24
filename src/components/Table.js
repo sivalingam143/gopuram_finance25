@@ -934,6 +934,14 @@ const TableUI = ({
                                 >
                                   Recovery
                                 </Dropdown.Item>
+
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    customActions?.repledge?.(rowData)
+                                  }
+                                >
+                                  Re-pledge
+                                </Dropdown.Item>
                               </>
                             )}
 

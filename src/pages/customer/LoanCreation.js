@@ -80,6 +80,55 @@ const LoanCreation = () => {
           bank_additional_charges: rowData.bank_additional_charges || "",
           location: rowData.location || "",
         }
+      : type === "repledge"
+      ? {
+          ...rowData,
+          receipt_no: "",
+          pawnjewelry_date: defaultDate,
+          dateofbirth: rowData.dateofbirth || "",
+          proof_number: rowData.proof_number || "",
+          upload_type: rowData.upload_type || "",
+          proof:
+            rowData.proof?.map((url, index) => {
+              const extension = url.split(".").pop()?.toLowerCase();
+              const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+              return {
+                name: `file_${index + 1}.${extension}`,
+                data: url,
+                type: isImage ? "image" : "file",
+              };
+            }) || [],
+          aadharproof:
+            rowData.aadharproof?.map((url, index) => {
+              const extension = url.split(".").pop()?.toLowerCase();
+              const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+              return {
+                name: `file_${index + 1}.${extension}`,
+                data: url,
+                type: isImage ? "image" : "file",
+              };
+            }) || [],
+          jewel_product: rowData.jewel_product || [
+            {
+              JewelName: "",
+              count: "",
+              weight: "",
+              deduction_weight: "",
+              net: "",
+              remark: "",
+              carrat: "",
+            },
+          ],
+          // New bank pledge fields (if needed, set to empty or previous)
+          bank_pledge_date: defaultDate,
+          bank_assessor_name: "",
+          bank_name: "",
+          bank_pawn_value: "",
+          bank_interest: "",
+          bank_duration: "",
+          bank_additional_charges: "",
+          location: "",
+        }
       : {
           customer_no: rowData?.customer_no || "",
           receipt_no: "",
@@ -1040,7 +1089,13 @@ const LoanCreation = () => {
         <Row className="regular">
           <Col lg="12" md="6" xs="12" className="py-3">
             <PageNav
-              pagetitle={`Loan${type === "edit" ? " Edit" : " Creation"}`}
+              pagetitle={`Loan${
+                type === "edit"
+                  ? " Edit"
+                  : type === "repledge"
+                  ? " Re-Pledge"
+                  : " Creation"
+              }`}
             />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
@@ -1050,6 +1105,7 @@ const LoanCreation = () => {
               name="customer_no"
               value={formData.customer_no}
               onChange={(e) => handleChange(e, "customer_no")}
+              disabled={type === "repledge"}
             />
             {customerSuggestions.length > 0 && searchCutomernu && (
               <ul

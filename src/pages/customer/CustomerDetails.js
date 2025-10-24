@@ -101,6 +101,12 @@ const CustomerDetails = () => {
     });
   };
 
+  const handleRePledgeClick = (pawnRow) => {
+    navigate("/console/customer/loancreation", {
+      state: { type: "repledge", rowData: pawnRow },
+    });
+  };
+
   useEffect(() => {
     if (rowData) {
       fetchCustomerDetails();
@@ -246,6 +252,7 @@ const CustomerDetails = () => {
                   customActions={{
                     interest: handleInterestClick,
                     recovery: handleRecoveryClick,
+                    repledge: handleRePledgeClick,
                   }}
                 />
               </Col>
