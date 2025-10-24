@@ -88,14 +88,32 @@ const LoanCreation = () => {
           customer_details: rowData?.customer_details || "",
           place: rowData?.place || "",
           mobile_number: rowData?.mobile_number || "",
-          dateofbirth: "",
-          proof_number: "",
-          upload_type: "",
+          dateofbirth: rowData?.dateofbirth || "",
+          proof_number: rowData?.proof_number || "",
+          upload_type: rowData?.upload_type || "",
           original_amount: "",
           interest_rate: "",
           Jewelry_recovery_agreed_period: "",
-          proof: [],
-          aadharproof: [],
+          proof:
+            rowData?.proof?.map((url, index) => {
+              const extension = url.split(".").pop()?.toLowerCase();
+              const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+              return {
+                name: `file_${index + 1}.${extension}`,
+                data: url,
+                type: isImage ? "image" : "file",
+              };
+            }) || [],
+          aadharproof:
+            rowData?.aadharproof?.map((url, index) => {
+              const extension = url.split(".").pop()?.toLowerCase();
+              const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+              return {
+                name: `file_${index + 1}.${extension}`,
+                data: url,
+                type: isImage ? "image" : "file",
+              };
+            }) || [],
           group_type: "Gold",
           jewel_product: [
             {

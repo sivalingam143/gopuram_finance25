@@ -224,7 +224,11 @@ const CustomerDetails = () => {
               <span className="px-1">
                 <ClickButton
                   label={<>Add New</>}
-                  onClick={() => navigate("/console/customer/loancreation")}
+                  onClick={() =>
+                    navigate("/console/customer/loancreation", {
+                      state: { type: "create", rowData: rowData },
+                    })
+                  }
                 ></ClickButton>
               </span>
             </Col>
