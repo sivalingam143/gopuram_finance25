@@ -424,7 +424,7 @@ const LoanCreation = () => {
       });
 
       const responseData = await response.json();
-
+      console.log(responseData);
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",
@@ -569,6 +569,7 @@ const LoanCreation = () => {
       });
 
       const responseData = await response.json();
+      console.log(responseData);
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",
