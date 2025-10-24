@@ -20,6 +20,7 @@ const RecoveryPayment = () => {
   const [error, setError] = useState("");
 
   const initialState = {
+    customer_no: rowData?.customer_no || "",
     receipt_no: rowData?.receipt_no || "",
     pawnjewelry_date: rowData?.pawnjewelry_date || "",
     name: rowData?.name || "",
@@ -150,6 +151,10 @@ const RecoveryPayment = () => {
               <ul className="list-unstyled">
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Customer No:</strong>
+                  <span>{formData.customer_no}</span>
+                </li>
+                <li className="mb-2 d-flex justify-content-between">
+                  <strong>Loan No:</strong>
                   <span>{formData.receipt_no}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">

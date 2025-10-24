@@ -140,6 +140,10 @@ const InterestPayment = () => {
                   <span>{formData.customer_no}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
+                  <strong>Loan No:</strong>
+                  <span>{formData.receipt_no}</span>
+                </li>
+                <li className="mb-2 d-flex justify-content-between">
                   <strong>Name:</strong>
                   <span>{formData.name}</span>
                 </li>
