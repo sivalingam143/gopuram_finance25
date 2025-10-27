@@ -934,7 +934,10 @@ const TableUI = ({
                                 >
                                   Recovery
                                 </Dropdown.Item>
-
+                              </>
+                            )}
+                            {rowData?.status !== "நகை மீட்கபடவில்லை" && (
+                              <>
                                 <Dropdown.Item
                                   onClick={() =>
                                     customActions?.repledge?.(rowData)
