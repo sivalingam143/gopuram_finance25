@@ -66,6 +66,7 @@ const InterestPayment = () => {
       });
 
       const responseData = await response.json();
+      console.log(responseData);
       if (responseData.head.code === 200) {
         const filteredHistory = responseData.body.interest.filter(
           (item) => item.receipt_no === rowData.receipt_no
