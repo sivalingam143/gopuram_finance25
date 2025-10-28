@@ -1,70 +1,90 @@
 import React from "react";
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Font,
+} from "@react-pdf/renderer";
+
+// Register a clean English font
+Font.register({
+  family: "Helvetica",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/helvetica.ttf", fontWeight: "normal" },
+  ],
+});
 
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    padding: 25,
     fontSize: 10,
+    fontFamily: "Helvetica",
+    lineHeight: 1.3,
   },
   title: {
-    fontSize: 18,
-    marginBottom: 20,
     textAlign: "center",
+    fontSize: 16,
     fontWeight: "bold",
+    marginBottom: 15,
+    textDecoration: "underline",
+  },
+  sectionTitle: {
+    fontWeight: "bold",
+    fontSize: 11,
+    marginBottom: 6,
+    textDecoration: "underline",
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
   table: {
-    display: "flex",
-    flexDirection: "column",
     width: "100%",
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: "#000",
-    borderRadius: 2,
   },
   row: {
-    display: "flex",
     flexDirection: "row",
     borderBottomStyle: "solid",
     borderBottomWidth: 1,
     borderBottomColor: "#000",
   },
-  headerRow: {
-    display: "flex",
-    flexDirection: "row",
-    backgroundColor: "#f0f0f0",
-  },
   cell: {
     borderRightStyle: "solid",
     borderRightWidth: 1,
     borderRightColor: "#000",
-    padding: 4,
-    fontSize: 8,
+    padding: 6,
     flex: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerCell: {
-    borderRightStyle: "solid",
-    borderRightWidth: 1,
-    borderRightColor: "#000",
-    padding: 5,
-    fontSize: 10,
-    fontWeight: "bold",
-    flex: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f0f0f0",
   },
   lastCell: {
     borderRightWidth: 0,
   },
-  lastRow: {
-    borderBottomWidth: 0,
+  headerRow: {
+    flexDirection: "row",
+    backgroundColor: "#f2f2f2",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
+    borderBottomColor: "#000",
+    fontWeight: "bold",
+  },
+  headerCell: {
+    flex: 1,
+    padding: 6,
+    fontWeight: "bold",
+    borderRightStyle: "solid",
+    borderRightWidth: 1,
+    borderRightColor: "#000",
+  },
+  headerLastCell: {
+    borderRightWidth: 0,
+  },
+  textCenter: {
+    textAlign: "center",
+  },
+  textRight: {
+    textAlign: "right",
   },
 });
 
@@ -99,118 +119,132 @@ const InterestStatementPDF = ({ data }) => {
     { label: "Loan Date", value: formatDateForPDF(customer.pawnjewelry_date) },
     {
       label: "Principal Amount",
-      value: `₹${principal?.toLocaleString() || 0}`,
+      value: `Rs${principal?.toLocaleString() || 0}`,
     },
-    { label: "Base Rate", value: base_rate || "N/A" },
+    { label: "Base Rate (%)", value: base_rate || "N/A" },
     { label: "Recovery Period", value: recovery_period || "N/A" },
     {
       label: "Total Interest",
-      value: `₹${total_interest?.toLocaleString() || 0}`,
+      value: `Rs${total_interest?.toLocaleString() || 0}`,
     },
     {
       label: "Paid Interest",
-      value: `₹${paid_interest?.toLocaleString() || 0}`,
+      value: `Rs${paid_interest?.toLocaleString() || 0}`,
     },
-    { label: "Total Due", value: `₹${total_due?.toLocaleString() || 0}` },
+    { label: "Total Due", value: `Rs${total_due?.toLocaleString() || 0}` },
   ];
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Interest Statement Report</Text>
+        {/* Main Title */}
+        <Text style={styles.title}>Pledge Interest Statement</Text>
+
+        {/* Receipt Info */}
         <View style={styles.section}>
           <Text>Receipt No: {receipt_no}</Text>
           <Text>
             Effective Start Date: {formatDateForPDF(effective_start_date)}
           </Text>
         </View>
+
+        {/* Customer Details */}
         <View style={styles.section}>
-          <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
-            Customer Details:
-          </Text>
+          <Text style={styles.sectionTitle}>Customer & Pledge Details</Text>
           <View style={styles.table}>
-            <View style={styles.headerRow}>
-              <View style={[styles.headerCell, styles.lastCell]}>
-                <Text>Field</Text>
-              </View>
-              <View style={styles.headerCell}>
-                <Text>Value</Text>
-              </View>
-            </View>
             {customerFields.map((field, idx) => (
               <View
                 key={idx}
                 style={[
                   styles.row,
-                  idx === customerFields.length - 1 && styles.lastRow,
+                  idx === customerFields.length - 1 && { borderBottomWidth: 0 },
                 ]}
               >
-                <View style={[styles.cell, styles.lastCell]}>
+                <View style={[styles.cell, { flex: 1 }]}>
                   <Text>{field.label}</Text>
                 </View>
-                <View style={styles.cell}>
+                <View style={[styles.cell, { flex: 1.5 }, styles.lastCell]}>
                   <Text>{field.value}</Text>
                 </View>
               </View>
             ))}
           </View>
         </View>
-        <View style={styles.section}>
-          <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
-            Breakdown:
+
+        {/* Breakdown Table */}
+        <View style={styles.section} wrap={true}>
+          <Text style={styles.sectionTitle}>
+            Installment / Interest Breakdown
           </Text>
           <View style={styles.table}>
+            {/* Header */}
             <View style={styles.headerRow}>
-              <View style={styles.headerCell}>
-                <Text>Period</Text>
+              <View style={[styles.headerCell, { flex: 0.5 }]}>
+                <Text style={styles.textCenter}>No</Text>
               </View>
-              <View style={styles.headerCell}>
-                <Text>From-To / Paid Date</Text>
+              <View style={[styles.headerCell, { flex: 1.5 }]}>
+                <Text style={styles.textCenter}>Period (From-To)</Text>
               </View>
-              <View style={styles.headerCell}>
-                <Text>Rate</Text>
+              <View style={[styles.headerCell, { flex: 0.7 }]}>
+                <Text style={styles.textCenter}>Rate %</Text>
               </View>
-              <View style={styles.headerCell}>
-                <Text>Interest</Text>
+              <View style={[styles.headerCell, { flex: 1 }]}>
+                <Text style={styles.textCenter}>Interest</Text>
               </View>
-              <View style={styles.headerCell}>
-                <Text>Total</Text>
+              <View style={[styles.headerCell, { flex: 1 }]}>
+                <Text style={styles.textCenter}>Total</Text>
               </View>
-              <View style={styles.headerCell}>
-                <Text>Balance</Text>
+              <View style={[styles.headerCell, { flex: 1 }]}>
+                <Text style={styles.textCenter}>Balance</Text>
               </View>
-              <View style={[styles.headerCell, styles.lastCell]}>
-                <Text>Paid</Text>
+              <View
+                style={[
+                  styles.headerCell,
+                  { flex: 0.8 },
+                  styles.headerLastCell,
+                ]}
+              >
+                <Text style={styles.textCenter}>Paid</Text>
               </View>
             </View>
+
+            {/* Data Rows */}
             {breakdown.map((item, idx) => (
               <View
                 key={idx}
                 style={[
                   styles.row,
-                  idx === breakdown.length - 1 && styles.lastRow,
+                  idx === breakdown.length - 1 && { borderBottomWidth: 0 },
                 ]}
               >
-                <View style={styles.cell}>
-                  <Text>{item.period || ""}</Text>
+                <View style={[styles.cell, { flex: 0.5 }]}>
+                  <Text style={styles.textCenter}>{idx + 1}</Text>
                 </View>
-                <View style={styles.cell}>
+                <View style={[styles.cell, { flex: 1.5 }]}>
                   <Text>{item.from_to || item.paid_date || ""}</Text>
                 </View>
-                <View style={styles.cell}>
-                  <Text>{item.rate || ""}</Text>
+                <View style={[styles.cell, { flex: 0.7 }]}>
+                  <Text style={styles.textCenter}>{item.rate || ""}</Text>
                 </View>
-                <View style={styles.cell}>
-                  <Text>₹{(item.interest || 0).toLocaleString()}</Text>
+                <View style={[styles.cell, { flex: 1, textAlign: "right" }]}>
+                  <Text style={styles.textRight}>
+                    Rs{(item.interest || 0).toLocaleString()}
+                  </Text>
                 </View>
-                <View style={styles.cell}>
-                  <Text>₹{(item.total || 0).toLocaleString()}</Text>
+                <View style={[styles.cell, { flex: 1 }]}>
+                  <Text style={styles.textRight}>
+                    Rs{(item.total || 0).toLocaleString()}
+                  </Text>
                 </View>
-                <View style={styles.cell}>
-                  <Text>₹{(item.balance || 0).toLocaleString()}</Text>
+                <View style={[styles.cell, { flex: 1 }]}>
+                  <Text style={styles.textRight}>
+                    Rs{(item.balance || 0).toLocaleString()}
+                  </Text>
                 </View>
-                <View style={[styles.cell, styles.lastCell]}>
-                  <Text>{item.paid ? "Yes" : "No"}</Text>
+                <View style={[styles.cell, { flex: 0.8 }, styles.lastCell]}>
+                  <Text style={styles.textCenter}>
+                    {item.paid ? "Yes" : "No"}
+                  </Text>
                 </View>
               </View>
             ))}
