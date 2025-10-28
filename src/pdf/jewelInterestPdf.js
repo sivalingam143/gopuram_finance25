@@ -118,13 +118,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 8,
   },
-  storename: {
-    textAlign: "center",
-    fontFamily: "fontBold",
-    fontSize: 12,
-    letterSpacing: 0.5,
-    fontWeight: "bold",
-  },
+
   tamilTable: {
     margin: 15,
     border: "1pt solid #4535C1",
@@ -177,16 +171,14 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   logoImage: {
-    width: 60,
-    maxHeight: 50,
+    width: 80,
+    maxHeight: 60,
   },
   tableCell: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 5,
     paddingHorizontal: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#4535C1",
   },
   footer: {
     display: "flex",
@@ -228,10 +220,13 @@ const Receipt = ({ data }) => {
       <View style={styles.table}>
         <View style={styles.tableCell}>
           <Text style={styles.pad}>
-            <Text style={styles.normalText}> BBL NO : 04/2019 - 20120 </Text>
+            <Text style={styles.normalText}>
+              {" "}
+              உரிமம் எண் : FR Madhurai South/50/2004
+            </Text>
           </Text>
           <View style={styles.headdivright}>
-            <Text>Ph: 9080909996 </Text>
+            <Text>Ph: 9600628220 </Text>
           </View>
         </View>
         <View style={styles.tableRow}>
@@ -239,15 +234,15 @@ const Receipt = ({ data }) => {
             <View style={styles.logoContainer}>
               <Image src="/logo192.png" style={styles.logoImage} />
             </View>
-            <Text style={styles.storename}> அபிநயா பைனான்ஸ் </Text>
+
             <Text style={{ marginTop: 3, fontSize: 8 }}>
-              "அபிநயா அடகுக்கடை" மார்க்கெட் ரோடு, அரசு மருத்துவமனை எதிரில்,
-              சோழவந்தான், மதுரை மாவட்டம் – 625214 .
+              ஹாஜியார் காம்ப்லெஸ் ,உசிலை ரோடு ,பேரையூர் -625703.
             </Text>
             <Text style={styles.boldText}>
-              (அரசு அங்கீகாரம் பெற்ற நிறுவனம்)
+              (அலுவலகம் திறந்திருக்கும் நேரம் காலை 9.00 மணி முதல் மாலை 6.00 மணி
+              வரை)
             </Text>
-            <Text style={styles.boldTextone}>Interest Receipt</Text>
+            <Text style={styles.boldTextone}>வட்டி கட்டிய ரசீது </Text>
           </View>
         </View>
         <View style={styles.tableRow1}>
@@ -256,20 +251,31 @@ const Receipt = ({ data }) => {
       </View>
       <View style={styles.customerdetail}>
         <View style={styles.details}>
-          <Text style={styles.state}>Customer Number:</Text>
-          <Text>{data.customer_no}</Text>
+          <Text style={styles.state}>1.அடகு எண்: {data.customer_no}</Text>
         </View>
         <View style={styles.details}>
-          <Text style={styles.state}>Loan Number:</Text>
-          <Text>{data.receipt_no}</Text>
+          <Text style={styles.state}>2.அடகு வைத்த தேதி:</Text>
         </View>
         <View style={styles.details}>
-          <Text style={styles.state}>Name:</Text>
-          <Text>{data.name}</Text>
+          <Text style={styles.state}>3.வட்டி பெறும் தேதி:</Text>
         </View>
         <View style={styles.details}>
-          <Text style={styles.state}>Interest Receive Date:</Text>
-          <Text>{formattedDate}</Text>
+          <Text style={styles.state}>4.பெயர் :</Text>
+        </View>
+        <View style={styles.details}>
+          <Text style={styles.state}>5.அடகு தொகை:</Text>
+        </View>
+        <View style={styles.details}>
+          <Text style={styles.state}>6.வட்டி விகிதம்:</Text>
+        </View>
+        <View style={styles.details}>
+          <Text style={styles.state}>7.ஒரு மாத வட்டி தொகை:</Text>
+        </View>
+        <View style={styles.details}>
+          <Text style={styles.state}>8.வட்டி நிலுவை காலம்:</Text>
+        </View>
+        <View style={styles.details}>
+          <Text style={styles.state}>9.வட்டி வரவு தொகை :</Text>
         </View>
       </View>
       <View style={styles.tamilTable}>
@@ -318,7 +324,7 @@ const Receipt = ({ data }) => {
         </View>
         <View style={styles.phone}>
           <View style={styles.termpoint}>
-            <Text style={styles.boldText}>For அபிநயா பைனான்ஸ்</Text>
+            <Text style={styles.boldText}>For </Text>
           </View>
         </View>
       </View>
@@ -330,12 +336,7 @@ const ReceiptPDF = ({ data }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.halfPage}>
-          <Receipt data={data} />
-        </View>
-        <View style={styles.halfPage}>
-          <Receipt data={data} />
-        </View>
+        <Receipt data={data} />
       </Page>
     </Document>
   );
