@@ -846,13 +846,13 @@ const TableUI = ({
                         </Button>
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
-                        <Dropdown.Item
+                        {/* <Dropdown.Item
                           onClick={() =>
                             handleJewelInterestprintviewClick(rowData)
                           }
                         >
                           print View
-                        </Dropdown.Item>
+                        </Dropdown.Item> */}
                         {/* <PDFDownloadLink
                           document={<ReceiptPDF data={rowData} />}
                           fileName={`${rowData.receipt_no}.pdf`}
@@ -870,7 +870,7 @@ const TableUI = ({
                           )}
                         </PDFDownloadLink> */}
 
-                        {isAdmin && ( // Show Edit option only if user is Admin
+                        {/* {isAdmin && ( // Show Edit option only if user is Admin
                           <Dropdown.Item
                             onClick={() => handleinterestEditClick(rowData)}
                           >
@@ -883,7 +883,7 @@ const TableUI = ({
                           }
                         >
                           Delete
-                        </Dropdown.Item>
+                        </Dropdown.Item> */}
                       </Dropdown.Menu>
                     </Dropdown>
                   </td>
