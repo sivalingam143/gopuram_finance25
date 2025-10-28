@@ -8,6 +8,7 @@ import { MdChevronRight, MdChevronLeft } from "react-icons/md";
 import JewelPawnPdfG from "../pdf/JewelPawnPdfg";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import LoadingOverlay from "./LoadingOverlay";
+import InterestStatementPDF from "../pdf/InterestStatementPDF";
 
 const TableUI = ({
   headers,
@@ -27,8 +28,28 @@ const TableUI = ({
   const endIndex = Math.min(startIndex + itemsPerPage, body.length);
   const currentItems = body.slice(startIndex, endIndex);
 
+  // States for PDF download
+  const [pendingDownload, setPendingDownload] = useState(null);
+  const [tempData, setTempData] = useState(null);
+  const [downloadUrl, setDownloadUrl] = useState(null);
+
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const isAdmin = user.role === "Admin";
+
+  useEffect(() => {
+    if (downloadUrl && pendingDownload) {
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `${pendingDownload}_statement.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+      setDownloadUrl(null);
+      setPendingDownload(null);
+      setTempData(null);
+    }
+  }, [downloadUrl, pendingDownload]);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
@@ -67,6 +88,39 @@ const TableUI = ({
   };
 
   const navigate = useNavigate();
+
+  const handleDownloadStatement = async (pawnRow) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${API_DOMAIN}/getintereststatementreport.php`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            receipt_no: pawnRow.receipt_no,
+          }),
+        }
+      );
+
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        setTempData({
+          statement: responseData.body,
+          customer: pawnRow,
+        });
+        setPendingDownload(pawnRow.receipt_no);
+      } else {
+        console.error("Error fetching statement:", responseData.head.msg);
+      }
+    } catch (error) {
+      console.error("Error fetching statement:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEditClick = (rowData) => {
     navigate("/console/user/create", {
@@ -929,6 +983,14 @@ const TableUI = ({
 
                                 <Dropdown.Item
                                   onClick={() =>
+                                    handleDownloadStatement(rowData)
+                                  }
+                                >
+                                  Download Statement PDF
+                                </Dropdown.Item>
+
+                                <Dropdown.Item
+                                  onClick={() =>
                                     customActions?.recovery?.(rowData)
                                   }
                                 >
@@ -1536,6 +1598,19 @@ const TableUI = ({
             />
           </span>
         </div>
+      )}
+      {pendingDownload && tempData && (
+        <PDFDownloadLink
+          document={<InterestStatementPDF data={tempData} />}
+          fileName={`${pendingDownload}_statement.pdf`}
+        >
+          {({ blob, url, loading: pdfLoading, error }) => {
+            if (!pdfLoading && url && !error) {
+              setDownloadUrl(url);
+            }
+            return <div style={{ display: "none" }} />;
+          }}
+        </PDFDownloadLink>
       )}
     </>
   );
