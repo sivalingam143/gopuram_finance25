@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Container, Row, Alert, Modal, Form } from "react-bootstrap";
+import { Col, Container, Row, Alert } from "react-bootstrap";
 import { TextInputForm, Calender } from "../../components/Forms";
 import { ClickButton } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
@@ -7,7 +7,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
-import { MdDeleteForever } from "react-icons/md";
+
+import TableUI from "../../components/Table";
+
+const UserTablehead = [
+  "No",
+  "Interest Receive Date",
+  "Name",
+  "Loan Number",
+  "Mobile Number",
+  "Interest Amount",
+  "Action",
+];
 
 const InterestPayment = () => {
   const location = useLocation();
@@ -17,6 +28,8 @@ const InterestPayment = () => {
   const [loading, setLoading] = useState(false);
   const [productList, setProductList] = useState([]);
   const [error, setError] = useState("");
+  const [interestHistory, setInterestHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const initialState = {
     customer_no: rowData?.customer_no || "",
@@ -38,6 +51,39 @@ const InterestPayment = () => {
 
   const [formData, setFormData] = useState(initialState);
 
+  const fetchInterestHistory = async () => {
+    if (!rowData?.receipt_no) return;
+    setHistoryLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/interest.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          search_text: rowData.receipt_no,
+        }),
+      });
+
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        const filteredHistory = responseData.body.interest.filter(
+          (item) => item.receipt_no === rowData.receipt_no
+        );
+        setInterestHistory(filteredHistory);
+      } else {
+        console.error(
+          "Error fetching interest history:",
+          responseData.head.msg
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching interest history:", error.message);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
   const fetchDataproduct = async () => {
     try {
       const response = await fetch(`${API_DOMAIN}/product.php`, {
@@ -58,6 +104,7 @@ const InterestPayment = () => {
   };
 
   useEffect(() => {
+    fetchInterestHistory();
     fetchDataproduct();
   }, []);
 
@@ -263,6 +310,26 @@ const InterestPayment = () => {
               </Alert>
             </Col>
           )}
+
+          <Col lg={12} className="py-3">
+            <div className="customer-card bg-light border rounded p-3">
+              <h5 className="mb-3">Interest Payment History</h5>
+
+              {interestHistory.length > 0 ? (
+                <TableUI
+                  headers={UserTablehead}
+                  body={interestHistory}
+                  type="interest"
+                  pageview="no"
+                  style={{ borderRadius: "5px" }}
+                />
+              ) : (
+                <div className="text-center text-muted py-3">
+                  No interest payments recorded yet.
+                </div>
+              )}
+            </div>
+          </Col>
         </Row>
       </Container>
     </div>
