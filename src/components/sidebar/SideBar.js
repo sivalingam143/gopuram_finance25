@@ -39,7 +39,9 @@ const SideBar = ({ onLogout }) => {
 
   const handleLogout = () => {
     onLogout();
+
     localStorage.removeItem("user");
+
     navigate("/login");
   };
 
@@ -63,7 +65,6 @@ const SideBar = ({ onLogout }) => {
                   alt="Sri Krishna Finance"
                 />
               </div>
-              {/* <h6 className="logoname py-3">GOPURAM FINANCE</h6> */}
             </li>
             {sidebarConfig.map((item, index) => (
               <li key={index}>

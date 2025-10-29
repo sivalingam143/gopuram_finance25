@@ -7,24 +7,26 @@ import { ClickButton } from "../components/ClickButton";
 import API_DOMAIN from "../config/config";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
   const handleLogin = async () => {
     try {
-      if (username === "" || password === "") {
-        throw new Error("Username Or password is Empty");
-      }
-      if (!username || !password) {
+      // Consolidated validation for empty fields
+      if (!username.trim() || !password.trim()) {
         throw new Error("Username and password are required");
       }
+
       const loginData = {
         user_name: username,
         password: password,
       };
+
       const response = await fetch(`${API_DOMAIN}/login.php`, {
         method: "POST",
         headers: {
@@ -38,8 +40,12 @@ const Login = ({ onLogin }) => {
       if (responseData.head.code === 400) {
         setError(responseData.head.msg);
       } else if (responseData.head.code === 200) {
+        // Call parent callback to handle login state
         onLogin();
+
+        // Save login data to localStorage for persistence
         localStorage.setItem("user", JSON.stringify(responseData.body.user));
+
         toast.success("Successfully login!", {
           position: "top-center",
           autoClose: 2000,
@@ -50,6 +56,7 @@ const Login = ({ onLogin }) => {
           progress: undefined,
           theme: "colored",
         });
+
         setTimeout(() => {
           console.log(responseData.body.user);
           navigate("/console/dashboard");
@@ -62,6 +69,7 @@ const Login = ({ onLogin }) => {
       setError(error.message);
     }
   };
+
   return (
     <div className="login-bg">
       <Container fluid className="px-5 pad">
@@ -75,8 +83,6 @@ const Login = ({ onLogin }) => {
                   alt="Tirupathi Balaji"
                 />
               </div>
-              {/* <div className="text-center">GOPURAM FINANCE</div> */}
-              {/* <div className="text-center">JEWEL PAWN SHOP</div> */}
 
               <div className="py-3">
                 <TextInputForm
@@ -115,9 +121,7 @@ const Login = ({ onLogin }) => {
                 pauseOnHover
                 theme="colored"
               />
-              {error && (
-                <Alert variant="danger">{error}</Alert> // Render error alert banner if error state is not null
-              )}
+              {error && <Alert variant="danger">{error}</Alert>}
             </div>
           </Col>
         </Row>
