@@ -277,15 +277,15 @@ const Receipt = ({ data }) => {
       {/* Customer Details */}
       <View style={styles.customerDetail}>
         {[
-          `1.அடகு எண்: ${data.customer_no}`,
-          "2.அடகு வைத்த தேதி:",
-          "3.வட்டி பெறும் தேதி:",
-          "4.பெயர்:",
-          "5.அடகு தொகை:",
-          "6.வட்டி விகிதம்:",
-          "7.ஒரு மாத வட்டி தொகை:",
-          "8.வட்டி நிலுவை காலம்:",
-          "9.வட்டி வரவு தொகை:",
+          `1.அடகு எண்: ${data.receipt_no} `,
+          `2.அடகு வைத்த தேதி: ${data.customer_no} `,
+          `3.வட்டி பெறும் தேதி:${data.interest_receive_date} `,
+          `4.பெயர்:${data.name} `,
+          `5.அடகு தொகை:${data.original_amount} `,
+          `6.வட்டி விகிதம்:${data.interest_rate} `,
+          `7.வட்டி நிலுவை தொகை:${data.outstanding_amount} `,
+          `8.வட்டி நிலுவை காலம்:${data.outstanding_period} மாதங்கள் `,
+          `9.வட்டி வரவு தொகை:${data.interest_income} `,
         ].map((text, i) => (
           <View key={i} style={styles.detailsRow}>
             <Text style={styles.detailLabel}>{text}</Text>
@@ -302,7 +302,7 @@ const Receipt = ({ data }) => {
 
         <View style={styles.tamilRow}>
           <Text style={styles.tamilCellLeft}>வட்டி கட்டிய தொகை </Text>
-          <Text style={styles.tamilCellRight}>600.00</Text>
+          <Text style={styles.tamilCellRight}>{data.interest_income}</Text>
         </View>
 
         <View style={styles.tamilRow}>
@@ -312,7 +312,7 @@ const Receipt = ({ data }) => {
 
         <View style={styles.tamilTotal}>
           <Text style={styles.tamilTotalLeft}>மொத்த தொகை </Text>
-          <Text style={styles.tamilTotalRight}>600.00</Text>
+          <Text style={styles.tamilTotalRight}>{data.interest_income}</Text>
         </View>
       </View>
 
