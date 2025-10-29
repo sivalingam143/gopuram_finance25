@@ -312,7 +312,7 @@ const Receipt = ({ data }) => {
         </View>
 
         <View style={styles.tamilTotal}>
-          <Text style={styles.tamilTotalLeft}>மொத்த தொகை </Text>
+          <Text style={styles.tamilTotalLeft}>மொத்த தொகை .</Text>
           <Text style={styles.tamilTotalRight}>{data.interest_income}</Text>
         </View>
       </View>
