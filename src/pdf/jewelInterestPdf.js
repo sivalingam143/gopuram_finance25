@@ -11,6 +11,7 @@ import { Font } from "@react-pdf/renderer";
 import fontBold from "./fonts/NotoSansTamil-Bold.ttf";
 import fontRegular from "./fonts/NotoSansTamil-Regular.ttf";
 
+// 📅 Format Date
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, "0");
@@ -19,6 +20,7 @@ const formatDate = (dateString) => {
   return `${day}-${month}-${year}`;
 };
 
+// 🔤 Register Tamil Fonts
 Font.register({
   family: "fontBold",
   fonts: [{ src: fontBold, fontStyle: "normal", fontWeight: "bold" }],
@@ -28,40 +30,32 @@ Font.register({
   fonts: [{ src: fontRegular, fontStyle: "normal", fontWeight: "normal" }],
 });
 
+// 🎨 Styles
 const styles = StyleSheet.create({
   page: {
     flexDirection: "row",
     backgroundColor: "#fff",
     padding: 10,
   },
-  halfPage: {
-    width: "50%",
-    padding: 5,
-  },
   dupe: {
-    //flexGrow: 1,
     border: 1,
     borderColor: "#4535C1",
-    letterSpacing: 0.5,
     color: "#4535C1",
     borderBottomWidth: 1,
     minHeight: "50%",
   },
   normalText: {
     fontFamily: "fontRegular",
-    fontWeight: "normal",
     fontSize: 8,
     margin: 8,
   },
   boldText: {
     fontFamily: "fontBold",
-    fontWeight: "bold",
     fontSize: 10,
     textAlign: "left",
   },
-  boldTextone: {
+  boldTextCenter: {
     fontFamily: "fontBold",
-    fontWeight: "bold",
     fontSize: 12,
     textAlign: "center",
     marginTop: 5,
@@ -80,90 +74,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  tableRow1: {
+  tableRowRight: {
     flexDirection: "row",
     justifyContent: "flex-end",
     paddingRight: 8,
   },
   company: {
     width: "100%",
-    fontFamily: "fontRegular",
     textAlign: "center",
     alignItems: "center",
     paddingVertical: 5,
-  },
-  dateCell: {
-    width: "100%",
-    padding: 5,
-    fontSize: 8,
-  },
-  pad: {
-    paddingVertical: 3,
-  },
-  customerdetail: {
-    paddingTop: 8,
-    paddingHorizontal: 8,
-    display: "flex",
-    fontSize: 8,
-  },
-  details: {
-    paddingVertical: 4,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-  },
-  state: {
-    width: "40%",
-    fontFamily: "fontBold",
-    fontWeight: "bold",
-    fontSize: 8,
-  },
-
-  tamilTable: {
-    margin: 15,
-    border: "1pt solid #4535C1",
-  },
-  tamilTableRowHeader: {
-    flexDirection: "row",
-    borderBottom: "1pt solid #4535C1",
-    paddingVertical: 5,
-  },
-  tamilTableRow: {
-    flexDirection: "row",
-    paddingVertical: 5,
-  },
-  tamilTableRowTotal: {
-    flexDirection: "row",
-    borderTop: "1pt solid #4535C1",
-    paddingVertical: 5,
-    marginTop: 4,
-    paddingTop: 3,
-  },
-  tamilCellLeft: {
-    width: "50%",
-    fontSize: 8,
-    paddingLeft: 5,
-    textAlign: "left",
-  },
-  tamilCellRight: {
-    width: "50%",
-    textAlign: "right",
-    fontSize: 8,
-    paddingRight: 5,
-  },
-  tamilCellLeftBold: {
-    width: "50%",
-    fontSize: 8,
-    fontWeight: "bold",
-    paddingLeft: 5,
-    textAlign: "left",
-  },
-  tamilCellRightBold: {
-    width: "50%",
-    textAlign: "right",
-    fontSize: 8,
-    fontWeight: "bold",
-    paddingRight: 5,
   },
   logoContainer: {
     alignItems: "center",
@@ -174,6 +94,115 @@ const styles = StyleSheet.create({
     width: 80,
     maxHeight: 60,
   },
+  addressText: {
+    marginTop: 3,
+    fontSize: 8,
+  },
+  headerNote: {
+    fontFamily: "fontBold",
+    fontSize: 8,
+  },
+  dateCell: {
+    width: "100%",
+    padding: 5,
+    fontSize: 8,
+  },
+  pad: {
+    paddingVertical: 3,
+  },
+  headRight: {
+    fontSize: 8,
+    textAlign: "right",
+  },
+  customerDetail: {
+    paddingTop: 8,
+    paddingHorizontal: 8,
+    fontSize: 8,
+  },
+  detailsRow: {
+    paddingVertical: 4,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+  },
+  detailLabel: {
+    width: "40%",
+    fontFamily: "fontBold",
+    fontSize: 8,
+  },
+
+  tamilTable: {
+    margin: 15,
+    border: "0.8pt solid #3A5ACB",
+    backgroundColor: "#FFFFFF",
+  },
+  tamilHeader: {
+    flexDirection: "row",
+    backgroundColor: "#BBD6FF",
+    borderBottom: "0.8pt solid #3A5ACB",
+    paddingVertical: 5,
+  },
+  tamilHeaderLeft: {
+    width: "50%",
+    fontFamily: "fontBold",
+    fontSize: 9,
+    paddingLeft: 5,
+    color: "#3A5ACB",
+  },
+  tamilHeaderRight: {
+    width: "50%",
+    fontFamily: "fontBold",
+    fontSize: 9,
+    textAlign: "right",
+    paddingRight: 5,
+    color: "#3A5ACB",
+  },
+  tamilRow: {
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
+    borderBottom: "0.5pt solid #BBD6FF",
+    paddingVertical: 5,
+  },
+  tamilRowAlt: {
+    flexDirection: "row",
+    backgroundColor: "#F2F7FF",
+    borderBottom: "0.5pt solid #BBD6FF",
+    paddingVertical: 5,
+  },
+  tamilCellLeft: {
+    width: "50%",
+    fontFamily: "fontRegular",
+    fontSize: 8,
+    paddingLeft: 5,
+  },
+  tamilCellRight: {
+    width: "50%",
+    fontFamily: "fontRegular",
+    fontSize: 8,
+    textAlign: "right",
+    paddingRight: 5,
+  },
+  tamilTotal: {
+    flexDirection: "row",
+    borderTop: "0.8pt solid #3A5ACB",
+    backgroundColor: "#E6EEFF",
+    paddingVertical: 5,
+  },
+  tamilTotalLeft: {
+    width: "50%",
+    fontFamily: "fontBold",
+    fontSize: 9,
+    paddingLeft: 5,
+    color: "#3A5ACB",
+  },
+  tamilTotalRight: {
+    width: "50%",
+    fontFamily: "fontBold",
+    fontSize: 9,
+    textAlign: "right",
+    paddingRight: 5,
+    color: "#3A5ACB",
+  },
   tableCell: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -181,8 +210,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   footer: {
-    display: "flex",
-    fontFamily: "fontRegular",
     flexDirection: "row",
     color: "#4535C1",
     marginTop: "auto",
@@ -192,13 +219,11 @@ const styles = StyleSheet.create({
     width: "50%",
     alignItems: "flex-start",
     fontSize: 8,
-    fontFamily: "fontRegular",
   },
   phone: {
     width: "50%",
     alignItems: "flex-end",
     fontSize: 8,
-    fontFamily: "fontRegular",
   },
   termpoint: {
     paddingVertical: 8,
@@ -212,11 +237,13 @@ const styles = StyleSheet.create({
   },
 });
 
+// 📄 Main Receipt Component
 const Receipt = ({ data }) => {
   const formattedDate = formatDate(data.interest_receive_date);
 
   return (
     <View style={styles.dupe}>
+      {/* Header Section */}
       <View style={styles.table}>
         <View style={styles.tableCell}>
           <Text style={styles.pad}>
@@ -229,117 +256,86 @@ const Receipt = ({ data }) => {
             <Text>Ph: 9600628220 </Text>
           </View>
         </View>
+
         <View style={styles.tableRow}>
           <View style={styles.company}>
             <View style={styles.logoContainer}>
               <Image src="/logo192.png" style={styles.logoImage} />
             </View>
-
-            <Text style={{ marginTop: 3, fontSize: 8 }}>
+            <Text style={styles.addressText}>
               ஹாஜியார் காம்ப்லெஸ் ,உசிலை ரோடு ,பேரையூர் -625703.
             </Text>
-            <Text style={styles.boldText}>
+            <Text style={styles.headerNote}>
               (அலுவலகம் திறந்திருக்கும் நேரம் காலை 9.00 மணி முதல் மாலை 6.00 மணி
               வரை)
             </Text>
-            <Text style={styles.boldTextone}>வட்டி கட்டிய ரசீது </Text>
+            <Text style={styles.boldTextCenter}>வட்டி கட்டிய ரசீது</Text>
           </View>
         </View>
-        <View style={styles.tableRow1}>
-          <View style={styles.dateCell}></View>
-        </View>
       </View>
-      <View style={styles.customerdetail}>
-        <View style={styles.details}>
-          <Text style={styles.state}>1.அடகு எண்: {data.customer_no}</Text>
-        </View>
-        <View style={styles.details}>
-          <Text style={styles.state}>2.அடகு வைத்த தேதி:</Text>
-        </View>
-        <View style={styles.details}>
-          <Text style={styles.state}>3.வட்டி பெறும் தேதி:</Text>
-        </View>
-        <View style={styles.details}>
-          <Text style={styles.state}>4.பெயர் :</Text>
-        </View>
-        <View style={styles.details}>
-          <Text style={styles.state}>5.அடகு தொகை:</Text>
-        </View>
-        <View style={styles.details}>
-          <Text style={styles.state}>6.வட்டி விகிதம்:</Text>
-        </View>
-        <View style={styles.details}>
-          <Text style={styles.state}>7.ஒரு மாத வட்டி தொகை:</Text>
-        </View>
-        <View style={styles.details}>
-          <Text style={styles.state}>8.வட்டி நிலுவை காலம்:</Text>
-        </View>
-        <View style={styles.details}>
-          <Text style={styles.state}>9.வட்டி வரவு தொகை :</Text>
-        </View>
+
+      {/* Customer Details */}
+      <View style={styles.customerDetail}>
+        {[
+          `1.அடகு எண்: ${data.customer_no}`,
+          "2.அடகு வைத்த தேதி:",
+          "3.வட்டி பெறும் தேதி:",
+          "4.பெயர்:",
+          "5.அடகு தொகை:",
+          "6.வட்டி விகிதம்:",
+          "7.ஒரு மாத வட்டி தொகை:",
+          "8.வட்டி நிலுவை காலம்:",
+          "9.வட்டி வரவு தொகை:",
+        ].map((text, i) => (
+          <View key={i} style={styles.detailsRow}>
+            <Text style={styles.detailLabel}>{text}</Text>
+          </View>
+        ))}
       </View>
+
+      {/* Tamil Table */}
       <View style={styles.tamilTable}>
-        <View style={styles.tamilTableRowHeader}>
-          <Text style={[styles.tamilCellLeft, styles.boldText]}>
-            Particulars
-          </Text>
-          <Text style={[styles.tamilCellRight, styles.boldText]}>Amount</Text>
+        <View style={styles.tamilHeader}>
+          <Text style={styles.tamilHeaderLeft}>விவரங்கள்</Text>
+          <Text style={styles.tamilHeaderRight}>தொகை</Text>
         </View>
-        {parseFloat(data.interest_income || 0) > 0 && (
-          <View style={styles.tamilTableRow}>
-            <Text style={styles.tamilCellLeft}>Interest Paid</Text>
-            <Text style={styles.tamilCellRight}>
-              {parseFloat(data.interest_income).toFixed(2)}
-            </Text>
-          </View>
-        )}
-        {parseFloat(data.deduction_amount || 0) > 0 && (
-          <View style={styles.tamilTableRow}>
-            <Text style={styles.tamilCellLeft}>Principal Amount Paid</Text>
-            <Text style={styles.tamilCellRight}>
-              {parseFloat(data.deduction_amount).toFixed(2)}
-            </Text>
-          </View>
-        )}
-        {(parseFloat(data.interest_income || 0) > 0 ||
-          parseFloat(data.deduction_amount || 0) > 0) && (
-          <View style={styles.tamilTableRowTotal}>
-            <Text style={[styles.tamilCellLeftBold, styles.boldText]}>
-              Total Amount
-            </Text>
-            <Text style={[styles.tamilCellRightBold, styles.boldText]}>
-              {(
-                parseFloat(data.interest_income || 0) +
-                parseFloat(data.deduction_amount || 0)
-              ).toFixed(2)}
-            </Text>
-          </View>
-        )}
+
+        <View style={styles.tamilRow}>
+          <Text style={styles.tamilCellLeft}>வட்டி கட்டிய தொகை</Text>
+          <Text style={styles.tamilCellRight}>600.00</Text>
+        </View>
+
+        <View style={styles.tamilRowAlt}>
+          <Text style={styles.tamilCellLeft}>Closing Charges</Text>
+          <Text style={styles.tamilCellRight}>0.00</Text>
+        </View>
+
+        <View style={styles.tamilTotal}>
+          <Text style={styles.tamilTotalLeft}>மொத்த தொகை</Text>
+          <Text style={styles.tamilTotalRight}>600.00</Text>
+        </View>
       </View>
+
+      {/* Footer */}
       <View style={styles.footer}>
         <View style={styles.time}>
-          <View style={styles.termpoint}>
-            <Text style={styles.boldText}>Payer's Signature</Text>
-          </View>
+          <Text style={styles.boldText}>Payer's Signature</Text>
         </View>
         <View style={styles.phone}>
-          <View style={styles.termpoint}>
-            <Text style={styles.boldText}>For </Text>
-          </View>
+          <Text style={styles.boldText}>For</Text>
         </View>
       </View>
     </View>
   );
 };
 
-const ReceiptPDF = ({ data }) => {
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <Receipt data={data} />
-      </Page>
-    </Document>
-  );
-};
+// 📘 Document Wrapper
+const ReceiptPDF = ({ data }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <Receipt data={data} />
+    </Page>
+  </Document>
+);
 
 export default ReceiptPDF;
