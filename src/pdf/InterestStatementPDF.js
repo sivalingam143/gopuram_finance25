@@ -104,7 +104,14 @@ const InterestStatementPDF = ({ data }) => {
     total_interest,
     paid_interest,
     total_due,
+    unpaid_interest,
     breakdown = [],
+    total_months,
+    unpaid_months,
+    paid_months,
+    total_days,
+    paid_days,
+    unpaid_days,
   } = statement;
 
   const formatDateForPDF = (dateString) => {
@@ -138,7 +145,36 @@ const InterestStatementPDF = ({ data }) => {
       value: `${paid_interest?.toLocaleString() || 0}`,
     },
     {
-      label: "மொத்த நிலுவைத் தொகை  ",
+      label: "நிலுவையில் உள்ள வட்டி ",
+      value: `${unpaid_interest?.toLocaleString() || 0}`,
+    },
+    {
+      label: "மொத்த மாதங்கள் ",
+      value: `${total_months?.toLocaleString() || 0}`,
+    },
+    {
+      label: "செலுத்தப்பட்ட மாதங்கள் ",
+      value: `${paid_months?.toLocaleString() || 0}`,
+    },
+    {
+      label: "நிலுவையுள்ள மாதங்கள் ",
+      value: `${unpaid_months?.toLocaleString() || 0}`,
+    },
+    {
+      label: "மொத்த நாட்கள்  ",
+      value: `${total_days?.toLocaleString() || 0}`,
+    },
+    {
+      label: "செலுத்தப்பட்ட நாட்கள்  ",
+      value: `${paid_days?.toLocaleString() || 0}`,
+    },
+    {
+      label: "நிலுவையுள்ள நாட்கள்  ",
+      value: `${unpaid_days?.toLocaleString() || 0}`,
+    },
+
+    {
+      label: "மொத்தம் திருப்ப வேண்டிய தொகை  ",
       value: `${total_due?.toLocaleString() || 0}`,
     },
   ];
