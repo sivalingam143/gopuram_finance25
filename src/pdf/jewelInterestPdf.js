@@ -253,7 +253,7 @@ const Receipt = ({ data }) => {
             </Text>
           </Text>
           <View style={styles.headdivright}>
-            <Text>Ph: 9600628220 </Text>
+            <Text>Ph: 9600628220{"\n"} 7903847979</Text>
           </View>
         </View>
 
