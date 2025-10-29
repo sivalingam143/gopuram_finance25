@@ -278,7 +278,7 @@ const Receipt = ({ data }) => {
       <View style={styles.customerDetail}>
         {[
           `1.அடகு எண்: ${data.receipt_no} `,
-          `2.அடகு வைத்த தேதி: ${data.customer_no} `,
+          `2.அடகு வைத்த தேதி: ${data.pawnjewelry_date} `,
           `3.வட்டி பெறும் தேதி:${data.interest_receive_date} `,
           `4.பெயர்:${data.name} `,
           `5.அடகு தொகை:${data.original_amount} `,
