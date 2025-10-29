@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import MobileView from "../../components/MobileView";
 import TableUI from "../../components/Table";
 import { TextInputForm } from "../../components/Forms";
 import { ClickButton } from "../../components/ClickButton";
@@ -27,7 +26,7 @@ const Customer = () => {
     "Place",
     "Action",
   ];
-  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+
   const [customerData, setcustomerData] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
@@ -213,15 +212,6 @@ const Customer = () => {
             <>
               <Col lg="12" md="12" xs="12" className="px-0">
                 <div className="py-1">
-                  {isMobile &&
-                    customerData.map((user, index) => (
-                      <MobileView
-                        key={index}
-                        sno={user.id}
-                        name={user.customer_name}
-                        subname={user.mobile_number}
-                      />
-                    ))}
                   <TableUI
                     headers={CustomerTablehead}
                     body={customerData}
