@@ -39,8 +39,8 @@ const styles = StyleSheet.create({
   },
   dupe: {
     border: 1,
-    borderColor: "#4535C1",
-    color: "#4535C1",
+    borderColor: "#3396D3",
+    color: "black",
     borderBottomWidth: 1,
     minHeight: "50%",
   },
@@ -50,12 +50,12 @@ const styles = StyleSheet.create({
     margin: 8,
   },
   boldText: {
-    fontFamily: "fontBold",
+    fontFamily: "fontRegular",
     fontSize: 10,
     textAlign: "left",
   },
   boldTextCenter: {
-    fontFamily: "fontBold",
+    fontFamily: "fontRegular",
     fontSize: 12,
     textAlign: "center",
     marginTop: 5,
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     borderBottom: 1,
     borderTop: 1,
     fontSize: 8,
-    borderColor: "#4535C1",
+    borderColor: "#3396D3",
   },
   tableRow: {
     flexDirection: "row",
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 8,
   },
   headerNote: {
-    fontFamily: "fontBold",
+    fontFamily: "fontRegular",
     fontSize: 8,
   },
   dateCell: {
@@ -127,46 +127,46 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     width: "40%",
-    fontFamily: "fontBold",
+    fontFamily: "fontRegular",
     fontSize: 8,
   },
 
   tamilTable: {
     margin: 15,
-    border: "0.8pt solid #3A5ACB",
+    border: "0.8pt solid #3396D3",
     backgroundColor: "#FFFFFF",
   },
   tamilHeader: {
     flexDirection: "row",
     backgroundColor: "#BBD6FF",
-    borderBottom: "0.8pt solid #3A5ACB",
+    borderBottom: "0.8pt solid #3396D3",
     paddingVertical: 5,
   },
   tamilHeaderLeft: {
     width: "50%",
-    fontFamily: "fontBold",
+    fontFamily: "fontRegular",
     fontSize: 9,
     paddingLeft: 5,
-    color: "#3A5ACB",
+    color: "black",
   },
   tamilHeaderRight: {
     width: "50%",
-    fontFamily: "fontBold",
+    fontFamily: "fontRegular",
     fontSize: 9,
     textAlign: "right",
     paddingRight: 5,
-    color: "#3A5ACB",
+    color: "black",
   },
   tamilRow: {
     flexDirection: "row",
     backgroundColor: "#FFFFFF",
-    borderBottom: "0.5pt solid #BBD6FF",
+    borderBottom: "0.5pt solid #3396D3",
     paddingVertical: 5,
   },
   tamilRowAlt: {
     flexDirection: "row",
     backgroundColor: "#F2F7FF",
-    borderBottom: "0.5pt solid #BBD6FF",
+    borderBottom: "0.5pt solid #3396D3",
     paddingVertical: 5,
   },
   tamilCellLeft: {
@@ -184,24 +184,24 @@ const styles = StyleSheet.create({
   },
   tamilTotal: {
     flexDirection: "row",
-    borderTop: "0.8pt solid #3A5ACB",
+    borderTop: "0.8pt solid #3396D3",
     backgroundColor: "#E6EEFF",
     paddingVertical: 5,
   },
   tamilTotalLeft: {
     width: "50%",
-    fontFamily: "fontBold",
+    fontFamily: "fontRegular",
     fontSize: 9,
     paddingLeft: 5,
-    color: "#3A5ACB",
+    color: "black",
   },
   tamilTotalRight: {
     width: "50%",
-    fontFamily: "fontBold",
+    fontFamily: "fontRegular",
     fontSize: 9,
     textAlign: "right",
     paddingRight: 5,
-    color: "#3A5ACB",
+    color: "black",
   },
   tableCell: {
     flexDirection: "row",
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: "row",
-    color: "#4535C1",
+    color: "black",
     marginTop: "auto",
     padding: 10,
   },
@@ -296,22 +296,22 @@ const Receipt = ({ data }) => {
       {/* Tamil Table */}
       <View style={styles.tamilTable}>
         <View style={styles.tamilHeader}>
-          <Text style={styles.tamilHeaderLeft}>விவரங்கள்</Text>
-          <Text style={styles.tamilHeaderRight}>தொகை</Text>
+          <Text style={styles.tamilHeaderLeft}>விவரங்கள் </Text>
+          <Text style={styles.tamilHeaderRight}>தொகை </Text>
         </View>
 
         <View style={styles.tamilRow}>
-          <Text style={styles.tamilCellLeft}>வட்டி கட்டிய தொகை</Text>
+          <Text style={styles.tamilCellLeft}>வட்டி கட்டிய தொகை </Text>
           <Text style={styles.tamilCellRight}>600.00</Text>
         </View>
 
-        <View style={styles.tamilRowAlt}>
+        <View style={styles.tamilRow}>
           <Text style={styles.tamilCellLeft}>Closing Charges</Text>
           <Text style={styles.tamilCellRight}>0.00</Text>
         </View>
 
         <View style={styles.tamilTotal}>
-          <Text style={styles.tamilTotalLeft}>மொத்த தொகை</Text>
+          <Text style={styles.tamilTotalLeft}>மொத்த தொகை </Text>
           <Text style={styles.tamilTotalRight}>600.00</Text>
         </View>
       </View>
@@ -319,10 +319,10 @@ const Receipt = ({ data }) => {
       {/* Footer */}
       <View style={styles.footer}>
         <View style={styles.time}>
-          <Text style={styles.boldText}>Payer's Signature</Text>
+          <Text style={styles.boldText}>கையொப்பம் (வாடிக்கையாளர்) </Text>
         </View>
         <View style={styles.phone}>
-          <Text style={styles.boldText}>For</Text>
+          <Text style={styles.boldText}>கையொப்பம் (கிளை அலுவலர்) </Text>
         </View>
       </View>
     </View>
