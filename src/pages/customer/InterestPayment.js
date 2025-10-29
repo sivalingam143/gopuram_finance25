@@ -138,6 +138,14 @@ const InterestPayment = () => {
   };
 
   const handleSubmit = async () => {
+    if (
+      parseFloat(formData.outstanding_amount) !==
+      parseFloat(formData.interest_income)
+    ) {
+      toast.error("Interest Amount should be equal to Outstanding Amount!");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/interest.php`, {
