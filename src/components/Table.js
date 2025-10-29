@@ -9,6 +9,7 @@ import JewelPawnPdfG from "../pdf/JewelPawnPdfg";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import LoadingOverlay from "./LoadingOverlay";
 import InterestStatementPDF from "../pdf/InterestStatementPDF";
+import ReceiptPDF from "../pdf/jewelInterestPdf";
 
 const TableUI = ({
   headers,
@@ -846,16 +847,16 @@ const TableUI = ({
                         </Button>
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
-                        <Dropdown.Item
+                        {/* <Dropdown.Item
                           onClick={() =>
                             handleJewelInterestprintviewClick(rowData)
                           }
                         >
                           print View
-                        </Dropdown.Item>
-                        {/* <PDFDownloadLink
+                        </Dropdown.Item> */}
+                        <PDFDownloadLink
                           document={<ReceiptPDF data={rowData} />}
-                          fileName={`${rowData.receipt_no}.pdf`}
+                          fileName={`${rowData.receipt_no}_interest.pdf`}
                         >
                           {({ blob, url, loading, error }) => (
                             <a
@@ -863,12 +864,12 @@ const TableUI = ({
                               role="button"
                               tabIndex="0"
                               href={url}
-                              download={`${rowData.receipt_no}.pdf`}
+                              download={`${rowData.receipt_no}_interest.pdf`}
                             >
-                              Download Pdf
+                              Download PDF
                             </a>
                           )}
-                        </PDFDownloadLink> */}
+                        </PDFDownloadLink>
 
                         {/* {isAdmin && ( // Show Edit option only if user is Admin
                           <Dropdown.Item
