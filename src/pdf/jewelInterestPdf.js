@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     fontFamily: "fontRegular",
     fontSize: 12,
     textAlign: "center",
-    marginTop: 5,
+    marginTop: 8,
   },
   table: {
     display: "table",
@@ -91,15 +91,16 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   logoImage: {
-    width: 80,
-    maxHeight: 60,
+    width: 100,
+    maxHeight: 80,
   },
   addressText: {
-    marginTop: 3,
+    marginTop: 8,
     fontSize: 8,
   },
   headerNote: {
     fontFamily: "fontRegular",
+    marginTop: 8,
     fontSize: 8,
   },
   dateCell: {
