@@ -134,13 +134,13 @@ const styles = StyleSheet.create({
 
   tamilTable: {
     margin: 15,
-    border: "0.8pt solid #3396D3",
+    border: "1pt solid #3396D3",
     backgroundColor: "#FFFFFF",
   },
   tamilHeader: {
     flexDirection: "row",
     backgroundColor: "#BBD6FF",
-    borderBottom: "0.8pt solid #3396D3",
+    borderBottom: "1pt solid #3396D3",
     paddingVertical: 5,
   },
   tamilHeaderLeft: {
@@ -161,13 +161,13 @@ const styles = StyleSheet.create({
   tamilRow: {
     flexDirection: "row",
     backgroundColor: "#FFFFFF",
-    borderBottom: "0.5pt solid #3396D3",
+    borderBottom: "1pt solid #3396D3",
     paddingVertical: 5,
   },
   tamilRowAlt: {
     flexDirection: "row",
     backgroundColor: "#F2F7FF",
-    borderBottom: "0.5pt solid #3396D3",
+    borderBottom: "1pt solid #3396D3",
     paddingVertical: 5,
   },
   tamilCellLeft: {
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   tamilTotal: {
     flexDirection: "row",
-    borderTop: "0.8pt solid #3396D3",
+
     backgroundColor: "#E6EEFF",
     paddingVertical: 5,
   },
