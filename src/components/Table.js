@@ -412,6 +412,7 @@ const TableUI = ({
         },
         body: JSON.stringify({
           delete_customer_id: id,
+          login_id: user.id,
         }),
       });
 

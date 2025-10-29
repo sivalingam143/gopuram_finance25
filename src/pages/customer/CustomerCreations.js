@@ -87,6 +87,7 @@ const CustomerCreations = () => {
   const [stream, setStream] = useState(null);
   const [previewFile, setPreviewFile] = useState(null);
   const [captureType, setCaptureType] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user")) || {};
   useEffect(() => {
     if (type === "edit" && rowData) {
       setSelectedProofType(rowData.upload_type || "");
@@ -266,6 +267,7 @@ const CustomerCreations = () => {
           account_number: formData.account_number,
           ifsc_code: formData.ifsc_code,
           branch_name: formData.branch_name,
+          login_id: user.id,
         }),
       });
       const responseData = await response.json();
@@ -366,6 +368,7 @@ const CustomerCreations = () => {
           account_number: formData.account_number,
           ifsc_code: formData.ifsc_code,
           branch_name: formData.branch_name,
+          login_id: user.id,
         }),
       });
       console.log(
@@ -388,6 +391,7 @@ const CustomerCreations = () => {
           account_number: formData.account_number,
           ifsc_code: formData.ifsc_code,
           branch_name: formData.branch_name,
+          login_id: user.id,
         })
       );
       const responseData = await response.json();
