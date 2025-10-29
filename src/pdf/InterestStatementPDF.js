@@ -1,268 +1,225 @@
-import React from "react";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Font,
-} from "@react-pdf/renderer";
+<?php
+include 'headers.php';
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-import fontRegular from "./fonts/NotoSansTamil-Regular.ttf";
-import fontBold from "./fonts/NotoSansTamil-Bold.ttf";
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit();
+}
+header('Content-Type: application/json; charset=utf-8');
 
-// Register Tamil font
-Font.register({
-  family: "NotoSansTamil",
-  src: fontRegular,
-});
+$json = file_get_contents('php://input');
+$obj = json_decode($json);
+$output = array();
+date_default_timezone_set('Asia/Calcutta');
+$timestamp = date('Y-m-d H:i:s');
+$today = new DateTime();
 
-Font.register({
-  family: "NotoSansTamil-Bold",
-  src: fontBold,
-  fontWeight: "bold",
-});
+function calculateInterestPeriod_14HalfDays($startDate, $endDate = null) {
+    $start = new DateTime($startDate);
+    $end = $endDate ? new DateTime($endDate) : new DateTime();
+    $diff_days = $start->diff($end)->days;
+    $half_count = ceil(($diff_days + 1) / 14);
+    return $half_count * 0.5;
+}
 
-const styles = StyleSheet.create({
-  page: {
-    padding: 25,
-    fontSize: 10,
-    fontFamily: "NotoSansTamil",
-    lineHeight: 1.3,
-  },
-  title: {
-    textAlign: "center",
-    fontSize: 16,
-    fontFamily: "NotoSansTamil-Bold",
-    marginBottom: 15,
-  },
-  sectionTitle: {
-    fontWeight: "bold",
-    fontSize: 11,
-    marginBottom: 6,
-  },
-  section: {
-    marginBottom: 18,
-  },
-  table: {
-    width: "100%",
-    bordetyle: "solid",
-    borderWidth: 1,
-    borderColor: "#000",
-  },
-  row: {
-    flexDirection: "row",
-    borderBottomStyle: "solid",
-    borderBottomWidth: 1,
-    borderBottomColor: "#000",
-  },
-  cell: {
-    borderRightStyle: "solid",
-    borderRightWidth: 1,
-    borderRightColor: "#000",
-    padding: 6,
-    flex: 1,
-  },
-  lastCell: {
-    borderRightWidth: 0,
-  },
-  headerRow: {
-    flexDirection: "row",
-    backgroundColor: "#f2f2f2",
-    borderBottomStyle: "solid",
-    borderBottomWidth: 1,
-    borderBottomColor: "#000",
-    fontWeight: "bold",
-  },
-  headerCell: {
-    flex: 1,
-    padding: 6,
-    fontWeight: "bold",
-    borderRightStyle: "solid",
-    borderRightWidth: 1,
-    borderRightColor: "#000",
-  },
-  headerLastCell: {
-    borderRightWidth: 0,
-  },
-  textCenter: {
-    textAlign: "center",
-  },
-  textRight: {
-    textAlign: "right",
-  },
-});
+function getDynamicRateByFullMonth($monthIndex, $pawn_interest, $recoveryPeriod) {
+    if ($monthIndex <= $recoveryPeriod) {
+        return $pawn_interest;
+    }
 
-const InterestStatementPDF = ({ data }) => {
-  const { statement, customer } = data;
-  const {
-    receipt_no,
-    effective_start_date,
-    principal,
-    base_rate,
-    recovery_period,
-    total_interest,
-    paid_interest,
-    total_due,
-    breakdown = [],
-  } = statement;
+    $monthAfterRecovery = $monthIndex - $recoveryPeriod;
 
-  const formatDateForPDF = (dateString) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
+    if ($monthAfterRecovery <= 3) {
+        return $pawn_interest + 1;
+    } elseif ($monthAfterRecovery <= 5) {
+        return $pawn_interest + 2;
+    } else {
+        $extraMonths = $monthAfterRecovery - 5;
+        return $pawn_interest + 2 + $extraMonths;
+    }
+}
 
-  const customerFields = [
-    { label: "ரசீது எண் ", value: customer.receipt_no || "N/A" },
-    { label: "வாடிக்கையாளர் பெயர் ", value: customer.name || "N/A" },
-    { label: "மொபைல் எண் ", value: customer.mobile_number || "N/A" },
-    { label: "முகவரி ", value: customer.customer_details || "N/A" },
-    { label: "இடம் ", value: customer.place || "N/A" },
-    { label: "கடன் தேதி ", value: formatDateForPDF(customer.pawnjewelry_date) },
-    {
-      label: "அசல் தொகை ",
-      value: `${principal?.toLocaleString() || 0}`,
-    },
-    { label: "அடிப்படை விகிதம் (%)", value: base_rate || "N/A" },
-    { label: "மீட்பு காலம்", value: recovery_period || "N/A" },
-    {
-      label: "மொத்த வட்டி ",
-      value: `${total_interest?.toLocaleString() || 0}`,
-    },
-    {
-      label: "செலுத்தப்பட்ட வட்டி ",
-      value: `${paid_interest?.toLocaleString() || 0}`,
-    },
-    {
-      label: "மொத்த நிலுவைத் தொகை  ",
-      value: `${total_due?.toLocaleString() || 0}`,
-    },
-  ];
+function getDateRangeForHalfPeriod($startDate, $halfIndex) {
+    $start = new DateTime($startDate);
+    $fromDate = clone $start;
+    $fromDate->add(new DateInterval('P' . (($halfIndex - 1) * 14) . 'D'));
+    $toDate = clone $fromDate;
+    $toDate->add(new DateInterval('P13D'));  // +13 days for 14-day period (inclusive)
+    return [
+        'from' => $fromDate->format('d-m-Y'),
+        'to' => $toDate->format('d-m-Y')
+    ];
+}
 
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Main Title */}
-        <Text style={styles.title}>அடகு அறிக்கை சுருக்கம்</Text>
+function generateBreakdownSection($startDate, $principal, $recoveryPeriod, $pawn_interest, $endDate = null, $paidTotalMonths = 0, $isNewCycle = false) {
+    $monthsFloat = calculateInterestPeriod_14HalfDays($startDate, $endDate);
+    $totalInterest = 0.0;
+    $breakdown = [];
+    $half_count = (int)ceil($monthsFloat * 2);
 
-        {/* Customer Details */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            {" "}
-            வாடிக்கையாளர்கள் மற்றும் அடகு விவரங்கள்{" "}
-          </Text>
-          <View style={styles.table}>
-            {customerFields.map((field, idx) => (
-              <View
-                key={idx}
-                style={[
-                  styles.row,
-                  idx === customerFields.length - 1 && { borderBottomWidth: 0 },
-                ]}
-              >
-                <View style={[styles.cell, { flex: 1 }]}>
-                  <Text>{field.label}</Text>
-                </View>
-                <View style={[styles.cell, { flex: 1.5 }, styles.lastCell]}>
-                  <Text>{field.value}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
+    for ($i = 1; $i <= $half_count; $i++) {
+        $period = $i * 0.5;
+        $monthIndex = (int)ceil($i / 2);
+        $rate = getDynamicRateByFullMonth($monthIndex, $pawn_interest, $recoveryPeriod);
+        $halfInterest = round(($principal * $rate / 100) * 0.5, 2);
+        $isPaid = ($paidTotalMonths >= $period);
+        $interestForPeriod = $isPaid ? 0 : $halfInterest;
+        $totalInterest += $interestForPeriod;
 
-        {/* Breakdown Table */}
-        <View style={styles.section} wrap={true}>
-          <Text style={styles.sectionTitle}>பரிவர்த்தனை சுருக்கம்</Text>
-          <View style={styles.table}>
-            {/* Header */}
-            <View style={styles.headerRow}>
-              <View style={[styles.headerCell, { flex: 0.5 }]}>
-                <Text style={styles.textCenter}>எண்</Text>
-              </View>
-              <View style={[styles.headerCell, { flex: 1.5 }]}>
-                <Text style={styles.textCenter}>தேதி</Text>
-              </View>
-              <View style={[styles.headerCell, { flex: 0.5 }]}>
-                <Text style={styles.textCenter}>காலம் </Text>
-              </View>
-              <View style={[styles.headerCell, { flex: 0.7 }]}>
-                <Text style={styles.textCenter}>வட்டி மதிப்பு</Text>
-              </View>
-              <View style={[styles.headerCell, { flex: 1 }]}>
-                <Text style={styles.textCenter}>வட்டி தொகை </Text>
-              </View>
-              <View style={[styles.headerCell, { flex: 1 }]}>
-                <Text style={styles.textCenter}>வட்டி வரவு </Text>
-              </View>
-              <View style={[styles.headerCell, { flex: 1 }]}>
-                <Text style={styles.textCenter}>வட்டி இருப்பு </Text>
-              </View>
+        $dateRange = getDateRangeForHalfPeriod($startDate, $i);
+        $breakdown[] = [
+            'period' => round($period, 1),
+            'from_to' => $dateRange['from'] . ' to ' . $dateRange['to'],
+            'rate' => $rate . '%',
+            'interest' => $halfInterest,
+            'total' => $totalInterest,
+            'balance' => $totalInterest,
+            'paid' => $isPaid
+        ];
+    }
 
-              <View
-                style={[
-                  styles.headerCell,
-                  { flex: 1.8 },
-                  styles.headerLastCell,
-                ]}
-              >
-                <Text style={styles.textCenter}>Paid</Text>
-              </View>
-            </View>
+    return [$monthsFloat, $totalInterest, $breakdown];
+}
 
-            {/* Data Rows */}
-            {breakdown.map((item, idx) => (
-              <View
-                key={idx}
-                style={[
-                  styles.row,
-                  idx === breakdown.length - 1 && { borderBottomWidth: 0 },
-                ]}
-              >
-                <View style={[styles.cell, { flex: 0.5 }]}>
-                  <Text style={styles.textCenter}>{idx + 1}</Text>
-                </View>
-                <View style={[styles.cell, { flex: 1.5 }]}>
-                  <Text>{item.from_to || item.paid_date || ""}</Text>
-                </View>
-                <View style={[styles.cell, { flex: 0.5 }]}>
-                  <Text>{item.period || ""}</Text>
-                </View>
-                <View style={[styles.cell, { flex: 0.7 }]}>
-                  <Text style={styles.textCenter}>{item.rate || ""}</Text>
-                </View>
-                <View style={[styles.cell, { flex: 1, textAlign: "right" }]}>
-                  <Text style={styles.textRight}>
-                    {(item.interest || 0).toLocaleString()}
-                  </Text>
-                </View>
-                <View style={[styles.cell, { flex: 1, textAlign: "right" }]}>
-                  <Text style={styles.textRight}>
-                    {(item.paid_amount || 0).toLocaleString()}
-                  </Text>
-                </View>
-                <View style={[styles.cell, { flex: 1 }]}>
-                  <Text style={styles.textRight}>
-                    {(item.total || 0).toLocaleString()}
-                  </Text>
-                </View>
+// Main logic: Generate Interest Statement Report
+if (isset($obj->receipt_no)) {
+    $receipt_no = trim($conn->real_escape_string($obj->receipt_no));
 
-                <View style={[styles.cell, { flex: 1.8 }, styles.lastCell]}>
-                  <Text style={styles.textCenter}>
-                    {item.paid ? "செலுத்தப்பட்டது " : "நிலுவை "}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
-      </Page>
-    </Document>
-  );
-};
+    if (empty($receipt_no)) {
+        $output["head"]["code"] = 400;
+        $output["head"]["msg"] = "Receipt number is required";
+        echo json_encode($output, JSON_NUMERIC_CHECK);
+        exit();
+    }
 
-export default InterestStatementPDF;
+    // Fetch pawn data
+    $stmt = $conn->prepare("SELECT p.pawnjewelry_date, p.original_amount, p.Jewelry_recovery_agreed_period, p.interest_rate, p.last_interest_settlement_date, r.pawnjewelry_recovery_date 
+                            FROM pawnjewelry p 
+                            LEFT JOIN pawnjewelry_recovery r ON p.receipt_no = r.receipt_no AND r.delete_at = 0 
+                            WHERE p.receipt_no = ? AND p.delete_at = 0");
+    $stmt->bind_param("s", $receipt_no);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
+
+    if ($result->num_rows === 0) {
+        $output["head"]["code"] = 400;
+        $output["head"]["msg"] = "Receipt number not found";
+        echo json_encode($output, JSON_NUMERIC_CHECK);
+        exit();
+    }
+
+    $pawn_data = $result->fetch_assoc();
+    $original_start = $pawn_data['pawnjewelry_date'];
+    $principal = floatval($pawn_data['original_amount']);
+    $recoveryPeriod = intval($pawn_data['Jewelry_recovery_agreed_period'] ?? 0);
+    $interest_rate_str = $pawn_data['interest_rate'] ?? '0';
+    $pawn_interest = floatval(str_replace('%', '', $interest_rate_str));
+    $end_date_str = $pawn_data['pawnjewelry_recovery_date'] ?: null;
+
+    // Fetch ALL interest payments sorted by date
+    $paymentStmt = $conn->prepare("SELECT interest_receive_date, interest_income FROM interest WHERE receipt_no = ? AND delete_at = 0 ORDER BY interest_receive_date ASC");
+    $paymentStmt->bind_param("s", $receipt_no);
+    $paymentStmt->execute();
+    $paymentResult = $paymentStmt->get_result();
+    $payments = [];
+    $total_paid_interest = 0.0;
+    while ($row = $paymentResult->fetch_assoc()) {
+        $payments[] = [
+            'date' => $row['interest_receive_date'],
+            'amount' => floatval($row['interest_income'])
+        ];
+        $total_paid_interest += $payments[count($payments)-1]['amount'];
+    }
+    $paymentStmt->close();
+
+    $breakdown = [];
+    $overall_total_interest = 0.0;
+    $overall_total_months = 0.0;
+    $paid_months = 0.0;
+    $current_start = $original_start;
+    $cumulative_period = 0.0;
+
+    foreach ($payments as $payment) {
+        $payment_date_full = $payment['date'];
+        $payment_date = date('Y-m-d', strtotime($payment_date_full)); // Strip time if any
+        $payment_amount = $payment['amount'];
+
+        // Calculate segment from current_start to payment_date
+        list($seg_months, $seg_interest, $seg_breakdown) = generateBreakdownSection($current_start, $principal, $recoveryPeriod, $pawn_interest, $payment_date);
+
+        // Adjust periods to cumulative
+        foreach ($seg_breakdown as &$row) {
+            $row['period'] = round($cumulative_period + $row['period'], 1);
+        }
+
+        // Add ALL unpaid rows (paid=false, local totals)
+        $breakdown = array_merge($breakdown, $seg_breakdown);
+
+        // Add paid entry
+        $last_period = round($cumulative_period + $seg_months, 1);
+        $paid_entry = [
+            'period' => $last_period,
+            'balance' => 0,
+            'paid' => true,
+            'paid_date' => date('d-m-Y', strtotime($payment_date)) . ' ',
+            'paid_amount' => $payment_amount  // Use actual paid amount from DB
+        ];
+        $breakdown[] = $paid_entry;
+
+        // Accumulate
+        $overall_total_interest += $seg_interest;
+        $overall_total_months += $seg_months;
+        $paid_months += $seg_months;
+        $cumulative_period += $seg_months;
+
+        // Next start: payment +1 day
+        $next_start_date = new DateTime($payment_date);
+        $next_start_date->add(new DateInterval('P1D'));
+        $current_start = $next_start_date->format('Y-m-d');
+    }
+
+    // Last unpaid segment from last payment +1 to end_date or today
+    $end_for_unpaid = $end_date_str ?: $today->format('Y-m-d');
+    if (strtotime($current_start) <= strtotime($end_for_unpaid)) {
+        list($last_months, $last_interest, $last_breakdown) = generateBreakdownSection($current_start, $principal, $recoveryPeriod, $pawn_interest, $end_for_unpaid);
+
+        foreach ($last_breakdown as &$row) {
+            $row['period'] = round($cumulative_period + $row['period'], 1);
+            $row['paid'] = false;  // Ensure
+        }
+
+        $breakdown = array_merge($breakdown, $last_breakdown);
+
+        $overall_total_interest += $last_interest;
+        $overall_total_months += $last_months;
+        // paid_months not added for unpaid
+    }
+
+    $total_due = $principal + $overall_total_interest;
+
+    $output["head"]["code"] = 200;
+    $output["head"]["msg"] = "Interest Statement Report Generated for " . $receipt_no;
+    $output["body"] = [
+        'receipt_no' => $receipt_no,
+        'effective_start_date' => $original_start,
+        'end_date_used' => $end_for_unpaid,
+        'principal' => $principal,
+        'base_rate' => $pawn_interest . '%',
+        'recovery_period' => $recoveryPeriod . ' months',
+        'paid_months' => round($paid_months, 1),
+        'total_months' => round($overall_total_months, 1),
+        'total_interest' => $overall_total_interest,
+        'paid_interest' => $total_paid_interest,
+        'total_due' => $total_due,
+        'breakdown' => $breakdown
+    ];
+} else {
+    $output["head"]["code"] = 400;
+    $output["head"]["msg"] = "Parameter mismatch: receipt_no required";
+}
+
+echo json_encode($output, JSON_NUMERIC_CHECK);
+?>
