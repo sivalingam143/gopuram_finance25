@@ -565,7 +565,7 @@ const TableUI = ({
     }
   };
   const handleJewelRecoveryEditClick = (rowData) => {
-    navigate("/console/master/jewelrecovery/create", {
+    navigate("/console/customer/jewelrecovery", {
       state: { type: "edit", rowData: rowData },
     });
   };
@@ -585,7 +585,7 @@ const TableUI = ({
       const responseData = await response.json();
 
       if (responseData.head.code === 200) {
-        navigate("/console/master/jewelrecovery");
+        navigate(-1);
         // window.location.reload();
       } else {
         console.log(responseData.head.msg);
@@ -993,16 +993,13 @@ const TableUI = ({
                                 >
                                   Download Statement PDF
                                 </Dropdown.Item>
-
-                                <Dropdown.Item
-                                  onClick={() =>
-                                    customActions?.recovery?.(rowData)
-                                  }
-                                >
-                                  Recovery
-                                </Dropdown.Item>
                               </>
                             )}
+                            <Dropdown.Item
+                              onClick={() => customActions?.recovery?.(rowData)}
+                            >
+                              Recovery
+                            </Dropdown.Item>
                             {rowData?.status !== "நகை மீட்கபடவில்லை" && (
                               <>
                                 <Dropdown.Item
