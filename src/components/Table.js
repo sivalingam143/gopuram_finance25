@@ -193,6 +193,8 @@ const TableUI = ({
         },
         body: JSON.stringify({
           delete_pawnjewelry_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 

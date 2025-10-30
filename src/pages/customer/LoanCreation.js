@@ -27,6 +27,7 @@ const LoanCreation = () => {
   const [searchCutomernu, setSearchcutomernumber] = useState("");
   const [customerSuggestions, setCustomerSuggestions] = useState([]);
   const [productList, setProductList] = useState([]);
+  const user = JSON.parse(localStorage.getItem("user")) || {};
 
   console.log("productList:", productList);
 
@@ -425,6 +426,8 @@ const LoanCreation = () => {
             formData.aadharproof,
             "aadharproof"
           ),
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 
@@ -481,6 +484,8 @@ const LoanCreation = () => {
             formData.aadharproof,
             "aadharproof"
           ),
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 
