@@ -200,7 +200,7 @@ const RecoveryPayment = () => {
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg);
         setTimeout(() => {
-          navigate("/console/master/customerdetails");
+          navigate("/console/master/customer");
           window.location.reload();
         }, 1000);
       } else {
@@ -235,7 +235,7 @@ const RecoveryPayment = () => {
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg);
         setTimeout(() => {
-          navigate("/console/master/customerdetails");
+          navigate("/console/master/customer");
           window.location.reload();
         }, 1000);
       } else {
