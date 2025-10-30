@@ -23,7 +23,7 @@ const UserTablehead = [
 const InterestPayment = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { rowData } = location.state || {};
+  const { type, rowData } = location.state || {};
   const today = new Date();
   const [loading, setLoading] = useState(false);
   const [productList, setProductList] = useState([]);
@@ -31,25 +31,52 @@ const InterestPayment = () => {
   const [interestHistory, setInterestHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  const initialState = {
-    customer_no: rowData?.customer_no || "",
-    receipt_no: rowData?.receipt_no || "",
-    interest_receive_date: today.toISOString().substr(0, 10),
-    name: rowData?.name || "",
-    customer_details: rowData?.customer_details || "",
-    place: rowData?.place || "",
-    mobile_number: rowData?.mobile_number || "",
-    original_amount: rowData?.original_amount || "",
-    interest_rate: rowData?.interest_rate || "",
-    jewel_product: Array.isArray(rowData?.jewel_product)
-      ? rowData.jewel_product
-      : JSON.parse(rowData?.jewel_product || "[]"),
-    outstanding_period: rowData?.interest_payment_period || "",
-    outstanding_amount: rowData?.interest_payment_amount || "",
-    interest_income: "", // Editable input
+  const getInitialState = () => {
+    if (type === "edit" && rowData) {
+      return {
+        customer_no: rowData.customer_no || "",
+        receipt_no: rowData.receipt_no || "",
+        interest_receive_date:
+          rowData.interest_receive_date || today.toISOString().substr(0, 10),
+        name: rowData.name || "",
+        customer_details: rowData.customer_details || "",
+        place: rowData.place || "",
+        mobile_number: rowData.mobile_number || "",
+        original_amount: rowData.original_amount || "",
+        interest_rate: rowData.interest_rate || "",
+        jewel_product: Array.isArray(rowData.jewel_product)
+          ? rowData.jewel_product
+          : JSON.parse(rowData.jewel_product || "[]"),
+        outstanding_period: rowData.outstanding_period || "",
+        outstanding_amount: rowData.outstanding_amount || "",
+        interest_income: rowData.interest_income || "",
+      };
+    } else {
+      return {
+        customer_no: rowData?.customer_no || "",
+        receipt_no: rowData?.receipt_no || "",
+        interest_receive_date: today.toISOString().substr(0, 10),
+        name: rowData?.name || "",
+        customer_details: rowData?.customer_details || "",
+        place: rowData?.place || "",
+        mobile_number: rowData?.mobile_number || "",
+        original_amount: rowData?.original_amount || "",
+        interest_rate: rowData?.interest_rate || "",
+        jewel_product: Array.isArray(rowData?.jewel_product)
+          ? rowData.jewel_product
+          : JSON.parse(rowData?.jewel_product || "[]"),
+        outstanding_period: rowData?.interest_payment_period || "",
+        outstanding_amount: rowData?.interest_payment_amount || "",
+        interest_income: "",
+      };
+    }
   };
 
-  const [formData, setFormData] = useState(initialState);
+  const [formData, setFormData] = useState(getInitialState());
+  console.log(formData);
+  useEffect(() => {
+    setFormData(getInitialState());
+  }, [location.state, type, rowData]);
 
   const fetchInterestHistory = async () => {
     if (!rowData?.receipt_no) return;
@@ -107,7 +134,7 @@ const InterestPayment = () => {
   useEffect(() => {
     fetchInterestHistory();
     fetchDataproduct();
-  }, []);
+  }, [rowData]);
 
   const handleChange = (e, fieldName, rowIndex) => {
     const value = e.target ? e.target.value : e.value;
@@ -174,8 +201,61 @@ const InterestPayment = () => {
     }
   };
 
+  const handleUpdateSubmit = async () => {
+    if (
+      parseFloat(formData.outstanding_amount) !==
+      parseFloat(formData.interest_income)
+    ) {
+      toast.error("Interest Amount should be equal to Outstanding Amount!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/interest.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          edit_interest_id: rowData.interest_id,
+        }),
+      });
+
+      const responseData = await response.json();
+      console.log(responseData);
+      if (responseData.head.code === 200) {
+        toast.success(responseData.head.msg);
+        setTimeout(() => {
+          navigate(-1); // Back to CustomerDetails
+        }, 1000);
+      } else {
+        toast.error(responseData.head.msg);
+        setError(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     navigate(-1); // Back to CustomerDetails
+  };
+
+  const pageTitle =
+    type === "edit" ? "Edit Interest Payment" : "Interest Payment";
+
+  const handleAction = (action, interestRow) => {
+    if (action === "edit") {
+      navigate("/console/customer/interest", {
+        state: { type: "edit", rowData: interestRow },
+      });
+    } else if (action === "delete") {
+      // Handle delete if needed, but since TableUI handles it, perhaps not here
+    }
   };
 
   return (
@@ -183,7 +263,7 @@ const InterestPayment = () => {
       <Container>
         <Row className="regular">
           <Col lg="12" md="12" xs="12" className="py-3">
-            <PageNav pagetitle={"Interest Payment"}></PageNav>
+            <PageNav pagetitle={pageTitle}></PageNav>
           </Col>
 
           {/* Read-only Customer Info Container */}
@@ -226,11 +306,14 @@ const InterestPayment = () => {
               <ul className="list-unstyled">
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Principal Amount:</strong>
-                  <span>₹{formData.original_amount}</span>
+                  <span>
+                    ₹
+                    {parseFloat(formData.original_amount || 0).toLocaleString()}
+                  </span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Interest Rate:</strong>
-                  <span>{formData.interest_rate}</span>
+                  <span>{formData.interest_rate}%</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Outstanding Period:</strong>
@@ -238,7 +321,12 @@ const InterestPayment = () => {
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Outstanding Amount:</strong>
-                  <span>₹{formData.outstanding_amount}</span>
+                  <span>
+                    ₹
+                    {parseFloat(
+                      formData.outstanding_amount || 0
+                    ).toLocaleString()}
+                  </span>
                 </li>
               </ul>
             </div>
@@ -301,8 +389,16 @@ const InterestPayment = () => {
               />
               <span className="mx-2">
                 <ClickButton
-                  label={loading ? <>Submitting...</> : <>Submit</>}
-                  onClick={handleSubmit}
+                  label={
+                    loading ? (
+                      <>Submitting...</>
+                    ) : type === "edit" ? (
+                      <>Update</>
+                    ) : (
+                      <>Submit</>
+                    )
+                  }
+                  onClick={type === "edit" ? handleUpdateSubmit : handleSubmit}
                   disabled={loading}
                 />
               </span>
@@ -331,6 +427,9 @@ const InterestPayment = () => {
                   type="interest"
                   pageview="no"
                   style={{ borderRadius: "5px" }}
+                  customActions={{
+                    edit: handleAction,
+                  }}
                 />
               ) : (
                 <div className="text-center text-muted py-3">

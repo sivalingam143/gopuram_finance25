@@ -257,7 +257,7 @@ const TableUI = ({
     }
   };
   const handleinterestEditClick = (rowData) => {
-    navigate("/console/interest/create", {
+    navigate("/console/customer/interest", {
       state: { type: "edit", rowData: rowData },
     });
   };
@@ -277,7 +277,7 @@ const TableUI = ({
       const responseData = await response.json();
 
       if (responseData.head.code === 200) {
-        navigate("/console/interest");
+        navigate("/console/customer/interest");
         window.location.reload();
       } else {
         console.log(responseData.head.msg);
@@ -875,7 +875,7 @@ const TableUI = ({
                           )}
                         </PDFDownloadLink>
 
-                        {/* {isAdmin && ( // Show Edit option only if user is Admin
+                        {isAdmin && ( // Show Edit option only if user is Admin
                           <Dropdown.Item
                             onClick={() => handleinterestEditClick(rowData)}
                           >
@@ -888,7 +888,7 @@ const TableUI = ({
                           }
                         >
                           Delete
-                        </Dropdown.Item> */}
+                        </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>
                   </td>
