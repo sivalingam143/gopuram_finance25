@@ -10,6 +10,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import LoadingOverlay from "./LoadingOverlay";
 import InterestStatementPDF from "../pdf/InterestStatementPDF";
 import ReceiptPDF from "../pdf/jewelInterestPdf";
+import JewelPawnrecoveryPdf from "../pdf/jewelpawnRecoverPdf";
 
 const TableUI = ({
   headers,
@@ -1113,30 +1114,29 @@ const TableUI = ({
                         </Button>
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
-                        <Dropdown.Item
+                        {/* <Dropdown.Item
                           onClick={() =>
                             handleJewelRecoveryprintviewClick(rowData)
                           }
                         >
                           print View
-                        </Dropdown.Item>
-
-                        {/* <PDFDownloadLink
-                            document={<JewelPawnRecoverPdf data={rowData} />}
-                            fileName={`${rowData.receipt_no}.pdf`}
-                          >
-                            {({ blob, url, loading, error }) => (
-                              <a
-                                className="dropdown-item"
-                                role="button"
-                                tabIndex="0"
-                                href={url}
-                                download={`${rowData.receipt_no}.pdf`}
-                              >
-                                Download Pdf
-                              </a>
-                            )}
-                          </PDFDownloadLink> */}
+                        </Dropdown.Item> */}
+                        <PDFDownloadLink
+                          document={<JewelPawnrecoveryPdf data={rowData} />}
+                          fileName={`${rowData.receipt_no}_recovery.pdf`}
+                        >
+                          {({ blob, url, loading, error }) => (
+                            <a
+                              className="dropdown-item"
+                              role="button"
+                              tabIndex="0"
+                              href={url}
+                              download={`${rowData.receipt_no}_recovery.pdf`}
+                            >
+                              Download PDF
+                            </a>
+                          )}
+                        </PDFDownloadLink>
 
                         {/* <Dropdown.Item onClick={() => handleJewelRecoveryViewClick(rowData)}>View</Dropdown.Item> */}
 
