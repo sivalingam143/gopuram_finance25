@@ -34,6 +34,7 @@ const InterestPayment = () => {
   const getInitialState = () => {
     if (type === "edit" && rowData) {
       return {
+        edit_interest_id: rowData.interest_id || "",
         customer_no: rowData.customer_no || "",
         receipt_no: rowData.receipt_no || "",
         interest_receive_date:
