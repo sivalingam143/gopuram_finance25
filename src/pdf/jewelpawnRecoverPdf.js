@@ -270,7 +270,7 @@ const Receipt = ({ data }) => {
               (அலுவலகம் திறந்திருக்கும் நேரம் காலை 9.00 மணி முதல் மாலை 6.00 மணி
               வரை)
             </Text>
-            <Text style={styles.boldTextCenter}>வட்டி கட்டிய ரசீது</Text>
+            <Text style={styles.boldTextCenter}>வட்டி மீட்பு ரசீது</Text>
           </View>
         </View>
       </View>
@@ -280,13 +280,11 @@ const Receipt = ({ data }) => {
         {[
           `1.அடகு எண்: ${data.receipt_no} `,
           `2.அடகு வைத்த தேதி: ${data.pawnjewelry_date} `,
-          `3.வட்டி பெறும் தேதி:${data.interest_receive_date} `,
+          `3.நகை மீட்பு தேதி ${data.pawnjewelry_recovery_date} `,
           `4.பெயர்:${data.name} `,
           `5.அடகு தொகை:${data.original_amount} `,
-          `6.வட்டி விகிதம்:${data.interest_rate} `,
-          `7.வட்டி நிலுவை தொகை:${data.outstanding_amount} `,
-          `8.வட்டி நிலுவை காலம்:${data.outstanding_period} மாதங்கள் `,
-          `9.வட்டி வரவு தொகை:${data.interest_income} `,
+          `6.வட்டி வரவு தொகை:${data.interest_paid} `,
+          `7.வட்டி நிலுவை  தொகை: 0.00 `,
         ].map((text, i) => (
           <View key={i} style={styles.detailsRow}>
             <Text style={styles.detailLabel}>{text}</Text>
@@ -302,18 +300,22 @@ const Receipt = ({ data }) => {
         </View>
 
         <View style={styles.tamilRow}>
-          <Text style={styles.tamilCellLeft}>வட்டி கட்டிய தொகை </Text>
-          <Text style={styles.tamilCellRight}>{data.interest_income}</Text>
+          <Text style={styles.tamilCellLeft}>நகை மீட்பு வாபஸ் தொகை </Text>
+          <Text style={styles.tamilCellRight}>
+            {data.original_amount + data.interest_paid}
+          </Text>
         </View>
 
         <View style={styles.tamilRow}>
-          <Text style={styles.tamilCellLeft}>Closing Charges</Text>
+          <Text style={styles.tamilCellLeft}>வட்டி நிலுவை தொகை </Text>
           <Text style={styles.tamilCellRight}>0.00</Text>
         </View>
 
         <View style={styles.tamilTotal}>
           <Text style={styles.tamilTotalLeft}>மொத்த தொகை .</Text>
-          <Text style={styles.tamilTotalRight}>{data.interest_income}</Text>
+          <Text style={styles.tamilTotalRight}>
+            {data.original_amount + data.interest_paid}
+          </Text>
         </View>
       </View>
 
