@@ -42,7 +42,8 @@ const RecoveryPayment = () => {
         typeof rowData?.jewel_product === "string" &&
         rowData.jewel_product.trim() !== ""
       ) {
-        const parsed = JSON.parse(rowData.jewel_product);
+        const unescapedString = rowData.jewel_product.replace(/\\"/g, '"');
+        const parsed = JSON.parse(unescapedString);
         if (Array.isArray(parsed)) {
           jewelProduct = parsed;
         }
