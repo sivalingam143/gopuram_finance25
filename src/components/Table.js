@@ -989,16 +989,13 @@ const TableUI = ({
                                 >
                                   Interest
                                 </Dropdown.Item>
-
-                                <Dropdown.Item
-                                  onClick={() =>
-                                    handleDownloadStatement(rowData)
-                                  }
-                                >
-                                  Download Statement PDF
-                                </Dropdown.Item>
                               </>
                             )}
+                            <Dropdown.Item
+                              onClick={() => handleDownloadStatement(rowData)}
+                            >
+                              Download Statement PDF
+                            </Dropdown.Item>
                             <Dropdown.Item
                               onClick={() => customActions?.recovery?.(rowData)}
                             >
