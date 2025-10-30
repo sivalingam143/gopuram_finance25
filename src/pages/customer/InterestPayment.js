@@ -30,6 +30,7 @@ const InterestPayment = () => {
   const [error, setError] = useState("");
   const [interestHistory, setInterestHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user")) || {};
 
   const getInitialState = () => {
     if (type === "edit" && rowData) {
@@ -181,7 +182,12 @@ const InterestPayment = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...formData, edit_interest_id: "" }),
+        body: JSON.stringify({
+          ...formData,
+          edit_interest_id: "",
+          login_id: user.id,
+          user_name: user.user_name,
+        }),
       });
 
       const responseData = await response.json();
@@ -222,6 +228,8 @@ const InterestPayment = () => {
         body: JSON.stringify({
           ...formData,
           edit_interest_id: rowData.interest_id,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 

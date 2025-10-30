@@ -30,6 +30,7 @@ const RecoveryPayment = () => {
   const [error, setError] = useState("");
   const [recoveryHistory, setRecoveryHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user")) || {};
 
   const getInitialState = () => {
     let jewelProduct = [];
@@ -192,6 +193,8 @@ const RecoveryPayment = () => {
           edit_pawnrecovery_id: "",
           interest_paid: formData.interest_paid,
           refund_amount: parseFloat(formData.refund_amount),
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 
@@ -227,6 +230,8 @@ const RecoveryPayment = () => {
           edit_pawnrecovery_id: rowData.pawnjewelry_recovery_id,
           interest_paid: formData.interest_paid,
           refund_amount: parseFloat(formData.refund_amount),
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 

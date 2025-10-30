@@ -271,6 +271,8 @@ const TableUI = ({
         },
         body: JSON.stringify({
           delete_interest_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 
@@ -579,6 +581,8 @@ const TableUI = ({
         },
         body: JSON.stringify({
           delete_pawn_recovery_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 
