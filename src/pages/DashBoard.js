@@ -25,10 +25,16 @@ const DashBoard = () => {
   const [interestData, setInterestData] = useState([]);
   const [actionData, setActionData] = useState([]);
   const [bankPledgeData, setBankPledgeData] = useState([]);
+  const [customerHistory, setCustomerHistory] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [placeSearchTerm, setPlaceSearchTerm] = useState("");
   const [noticeSearchTerm, setNoticeSearchTerm] = useState("");
   const [actionSearchTerm, setActionSearchTerm] = useState("");
+  const [selectedCustomerNo, setSelectedCustomerNo] = useState("");
+  const [fromDate, setFromDate] = useState(
+    dayjs().startOf("month").format("YYYY-MM-DD")
+  );
+  const [toDate, setToDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [filteredData, setFilteredData] = useState([]);
   const [loadingPawn, setLoadingPawn] = useState(true);
   const [loadingRecovery, setLoadingRecovery] = useState(true);
@@ -36,6 +42,7 @@ const DashBoard = () => {
   const [loadingInterest, setLoadingInterest] = useState(true);
   const [loadingAction, setLoadingAction] = useState(true);
   const [loadingBank, setLoadingBank] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [expandedRow, setExpandedRow] = useState(null);
 
   const parsePeriod = (periodStr) => {
@@ -75,6 +82,136 @@ const DashBoard = () => {
     });
 
     return aggregated;
+  };
+
+  const getValueDisplay = (val) => {
+    if (!val || (Array.isArray(val) && val.length === 0)) {
+      return <span className="text-muted">N/A</span>;
+    }
+
+    // Blacklist of fields to skip
+    const skipFields = [
+      "id",
+      "interest_id",
+      "pawnjewelry_id",
+      "customer_id",
+      "pawnjewelry_recovery_id",
+      "create_at",
+      "delete_at",
+      "created_by_id",
+      "create_by_id",
+      "updated_by_id",
+      "deleted_by_id",
+    ];
+
+    const formatJewelProduct = (jewelStr) => {
+      if (!jewelStr) return "No items";
+      try {
+        // Clean extra escapes (e.g., \\\" -> ")
+        let cleanStr = jewelStr.replace(/\\\\/g, "\\").replace(/\\"/g, '"');
+        const jewels = JSON.parse(cleanStr);
+        return (
+          jewels
+            .filter((j) => j.JewelName && j.JewelName.trim())
+            .map(
+              (j) =>
+                `${j.JewelName} (${j.count || 1} pcs, ${j.weight || 0}g, ${
+                  j.carrat || ""
+                })`
+            )
+            .join(", ") || "No items"
+        );
+      } catch (e) {
+        console.error("Parse error:", e, jewelStr);
+        return "Invalid format";
+      }
+    };
+
+    const formatField = (key, value) => {
+      if (value === null || value === undefined || value === "") return null;
+      switch (key) {
+        case "pawnjewelry_date":
+        case "interest_receive_date":
+        case "pawnjewelry_recovery_date":
+        case "created_at":
+          return dayjs(value).format("DD-MM-YYYY");
+        case "original_amount":
+        case "outstanding_amount":
+        case "interest_income":
+        case "topup_amount":
+        case "deduction_amount":
+        case "interest_payment_amount":
+        case "refund_amount":
+        case "other_amount":
+        case "interest_paid":
+          return `₹${parseFloat(value || 0).toLocaleString("en-IN")}`;
+        case "jewel_product":
+          return formatJewelProduct(value);
+        case "interest_rate":
+          return `${value}%`;
+        case "status":
+          return value; // Keep as is (e.g., Tamil text)
+        case "proof":
+        case "aadharproof":
+          return Array.isArray(value) ? "Uploaded files" : value || "None";
+        default:
+          return value;
+      }
+    };
+
+    return (
+      <div
+        style={{
+          fontSize: "0.75em",
+          lineHeight: "1.2",
+          textAlign: "left",
+          wordBreak: "break-word",
+        }}
+      >
+        {Object.entries(val).map(([key, value]) => {
+          if (skipFields.includes(key)) return null;
+          const formattedValue = formatField(key, value);
+          if (formattedValue === null) return null;
+          return (
+            <div key={key}>
+              <strong>{key.replace(/_/g, " ").toUpperCase()}:</strong>{" "}
+              {formattedValue}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const fetchCustomerHistory = async (customerNo) => {
+    if (!customerNo) {
+      setCustomerHistory([]);
+      return;
+    }
+    setLoadingHistory(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/customer.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          list_history: true,
+          customer_no: customerNo,
+          fromdate: fromDate,
+          todate: toDate,
+        }),
+      });
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        setCustomerHistory(responseData.body.history || []);
+      } else {
+        throw new Error(responseData.head.msg);
+      }
+    } catch (error) {
+      console.error("Error fetching history:", error.message);
+      setCustomerHistory([]);
+    } finally {
+      setLoadingHistory(false);
+    }
   };
 
   const fetchDatajewelpawncustomer = async () => {
@@ -316,6 +453,13 @@ const DashBoard = () => {
     setActionSearchTerm("");
   };
 
+  const handleHistoryClear = () => {
+    setSelectedCustomerNo("");
+    setFromDate(dayjs().startOf("month").format("YYYY-MM-DD"));
+    setToDate(dayjs().format("YYYY-MM-DD"));
+    setCustomerHistory([]);
+  };
+
   useEffect(() => {
     handleSearch();
   }, [searchTerm, placeSearchTerm, userData]);
@@ -447,6 +591,12 @@ const DashBoard = () => {
     }
     return value || "-";
   };
+
+  useEffect(() => {
+    if (selectedCustomerNo) {
+      fetchCustomerHistory(selectedCustomerNo);
+    }
+  }, [fromDate, toDate]);
 
   return (
     <>
@@ -963,6 +1113,165 @@ const DashBoard = () => {
                               className="text-center text-muted py-4"
                             >
                               No action alerts found at this time.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </Table>
+                  </div>
+                </Col>
+              </Row>
+              <Row className="mt-5">
+                <Col lg="12">
+                  <h5 className="mb-3">📌 Customer History</h5>
+                  <Row className="mb-3">
+                    <Col lg={3} className="mb-2">
+                      <Form.Control
+                        type="text"
+                        placeholder="Customer Number"
+                        value={selectedCustomerNo}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setSelectedCustomerNo(val);
+                          if (val) {
+                            fetchCustomerHistory(val);
+                          } else {
+                            setCustomerHistory([]);
+                          }
+                        }}
+                      />
+                    </Col>
+                    <Col lg={3} className="mb-2">
+                      <Form.Control
+                        type="date"
+                        value={fromDate}
+                        onChange={(e) => {
+                          setFromDate(e.target.value);
+                        }}
+                      />
+                    </Col>
+                    <Col lg={3} className="mb-2">
+                      <Form.Control
+                        type="date"
+                        value={toDate}
+                        onChange={(e) => {
+                          setToDate(e.target.value);
+                        }}
+                      />
+                    </Col>
+                    <Col lg={3} className="mb-2">
+                      <Button
+                        variant="primary"
+                        onClick={() =>
+                          selectedCustomerNo &&
+                          fetchCustomerHistory(selectedCustomerNo)
+                        }
+                      >
+                        Search
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        className="ms-2"
+                        onClick={handleHistoryClear}
+                      >
+                        Clear
+                      </Button>
+                    </Col>
+                  </Row>
+                  <div
+                    className="notice-table-wrapper table-responsive shadow-sm rounded border"
+                    style={{ maxHeight: "400px", overflowY: "auto" }}
+                  >
+                    <Table
+                      bordered
+                      hover
+                      className="table table-striped align-middle mb-0"
+                      style={{ tableLayout: "fixed", width: "100%" }}
+                    >
+                      <thead className="table-dark text-center">
+                        <tr>
+                          <th style={{ width: "5%" }}>S.No</th>
+                          <th style={{ width: "15%" }}>Date</th>
+                          <th style={{ width: "15%" }}>Receipt No</th>
+                          <th style={{ width: "25%" }}>Old Value</th>
+                          <th style={{ width: "25%" }}>New Value</th>
+                          <th style={{ width: "15%" }}>Remarks</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {loadingHistory ? (
+                          <tr>
+                            <td colSpan="6" className="text-center">
+                              Loading...
+                            </td>
+                          </tr>
+                        ) : customerHistory.length > 0 ? (
+                          customerHistory.map((hist, index) => (
+                            <tr key={hist.id}>
+                              <td
+                                className="text-center"
+                                style={{ verticalAlign: "top" }}
+                              >
+                                {index + 1}
+                              </td>
+                              <td
+                                className="text-center"
+                                style={{ verticalAlign: "top" }}
+                              >
+                                {dayjs(hist.created_at).format(
+                                  "DD-MM-YYYY HH:mm"
+                                )}
+                              </td>
+                              <td
+                                className="text-center"
+                                style={{ verticalAlign: "top" }}
+                              >
+                                {hist.old_value?.receipt_no ||
+                                  hist.new_value?.receipt_no ||
+                                  "-"}
+                              </td>
+                              <td
+                                style={{
+                                  verticalAlign: "top",
+                                  wordBreak: "break-word",
+                                  maxHeight: "100px",
+                                  overflow: "auto",
+                                  padding: "8px",
+                                }}
+                              >
+                                {getValueDisplay(hist.old_value)}
+                              </td>
+                              <td
+                                style={{
+                                  verticalAlign: "top",
+                                  wordBreak: "break-word",
+                                  maxHeight: "100px",
+                                  overflow: "auto",
+                                  padding: "8px",
+                                }}
+                              >
+                                {getValueDisplay(hist.new_value)}
+                              </td>
+                              <td
+                                className="text-center"
+                                style={{
+                                  verticalAlign: "top",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {hist.remarks}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan="6"
+                              className="text-center text-muted py-4"
+                            >
+                              {selectedCustomerNo
+                                ? "No history found."
+                                : "Enter customer number to view history."}
                             </td>
                           </tr>
                         )}
