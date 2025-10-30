@@ -29,6 +29,7 @@ const RecoveryPayment = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [recoveryHistory, setRecoveryHistory] = useState([]);
+  const [interestHistory, setInterestHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
@@ -88,8 +89,8 @@ const RecoveryPayment = () => {
         original_amount: rowData?.original_amount || "",
         interest_rate: rowData?.interest_rate || "",
         jewel_product: jewelProduct,
-        interest_payment_periods: rowData?.interest_payment_period || "",
-        interest_paid: rowData?.interest_payment_amount || "",
+        interest_payment_periods: "",
+        interest_paid: "",
         pawnjewelry_recovery_date: today.toISOString().substr(0, 10),
         refund_amount: "",
         other_amount: "",
@@ -136,21 +137,73 @@ const RecoveryPayment = () => {
     }
   };
 
-  // Pre-calculate refund_amount for new recovery
+  // New: Fetch Interest History (similar to InterestPayment)
+  const fetchInterestHistory = async () => {
+    if (!rowData?.receipt_no) return;
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/interest.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          search_text: rowData.receipt_no,
+        }),
+      });
+
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        const filteredHistory = responseData.body.interest.filter(
+          (item) => item.receipt_no === rowData.receipt_no
+        );
+        setInterestHistory(filteredHistory);
+      } else {
+        console.error(
+          "Error fetching interest history:",
+          responseData.head.msg
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching interest history:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // New: Calculate totals from interest history and update formData for new recovery
   useEffect(() => {
-    if (type !== "edit" && rowData) {
+    if (type !== "edit" && interestHistory.length > 0) {
+      // Calculate total paid interest
+      const totalPaidInterest = interestHistory.reduce(
+        (sum, item) => sum + parseFloat(item.interest_income || 0),
+        0
+      );
+
+      // Calculate total payment periods (using outstanding_period as numerical value)
+      const totalPeriods = interestHistory.reduce(
+        (sum, item) => sum + parseFloat(item.outstanding_period || 0),
+        0
+      );
+
+      // Principal from loan
       const principal = parseFloat(rowData?.original_amount || 0);
-      const interest = parseFloat(rowData?.interest_payment_amount || 0);
-      const calculatedRefund = (principal + interest).toFixed(2);
+
+      // Refund = Principal + Total Paid Interest
+      const calculatedRefund = (principal + totalPaidInterest).toFixed(2);
+
       setFormData((prev) => ({
         ...prev,
+        interest_paid: totalPaidInterest.toFixed(2),
+        interest_payment_periods: totalPeriods.toFixed(1),
         refund_amount: calculatedRefund,
       }));
     }
-  }, [rowData, type]);
+  }, [interestHistory, rowData, type]);
 
   useEffect(() => {
     fetchRecoveryHistory();
+    fetchInterestHistory();
   }, [rowData]);
 
   const handleChange = (e, fieldName, rowIndex) => {
