@@ -216,26 +216,6 @@ const CustomerCreations = () => {
   };
 
   const handleSubmit = async () => {
-    for (const key in formData) {
-      if (
-        key !== "proof" &&
-        key !== "aadharproof" &&
-        key !== "proof_number" &&
-        formData[key] === ""
-      ) {
-        toast.error(`${key.replace("_", " ")} cannot be empty!`, {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        return;
-      }
-    }
     if (selectedProofType && !proofNumber) {
       toast.error(`Proof number cannot be empty!`, {
         position: "top-center",
@@ -268,6 +248,7 @@ const CustomerCreations = () => {
           ifsc_code: formData.ifsc_code,
           branch_name: formData.branch_name,
           login_id: user.id,
+          user_name: user.user_name,
         }),
       });
       const responseData = await response.json();
@@ -369,6 +350,7 @@ const CustomerCreations = () => {
           ifsc_code: formData.ifsc_code,
           branch_name: formData.branch_name,
           login_id: user.id,
+          user_name: user.user_name,
         }),
       });
       console.log(
@@ -392,6 +374,7 @@ const CustomerCreations = () => {
           ifsc_code: formData.ifsc_code,
           branch_name: formData.branch_name,
           login_id: user.id,
+          user_name: user.user_name,
         })
       );
       const responseData = await response.json();
