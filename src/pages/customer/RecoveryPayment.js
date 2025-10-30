@@ -453,40 +453,45 @@ const RecoveryPayment = () => {
           </Col>
 
           {/* Buttons */}
-          <Col lg={12}>
-            <div className="text-center mb-3">
-              <ToastContainer
-                position="top-center"
-                autoClose={2000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-              />
-              <span className="mx-2">
-                <ClickButton
-                  label={
-                    loading ? (
-                      <>Submitting...</>
-                    ) : type === "edit" ? (
-                      <>Update</>
-                    ) : (
-                      <>Submit</>
-                    )
-                  }
-                  onClick={type === "edit" ? handleUpdateSubmit : handleSubmit}
-                  disabled={loading}
+
+          {(type === "edit" || recoveryHistory.length === 0) && (
+            <Col lg={12}>
+              <div className="text-center mb-3">
+                <ToastContainer
+                  position="top-center"
+                  autoClose={2000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="colored"
                 />
-              </span>
-              <span className="mx-2">
-                <ClickButton label={<>Cancel</>} onClick={handleCancel} />
-              </span>
-            </div>
-          </Col>
+                <span className="mx-2">
+                  <ClickButton
+                    label={
+                      loading ? (
+                        <>Submitting...</>
+                      ) : type === "edit" ? (
+                        <>Update</>
+                      ) : (
+                        <>Submit</>
+                      )
+                    }
+                    onClick={
+                      type === "edit" ? handleUpdateSubmit : handleSubmit
+                    }
+                    disabled={loading}
+                  />
+                </span>
+                <span className="mx-2">
+                  <ClickButton label={<>Cancel</>} onClick={handleCancel} />
+                </span>
+              </div>
+            </Col>
+          )}
 
           {error && (
             <Col lg={12}>
