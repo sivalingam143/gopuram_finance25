@@ -432,11 +432,11 @@ const RecoveryPayment = () => {
           )}
 
           {/* Recovery History Listing */}
-          <Col lg={12} className="py-3">
-            <div className="customer-card bg-light border rounded p-3">
-              <h5 className="mb-3">Recovery Payment History</h5>
+          {recoveryHistory.length > 0 && (
+            <Col lg={12} className="py-3">
+              <div className="customer-card bg-light border rounded p-3">
+                <h5 className="mb-3">Recovery Payment History</h5>
 
-              {recoveryHistory.length > 0 ? (
                 <TableUI
                   headers={UserTablehead}
                   body={recoveryHistory}
@@ -447,13 +447,9 @@ const RecoveryPayment = () => {
                     edit: handleAction,
                   }}
                 />
-              ) : (
-                <div className="text-center text-muted py-3">
-                  No recovery payments recorded yet.
-                </div>
-              )}
-            </div>
-          </Col>
+              </div>
+            </Col>
+          )}
         </Row>
       </Container>
     </div>
