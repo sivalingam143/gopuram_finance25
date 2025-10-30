@@ -171,9 +171,9 @@ const RecoveryPayment = () => {
     }
   };
 
-  // New: Calculate totals from interest history and update formData for new recovery
+  // New: Calculate totals from interest history and update formData
   useEffect(() => {
-    if (type !== "edit" && interestHistory.length > 0) {
+    if (interestHistory.length > 0) {
       // Calculate total paid interest
       const totalPaidInterest = interestHistory.reduce(
         (sum, item) => sum + parseFloat(item.interest_income || 0),
@@ -192,12 +192,19 @@ const RecoveryPayment = () => {
       // Refund = Principal + Total Paid Interest
       const calculatedRefund = (principal + totalPaidInterest).toFixed(2);
 
-      setFormData((prev) => ({
-        ...prev,
-        interest_paid: totalPaidInterest.toFixed(2),
-        interest_payment_periods: totalPeriods.toFixed(1),
-        refund_amount: calculatedRefund,
-      }));
+      setFormData((prev) => {
+        const updated = { ...prev };
+        if (type !== "edit" || !prev.interest_paid) {
+          updated.interest_paid = totalPaidInterest.toFixed(2);
+        }
+        if (type !== "edit" || !prev.interest_payment_periods) {
+          updated.interest_payment_periods = totalPeriods.toFixed(1);
+        }
+        if (type !== "edit" || !prev.refund_amount) {
+          updated.refund_amount = calculatedRefund;
+        }
+        return updated;
+      });
     }
   }, [interestHistory, rowData, type]);
 
