@@ -189,7 +189,8 @@ const InterestPayment = () => {
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg);
         setTimeout(() => {
-          navigate(-1); // Back to CustomerDetails
+          navigate(-1);
+          window.location.reload();
         }, 1000);
       } else {
         toast.error(responseData.head.msg);
@@ -229,7 +230,8 @@ const InterestPayment = () => {
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg);
         setTimeout(() => {
-          navigate(-1); // Back to CustomerDetails
+          navigate(-1);
+          window.location.reload();
         }, 1000);
       } else {
         toast.error(responseData.head.msg);
