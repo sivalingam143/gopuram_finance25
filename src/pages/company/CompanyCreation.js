@@ -179,41 +179,41 @@ const CompanyCreation = () => {
 
   const priceFields = [
     { key: "jewel_price", label: "Jewel Price", placeholder: "Jewel Price" },
-    {
-      key: "22_carat_price",
-      label: "22 Carat Price",
-      placeholder: "22 Carat Price",
-    },
-    {
-      key: "21_carat_price",
-      label: "21 Carat Price",
-      placeholder: "21 Carat Price",
-    },
-    {
-      key: "20_carat_price",
-      label: "20 Carat Price",
-      placeholder: "20 Carat Price",
-    },
-    {
-      key: "19_carat_price",
-      label: "19 Carat Price",
-      placeholder: "19 Carat Price",
-    },
-    {
-      key: "18_carat_price",
-      label: "18 Carat Price",
-      placeholder: "18 Carat Price",
-    },
-    {
-      key: "17_carat_price",
-      label: "17 Carat Price",
-      placeholder: "17 Carat Price",
-    },
-    {
-      key: "16_carat_price",
-      label: "16 Carat Price",
-      placeholder: "16 Carat Price",
-    },
+    // {
+    //   key: "22_carat_price",
+    //   label: "22 Carat Price",
+    //   placeholder: "22 Carat Price",
+    // },
+    // {
+    //   key: "21_carat_price",
+    //   label: "21 Carat Price",
+    //   placeholder: "21 Carat Price",
+    // },
+    // {
+    //   key: "20_carat_price",
+    //   label: "20 Carat Price",
+    //   placeholder: "20 Carat Price",
+    // },
+    // {
+    //   key: "19_carat_price",
+    //   label: "19 Carat Price",
+    //   placeholder: "19 Carat Price",
+    // },
+    // {
+    //   key: "18_carat_price",
+    //   label: "18 Carat Price",
+    //   placeholder: "18 Carat Price",
+    // },
+    // {
+    //   key: "17_carat_price",
+    //   label: "17 Carat Price",
+    //   placeholder: "17 Carat Price",
+    // },
+    // {
+    //   key: "16_carat_price",
+    //   label: "16 Carat Price",
+    //   placeholder: "16 Carat Price",
+    // },
   ];
 
   return (
