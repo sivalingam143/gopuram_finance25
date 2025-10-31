@@ -631,7 +631,7 @@ const DashBoard = () => {
   const marqueeText = caratEntries
     .map(([key, value]) => {
       const carat = key.split("_")[0];
-      return `${carat} carat Rate = ₹${(value || 0).toLocaleString("en-IN")}`;
+      return `${carat} karat Rate = ₹${(value || 0).toLocaleString("en-IN")}`;
     })
     .join(", ");
 
