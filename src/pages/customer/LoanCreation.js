@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { Col, Container, Row, Alert, Form } from "react-bootstrap";
 import { TextInputForm, Calender } from "../../components/Forms";
 import {
@@ -167,6 +173,7 @@ const LoanCreation = () => {
   const [showCapturePage, setShowCapturePage] = useState(false);
   const [stream, setStream] = useState(null);
   const [previewFile, setPreviewFile] = useState(null);
+  const [companyRates, setCompanyRates] = useState({});
   console.log(formData);
   const handleChange = (e, field, rowIndex) => {
     const { value } = e.target;
@@ -621,6 +628,31 @@ const LoanCreation = () => {
     }
   };
 
+  const fetchCompany = async () => {
+    try {
+      const response = await fetch(`${API_DOMAIN}/company.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ search_text: "" }),
+      });
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        const company = responseData.body.company;
+        if (company && company.jewel_price_details) {
+          try {
+            const rates = JSON.parse(company.jewel_price_details);
+            setCompanyRates(rates);
+          } catch (e) {
+            console.error("Error parsing rates:", e);
+            setCompanyRates({});
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching company:", error);
+    }
+  };
+
   const fetchPawnJewelry = async () => {
     try {
       const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
@@ -781,12 +813,40 @@ const LoanCreation = () => {
     }
   };
 
+  const getRate = useCallback(
+    (carrat) => {
+      if (!carrat) return 0;
+      const caratNum = carrat.split(" ")[0];
+      const key = `${caratNum}_carat_price`;
+      return parseFloat(companyRates[key]) || 0;
+    },
+    [companyRates]
+  );
+
+  const totalJewelValue = useMemo(() => {
+    if (
+      !formData.jewel_product ||
+      !formData.jewel_product.length ||
+      !Object.keys(companyRates).length
+    )
+      return "0.00";
+    return formData.jewel_product
+      .reduce((sum, row) => {
+        const net =
+          parseFloat(row.weight || 0) - parseFloat(row.deduction_weight || 0);
+        const rate = getRate(row.carrat);
+        return sum + net * rate;
+      }, 0)
+      .toFixed(2);
+  }, [formData.jewel_product, companyRates, getRate]);
+
   useEffect(() => {
     fetchgroup();
     fetchDatacategory();
     fetchuser();
     fetchData();
     fetchDatajewelpawncustomer();
+    fetchCompany();
     if (type !== "edit") {
       fetchPawnJewelry();
     }
@@ -1297,6 +1357,15 @@ const LoanCreation = () => {
                   value={formData.receipt_no}
                   onChange={(e) => handleChange(e, "receipt_no")}
                   readOnly={type === "edit"}
+                />
+              </Col>
+              <Col lg="3" md="4" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Jewel Pawn Value"}
+                  labelname={"Jewel Pawn Value"}
+                  name="jewel_pawn_value"
+                  value={totalJewelValue}
+                  readOnly={true}
                 />
               </Col>
               <Col lg="3" md="4" xs="12" className="py-3">
