@@ -421,7 +421,7 @@ input:focus {
 }
 
 .marquee-container:hover .marquee-text {
-  animation-play-state: paused;
+  animation-play-state: paused !important;
 }
 
 @keyframes scroll {
