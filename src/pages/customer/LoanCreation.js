@@ -24,7 +24,7 @@ const LoanCreation = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchName, setSearchName] = useState("");
   const [searchMobile, setSearchMobile] = useState("");
-  const [searchCutomernu, setSearchcutomernumber] = useState("");
+  const [searchCustomerNo, setSearchCustomerNo] = useState("");
   const [customerSuggestions, setCustomerSuggestions] = useState([]);
   const [productList, setProductList] = useState([]);
   const user = JSON.parse(localStorage.getItem("user")) || {};
@@ -182,7 +182,7 @@ const LoanCreation = () => {
       if (["customer_no", "name", "mobile_number"].includes(field)) {
         if (field === "name") setSearchName(value);
         if (field === "mobile_number") setSearchMobile(value);
-        if (field === "customer_no") setSearchcutomernumber(value);
+        if (field === "customer_no") setSearchCustomerNo(value);
 
         if (value.length >= 2) {
           fetchDatajewelpawncustomer({ text: value, field }).then(
@@ -277,7 +277,7 @@ const LoanCreation = () => {
     });
     setSearchName("");
     setSearchMobile("");
-    setSearchcutomernumber("");
+    setSearchCustomerNo("");
     setCustomerSuggestions([]);
   };
 
@@ -950,381 +950,197 @@ const LoanCreation = () => {
               }`}
             />
           </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Customer No"}
-              labelname={"Customer No"}
-              name="customer_no"
-              value={formData.customer_no}
-              onChange={(e) => handleChange(e, "customer_no")}
-              disabled={type === "repledge"}
-            />
-            {customerSuggestions.length > 0 && searchCutomernu && (
-              <ul
-                style={{
-                  position: "absolute",
-                  zIndex: 1000,
-                  backgroundColor: "#fff",
-                  border: "1px solid #ccc",
-                  listStyle: "none",
-                  padding: 0,
-                  margin: 0,
-                  maxHeight: "200px",
-                  overflowY: "auto",
-                  width: "100%",
-                }}
+
+          {/* Customer Details Section */}
+          <Col lg="12" className="py-3">
+            <h5 className="mb-3">Customer Details</h5>
+            <Row>
+              <Col
+                lg="3"
+                md="4"
+                xs="12"
+                className="py-3"
+                style={{ position: "relative" }}
               >
-                {customerSuggestions.map((customer) => (
-                  <li
-                    key={customer.customer_no}
-                    onClick={() => handleCustomerSelect(customer)}
+                <TextInputForm
+                  placeholder={"Customer No"}
+                  labelname={"Customer No"}
+                  name="customer_no"
+                  value={formData.customer_no}
+                  onChange={(e) => handleChange(e, "customer_no")}
+                  disabled={type === "repledge"}
+                />
+                {customerSuggestions.length > 0 && searchCustomerNo && (
+                  <ul
                     style={{
-                      padding: "8px",
-                      cursor: "pointer",
-                      borderBottom: "1px solid #eee",
+                      position: "absolute",
+                      zIndex: 1000,
+                      backgroundColor: "#fff",
+                      border: "1px solid #ccc",
+                      listStyle: "none",
+                      padding: 0,
+                      margin: 0,
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                      width: "100%",
                     }}
-                    onMouseEnter={(e) =>
-                      (e.target.style.backgroundColor = "#f0f0f0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.target.style.backgroundColor = "#fff")
-                    }
                   >
-                    {customer.name} ({customer.customer_no},{" "}
-                    {customer.mobile_number})
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Loan No"}
-              labelname={"Loan No"}
-              name="receipt_no"
-              value={formData.receipt_no}
-              onChange={(e) => handleChange(e, "receipt_no")}
-              readOnly={type === "edit"}
-            />
-          </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <Calender
-              setLabel={(date) => setLabel(date, "pawnjewelry_date")}
-              initialDate={formData.pawnjewelry_date}
-              calenderlabel="Loan Date"
-            />
-          </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Name"}
-              labelname={"Name"}
-              name="name"
-              value={formData.name}
-              onChange={(e) => handleChange(e, "name")}
-            />
-            {customerSuggestions.length > 0 && searchName && (
-              <ul
-                style={{
-                  position: "absolute",
-                  zIndex: 1000,
-                  backgroundColor: "#fff",
-                  border: "1px solid #ccc",
-                  listStyle: "none",
-                  padding: 0,
-                  margin: 0,
-                  maxHeight: "200px",
-                  overflowY: "auto",
-                  width: "100%",
-                }}
-              >
-                {customerSuggestions.map((customer) => (
-                  <li
-                    key={customer.customer_no}
-                    onClick={() => handleCustomerSelect(customer)}
-                    style={{
-                      padding: "8px",
-                      cursor: "pointer",
-                      borderBottom: "1px solid #eee",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.target.style.backgroundColor = "#f0f0f0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.target.style.backgroundColor = "#fff")
-                    }
-                  >
-                    {customer.name} ({customer.customer_no},{" "}
-                    {customer.mobile_number})
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Col>
-          <Col lg="3" md="4" xs="12" className="py-4">
-            <label htmlFor="customer_details" className="form-label">
-              Address
-            </label>
-            <textarea
-              className="form-cntrl-bt w-100"
-              placeholder={"Address"}
-              name="customer_details"
-              value={formData.customer_details}
-              onChange={(e) => handleChange(e, "customer_details")}
-            />
-          </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Place"}
-              labelname={"Place"}
-              name="place"
-              value={formData.place}
-              onChange={(e) => handleChange(e, "place")}
-            />
-          </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Mobile Number"}
-              labelname={"Mobile Number"}
-              name="mobile_number"
-              value={formData.mobile_number}
-              onChange={(e) => handleChange(e, "mobile_number")}
-            />
-            {customerSuggestions.length > 0 && searchMobile && (
-              <ul
-                style={{
-                  position: "absolute",
-                  zIndex: 1000,
-                  backgroundColor: "#fff",
-                  border: "1px solid #ccc",
-                  listStyle: "none",
-                  padding: 0,
-                  margin: 0,
-                  maxHeight: "200px",
-                  overflowY: "auto",
-                  width: "100%",
-                }}
-              >
-                {customerSuggestions.map((customer) => (
-                  <li
-                    key={customer.customer_no}
-                    onClick={() => handleCustomerSelect(customer)}
-                    style={{
-                      padding: "8px",
-                      cursor: "pointer",
-                      borderBottom: "1px solid #eee",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.target.style.backgroundColor = "#f0f0f0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.target.style.backgroundColor = "#fff")
-                    }
-                  >
-                    {customer.name} ({customer.customer_no},{" "}
-                    {customer.mobile_number})
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"principal amount"}
-              labelname={"principal amount"}
-              name="original_amount"
-              value={formData.original_amount}
-              onChange={(e) => handleChange(e, "original_amount")}
-            />
-          </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Interest Rate"}
-              labelname={"Interest Rate"}
-              name="interest_rate"
-              value={formData.interest_rate}
-              onChange={(e) => handleChange(e, "interest_rate")}
-            />
-          </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Jewelry Recovery Agreed Period (Months)"}
-              labelname={"Jewelry Recovery Agreed Period"}
-              name="Jewelry_recovery_agreed_period"
-              value={formData.Jewelry_recovery_agreed_period}
-              onChange={(e) =>
-                handleChange(e, "Jewelry_recovery_agreed_period")
-              }
-            />
-          </Col>
-          <Col lg="4" md="4" xs="12" className="py-5">
-            <div className="file-upload">
-              <label>
-                {type === "edit" ? "Preview Ornament" : "Upload Ornament"}
-              </label>
-              <input
-                type="file"
-                id="proof"
-                accept=".pdf,image/*"
-                ref={fileInputRef}
-                multiple
-                onChange={(e) => handleFileChange(e.target.files, "proof")}
-                style={{ display: "none" }}
-              />
-              <ChooseButton
-                label="Choose File"
-                onClick={startWebcam}
-                className="choosefilebtn"
-              />
-              {formData.proof.map((file, index) => (
-                <div
-                  key={index}
-                  className="file-item d-flex align-items-center mb-2"
-                >
-                  {file.type === "image" ? (
-                    <div
-                      style={{
-                        position: "relative",
-                        width: "100px",
-                        height: "100px",
-                        marginRight: "10px",
-                      }}
-                    >
-                      {isLoading && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "100px",
-                            height: "100px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: "#f8f8f8",
-                            borderRadius: "5px",
-                          }}
-                        >
-                          <div
-                            className="spinner-border text-primary"
-                            role="status"
-                            style={{ width: "1.5rem", height: "1.5rem" }}
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                      )}
-                      <img
-                        src={file.data}
-                        alt={`Preview ${file.name}`}
-                        onLoad={() => setIsLoading(false)}
-                        onError={(e) => {
-                          e.target.src = "path/to/fallback-image.png";
-                          toast.error(`Failed to load image: ${file.name}`, {
-                            position: "top-center",
-                            autoClose: 2000,
-                            theme: "colored",
-                          });
-                          setIsLoading(false);
-                        }}
+                    {customerSuggestions.map((customer) => (
+                      <li
+                        key={customer.customer_no}
+                        onClick={() => handleCustomerSelect(customer)}
                         style={{
-                          width: "100px",
-                          height: "100px",
-                          objectFit: "cover",
-                          borderRadius: "5px",
-                          display: isLoading ? "none" : "block",
+                          padding: "8px",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #eee",
                         }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="file-info" style={{ marginRight: "10px" }}>
-                      <p>
-                        <a
-                          href={file.data}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {file.name}
-                        </a>{" "}
-                        ({file.type ? file.type.toUpperCase() : "UNKNOWN"})
-                      </p>
-                    </div>
-                  )}
-                  <ChooseButton
-                    label="Preview"
-                    className="btn btn-primary btn-sm me-2"
-                    onClick={() => handlePreview(file)}
-                  />
-                  <ChooseButton
-                    label="Delete"
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleImageDelete(index, "proof")}
-                  />
-                </div>
-              ))}
-            </div>
-          </Col>
-          <Col lg="4" md="4" xs="12" className="py-5">
-            <div className="file-upload">
-              <label>
-                {type === "edit" ? "Preview Proof Files" : "Upload Proof"}
-              </label>
-              {formData.aadharproof && formData.aadharproof.length > 0 && (
-                <div className="file-preview mt-2">
-                  {formData.aadharproof.map((file, index) => (
-                    <div
-                      key={index}
-                      className="file-item d-flex align-items-center mb-2"
-                    >
-                      {file.type === "image" ? (
-                        <img
-                          src={file.data}
-                          alt={`Preview ${file.name}`}
-                          onError={(e) => {
-                            e.target.src = "/assets/fallback-image.png";
-                            toast.error(`Failed to load image: ${file.name}`, {
-                              position: "top-center",
-                              autoClose: 2000,
-                              theme: "colored",
-                            });
-                          }}
-                          style={{
-                            width: "100px",
-                            height: "100px",
-                            marginRight: "10px",
-                            objectFit: "cover",
-                            borderRadius: "5px",
-                          }}
-                        />
-                      ) : (
-                        <div
-                          className="file-info"
-                          style={{ marginRight: "10px" }}
-                        >
-                          <p>
-                            <a
-                              href={file.data}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {file.name}
-                            </a>{" "}
-                            ({file.type ? file.type.toUpperCase() : "UNKNOWN"})
-                          </p>
-                        </div>
-                      )}
-                      <ChooseButton
-                        label="Preview"
-                        className="btn btn-primary btn-sm me-2"
-                        onClick={() => handlePreview(file)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                        onMouseEnter={(e) =>
+                          (e.target.style.backgroundColor = "#f0f0f0")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.target.style.backgroundColor = "#fff")
+                        }
+                      >
+                        {customer.name} ({customer.customer_no},{" "}
+                        {customer.mobile_number})
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Col>
+              <Col
+                lg="3"
+                md="4"
+                xs="12"
+                className="py-3"
+                style={{ position: "relative" }}
+              >
+                <TextInputForm
+                  placeholder={"Name"}
+                  labelname={"Name"}
+                  name="name"
+                  value={formData.name}
+                  onChange={(e) => handleChange(e, "name")}
+                />
+                {customerSuggestions.length > 0 && searchName && (
+                  <ul
+                    style={{
+                      position: "absolute",
+                      zIndex: 1000,
+                      backgroundColor: "#fff",
+                      border: "1px solid #ccc",
+                      listStyle: "none",
+                      padding: 0,
+                      margin: 0,
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                      width: "100%",
+                    }}
+                  >
+                    {customerSuggestions.map((customer) => (
+                      <li
+                        key={customer.customer_no}
+                        onClick={() => handleCustomerSelect(customer)}
+                        style={{
+                          padding: "8px",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #eee",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.target.style.backgroundColor = "#f0f0f0")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.target.style.backgroundColor = "#fff")
+                        }
+                      >
+                        {customer.name} ({customer.customer_no},{" "}
+                        {customer.mobile_number})
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Col>
+              <Col
+                lg="3"
+                md="4"
+                xs="12"
+                className="py-3"
+                style={{ position: "relative" }}
+              >
+                <TextInputForm
+                  placeholder={"Mobile Number"}
+                  labelname={"Mobile Number"}
+                  name="mobile_number"
+                  value={formData.mobile_number}
+                  onChange={(e) => handleChange(e, "mobile_number")}
+                />
+                {customerSuggestions.length > 0 && searchMobile && (
+                  <ul
+                    style={{
+                      position: "absolute",
+                      zIndex: 1000,
+                      backgroundColor: "#fff",
+                      border: "1px solid #ccc",
+                      listStyle: "none",
+                      padding: 0,
+                      margin: 0,
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                      width: "100%",
+                    }}
+                  >
+                    {customerSuggestions.map((customer) => (
+                      <li
+                        key={customer.customer_no}
+                        onClick={() => handleCustomerSelect(customer)}
+                        style={{
+                          padding: "8px",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #eee",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.target.style.backgroundColor = "#f0f0f0")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.target.style.backgroundColor = "#fff")
+                        }
+                      >
+                        {customer.name} ({customer.customer_no},{" "}
+                        {customer.mobile_number})
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Col>
+              <Col lg="3" md="4" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Place"}
+                  labelname={"Place"}
+                  name="place"
+                  value={formData.place}
+                  onChange={(e) => handleChange(e, "place")}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col lg="3" className="py-3">
+                <label htmlFor="customer_details" className="form-label">
+                  Address
+                </label>
+                <textarea
+                  className="form-cntrl-bt w-100"
+                  placeholder={"Address"}
+                  name="customer_details"
+                  value={formData.customer_details}
+                  onChange={(e) => handleChange(e, "customer_details")}
+                />
+              </Col>
+            </Row>
           </Col>
 
-          <Col lg="12" md="6" xs="12">
+          {/* Jewel Details Section */}
+          <Col lg="12" className="py-3">
+            <h5 className="mb-3">Jewel Details</h5>
             <table className="table table-bordered mx-auto">
               <thead>
                 <tr>
@@ -1460,6 +1276,273 @@ const LoanCreation = () => {
                   ))}
               </tbody>
             </table>
+          </Col>
+
+          {/* Loan Details Section */}
+          <Col lg="12" className="py-3">
+            <h5 className="mb-3">Loan Details</h5>
+            <Row>
+              <Col lg="3" md="4" xs="12" className="py-3">
+                <Calender
+                  setLabel={(date) => setLabel(date, "pawnjewelry_date")}
+                  initialDate={formData.pawnjewelry_date}
+                  calenderlabel="Loan Date"
+                />
+              </Col>
+              <Col lg="3" md="4" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Loan No"}
+                  labelname={"Loan No"}
+                  name="receipt_no"
+                  value={formData.receipt_no}
+                  onChange={(e) => handleChange(e, "receipt_no")}
+                  readOnly={type === "edit"}
+                />
+              </Col>
+              <Col lg="3" md="4" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"principal amount"}
+                  labelname={"principal amount"}
+                  name="original_amount"
+                  value={formData.original_amount}
+                  onChange={(e) => handleChange(e, "original_amount")}
+                />
+              </Col>
+              <Col lg="3" md="4" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Interest Rate"}
+                  labelname={"Interest Rate"}
+                  name="interest_rate"
+                  value={formData.interest_rate}
+                  onChange={(e) => handleChange(e, "interest_rate")}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col lg="3" md="4" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Jewelry Recovery Agreed Period (Months)"}
+                  labelname={"Jewelry Recovery Agreed Period"}
+                  name="Jewelry_recovery_agreed_period"
+                  value={formData.Jewelry_recovery_agreed_period}
+                  onChange={(e) =>
+                    handleChange(e, "Jewelry_recovery_agreed_period")
+                  }
+                />
+              </Col>
+            </Row>
+          </Col>
+
+          {/* Proof Details Section */}
+          <Col lg="12" className="py-3">
+            <h5 className="mb-3">Proof Details</h5>
+            <Row>
+              <Col lg="6" md="6" xs="12" className="py-5">
+                <div className="file-upload">
+                  <label>
+                    {type === "edit" ? "Preview Ornament" : "Upload Ornament"}
+                  </label>
+                  <input
+                    type="file"
+                    id="proof"
+                    accept=".pdf,image/*"
+                    ref={fileInputRef}
+                    multiple
+                    onChange={(e) => handleFileChange(e.target.files, "proof")}
+                    style={{ display: "none" }}
+                  />
+                  <ChooseButton
+                    label="Choose File"
+                    onClick={startWebcam}
+                    className="choosefilebtn"
+                  />
+                  {formData.proof.map((file, index) => (
+                    <div
+                      key={index}
+                      className="file-item d-flex align-items-center mb-2"
+                    >
+                      {file.type === "image" ? (
+                        <div
+                          style={{
+                            position: "relative",
+                            width: "100px",
+                            height: "100px",
+                            marginRight: "10px",
+                          }}
+                        >
+                          {isLoading && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100px",
+                                height: "100px",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                backgroundColor: "#f8f8f8",
+                                borderRadius: "5px",
+                              }}
+                            >
+                              <div
+                                className="spinner-border text-primary"
+                                role="status"
+                                style={{ width: "1.5rem", height: "1.5rem" }}
+                              >
+                                <span className="visually-hidden">
+                                  Loading...
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                          <img
+                            src={file.data}
+                            alt={`Preview ${file.name}`}
+                            onLoad={() => setIsLoading(false)}
+                            onError={(e) => {
+                              e.target.src = "path/to/fallback-image.png";
+                              toast.error(
+                                `Failed to load image: ${file.name}`,
+                                {
+                                  position: "top-center",
+                                  autoClose: 2000,
+                                  theme: "colored",
+                                }
+                              );
+                              setIsLoading(false);
+                            }}
+                            style={{
+                              width: "100px",
+                              height: "100px",
+                              objectFit: "cover",
+                              borderRadius: "5px",
+                              display: isLoading ? "none" : "block",
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className="file-info"
+                          style={{ marginRight: "10px" }}
+                        >
+                          <p>
+                            <a
+                              href={file.data}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {file.name}
+                            </a>{" "}
+                            ({file.type ? file.type.toUpperCase() : "UNKNOWN"})
+                          </p>
+                        </div>
+                      )}
+                      <ChooseButton
+                        label="Preview"
+                        className="btn btn-primary btn-sm me-2"
+                        onClick={() => handlePreview(file)}
+                      />
+                      <ChooseButton
+                        label="Delete"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleImageDelete(index, "proof")}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </Col>
+              <Col lg="6" md="6" xs="12" className="py-5">
+                <div className="file-upload">
+                  <label>
+                    {type === "edit" ? "Preview Proof Files" : "Upload Proof"}
+                  </label>
+                  <input
+                    type="file"
+                    id="aadharproof"
+                    accept=".pdf,image/*"
+                    ref={aadharFileInputRef}
+                    multiple
+                    onChange={(e) =>
+                      handleFileChange(e.target.files, "aadharproof")
+                    }
+                    style={{ display: "none" }}
+                  />
+                  <ChooseButton
+                    label="Choose File"
+                    onClick={() => aadharFileInputRef.current?.click()}
+                    className="choosefilebtn"
+                  />
+                  {formData.aadharproof && formData.aadharproof.length > 0 && (
+                    <div className="file-preview mt-2">
+                      {formData.aadharproof.map((file, index) => (
+                        <div
+                          key={index}
+                          className="file-item d-flex align-items-center mb-2"
+                        >
+                          {file.type === "image" ? (
+                            <img
+                              src={file.data}
+                              alt={`Preview ${file.name}`}
+                              onError={(e) => {
+                                e.target.src = "/assets/fallback-image.png";
+                                toast.error(
+                                  `Failed to load image: ${file.name}`,
+                                  {
+                                    position: "top-center",
+                                    autoClose: 2000,
+                                    theme: "colored",
+                                  }
+                                );
+                              }}
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                marginRight: "10px",
+                                objectFit: "cover",
+                                borderRadius: "5px",
+                              }}
+                            />
+                          ) : (
+                            <div
+                              className="file-info"
+                              style={{ marginRight: "10px" }}
+                            >
+                              <p>
+                                <a
+                                  href={file.data}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {file.name}
+                                </a>{" "}
+                                (
+                                {file.type
+                                  ? file.type.toUpperCase()
+                                  : "UNKNOWN"}
+                                )
+                              </p>
+                            </div>
+                          )}
+                          <ChooseButton
+                            label="Preview"
+                            className="btn btn-primary btn-sm me-2"
+                            onClick={() => handlePreview(file)}
+                          />
+                          <ChooseButton
+                            label="Delete"
+                            className="btn btn-danger btn-sm"
+                            onClick={() =>
+                              handleImageDelete(index, "aadharproof")
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Col>
+            </Row>
           </Col>
 
           <Col lg="12">
