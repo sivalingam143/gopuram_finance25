@@ -31,6 +31,7 @@ const RecoveryPayment = () => {
   const [recoveryHistory, setRecoveryHistory] = useState([]);
   const [interestHistory, setInterestHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [pawnData, setPawnData] = useState(null);
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
   const getInitialState = () => {
@@ -70,13 +71,15 @@ const RecoveryPayment = () => {
         original_amount: rowData.original_amount || "",
         interest_rate: rowData.interest_rate || "",
         jewel_product: jewelProduct,
-        interest_payment_periods: rowData.interest_payment_period || "",
-        interest_paid: rowData.interest_payment_amount || "",
+        interest_payment_periods: rowData.interest_payment_periods || "",
+        interest_paid: rowData.interest_paid || "",
         pawnjewelry_recovery_date:
           rowData.pawnjewelry_recovery_date ||
           today.toISOString().substr(0, 10),
         refund_amount: rowData.refund_amount || "",
         other_amount: rowData.other_amount || "",
+        unpaid_interest_amount: 0,
+        unpaid_interest_period: 0,
       };
     } else {
       return {
@@ -90,11 +93,13 @@ const RecoveryPayment = () => {
         original_amount: rowData?.original_amount || "",
         interest_rate: rowData?.interest_rate || "",
         jewel_product: jewelProduct,
-        interest_payment_periods: "",
-        interest_paid: "",
+        interest_payment_periods: 0,
+        interest_paid: 0,
         pawnjewelry_recovery_date: today.toISOString().substr(0, 10),
-        refund_amount: "",
+        refund_amount: 0,
         other_amount: "",
+        unpaid_interest_amount: rowData?.interest_payment_amount || 0,
+        unpaid_interest_period: rowData?.interest_payment_period || 0,
       };
     }
   };
@@ -104,6 +109,36 @@ const RecoveryPayment = () => {
   useEffect(() => {
     setFormData(getInitialState());
   }, [location.state, type, rowData]);
+
+  // For edit mode, fetch pawn data to get unpaid
+  useEffect(() => {
+    if (type === "edit" && rowData?.receipt_no && !pawnData) {
+      const fetchPawnDetails = async () => {
+        try {
+          const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              search_text: rowData.receipt_no,
+            }),
+          });
+          const responseData = await response.json();
+          if (
+            responseData.head.code === 200 &&
+            responseData.body.pawnjewelry.length > 0
+          ) {
+            const pawn = responseData.body.pawnjewelry[0];
+            setPawnData(pawn);
+          }
+        } catch (error) {
+          console.error("Error fetching pawn details:", error);
+        }
+      };
+      fetchPawnDetails();
+    }
+  }, [type, rowData]);
 
   const fetchRecoveryHistory = async () => {
     if (!rowData?.receipt_no) return;
@@ -138,7 +173,7 @@ const RecoveryPayment = () => {
     }
   };
 
-  // New: Fetch Interest History (similar to InterestPayment)
+  // Fetch Interest History
   const fetchInterestHistory = async () => {
     if (!rowData?.receipt_no) return;
     setLoading(true);
@@ -172,42 +207,65 @@ const RecoveryPayment = () => {
     }
   };
 
-  // New: Calculate totals from interest history and update formData
+  // Calculate totals from interest history and update formData
   useEffect(() => {
+    if (!rowData?.receipt_no) return;
+
+    // Get principal and unpaid from pawn data (rowData for new, pawnData for edit)
+    const principal = parseFloat(
+      (type === "edit"
+        ? pawnData?.original_amount
+        : rowData?.original_amount) || 0
+    );
+    const unpaidInterestAmount = parseFloat(
+      (type === "edit"
+        ? pawnData?.interest_payment_amount
+        : rowData?.interest_payment_amount) || 0
+    );
+    const unpaidInterestPeriod = parseFloat(
+      (type === "edit"
+        ? pawnData?.interest_payment_period
+        : rowData?.interest_payment_period) || 0
+    );
+
+    // Paid from history
+    let totalPaidInterest = 0;
+    let totalPaidPeriods = 0;
     if (interestHistory.length > 0) {
-      // Calculate total paid interest
-      const totalPaidInterest = interestHistory.reduce(
+      totalPaidInterest = interestHistory.reduce(
         (sum, item) => sum + parseFloat(item.interest_income || 0),
         0
       );
-
-      // Calculate total payment periods (using outstanding_period as numerical value)
-      const totalPeriods = interestHistory.reduce(
-        (sum, item) => sum + parseFloat(item.outstanding_period || 0),
+      totalPaidPeriods = interestHistory.reduce(
+        (sum, item) =>
+          sum +
+          parseFloat(
+            item.interest_payment_periods || item.outstanding_period || 0
+          ),
         0
       );
-
-      // Principal from loan
-      const principal = parseFloat(rowData?.original_amount || 0);
-
-      // Refund = Principal + Total Paid Interest
-      const calculatedRefund = (principal + totalPaidInterest).toFixed(2);
-
-      setFormData((prev) => {
-        const updated = { ...prev };
-        if (type !== "edit" || !prev.interest_paid) {
-          updated.interest_paid = totalPaidInterest.toFixed(2);
-        }
-        if (type !== "edit" || !prev.interest_payment_periods) {
-          updated.interest_payment_periods = totalPeriods.toFixed(1);
-        }
-        if (type !== "edit" || !prev.refund_amount) {
-          updated.refund_amount = calculatedRefund;
-        }
-        return updated;
-      });
     }
-  }, [interestHistory, rowData, type]);
+
+    // Refund = Principal + Unpaid Interest (always calculate)
+    const calculatedRefund = (principal + unpaidInterestAmount).toFixed(2);
+
+    setFormData((prev) => {
+      const updated = { ...prev };
+      updated.interest_paid = totalPaidInterest.toFixed(2);
+      updated.interest_payment_periods = totalPaidPeriods.toFixed(1);
+      updated.unpaid_interest_amount = unpaidInterestAmount;
+      updated.unpaid_interest_period = unpaidInterestPeriod;
+      // Set refund, but for edit, only if not already set (preserve manual changes)
+      if (
+        type !== "edit" ||
+        !prev.refund_amount ||
+        prev.refund_amount === "0"
+      ) {
+        updated.refund_amount = calculatedRefund;
+      }
+      return updated;
+    });
+  }, [interestHistory, rowData, type, pawnData]);
 
   useEffect(() => {
     fetchRecoveryHistory();
@@ -384,7 +442,10 @@ const RecoveryPayment = () => {
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Principal Amount:</strong>
-                  <span>₹{formData.original_amount}</span>
+                  <span>
+                    ₹
+                    {parseFloat(formData.original_amount || 0).toLocaleString()}
+                  </span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Interest Rate:</strong>
@@ -392,11 +453,28 @@ const RecoveryPayment = () => {
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Interest Paid:</strong>
-                  <span>₹{formData.interest_paid}</span>
+                  <span>
+                    ₹{parseFloat(formData.interest_paid || 0).toLocaleString()}
+                  </span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
                   <strong>Payment Periods:</strong>
-                  <span>{formData.interest_payment_periods}</span>
+                  <span>{formData.interest_payment_periods} months</span>
+                </li>
+                {/* Unpaid Interest Amount */}
+                <li className="mb-2 d-flex justify-content-between">
+                  <strong>Unpaid Interest Amount:</strong>
+                  <span>
+                    ₹
+                    {parseFloat(
+                      formData.unpaid_interest_amount || 0
+                    ).toLocaleString()}
+                  </span>
+                </li>
+                {/* Unpaid Interest Period */}
+                <li className="mb-2 d-flex justify-content-between">
+                  <strong>Unpaid Interest Period:</strong>
+                  <span>{formData.unpaid_interest_period} months</span>
                 </li>
               </ul>
             </div>
@@ -438,6 +516,7 @@ const RecoveryPayment = () => {
                     name="refund_amount"
                     value={formData.refund_amount}
                     onChange={(e) => handleChange(e, "refund_amount")}
+                    disabled
                   />
                 </Col>
                 <Col lg={3}>
