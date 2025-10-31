@@ -1368,12 +1368,13 @@ const LoanCreation = () => {
                           onChange={(e) => handleChange(e, "carrat", index)}
                         >
                           <option value="">தேர்வு செய்க</option>
-
-                          <option value="20 Carat">20 Carat</option>
                           <option value="22 Carat">22 Carat</option>
-                          <option value="916">916</option>
-                          <option value="916 KDM">916 KDM</option>
-                          <option value="BIS Hall Mark">BIS Hall Mark</option>
+                          <option value="21 Carat">21 Carat</option>
+                          <option value="20 Carat">20 Carat</option>
+                          <option value="19 Carat">19 Carat</option>
+                          <option value="18 Carat">18 Carat</option>
+                          <option value="17 Carat">17 Carat</option>
+                          <option value="16 Carat">16 Carat</option>
                         </select>
                       </td>
 
