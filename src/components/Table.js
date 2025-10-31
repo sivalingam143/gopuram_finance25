@@ -880,13 +880,14 @@ const TableUI = ({
                           )}
                         </PDFDownloadLink>
 
-                        {isAdmin && ( // Show Edit option only if user is Admin
-                          <Dropdown.Item
-                            onClick={() => handleinterestEditClick(rowData)}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        )}
+                        {isAdmin &&
+                          rowIndex === body.length - 1 && ( // Show Edit option only if user is Admin and it's the last row
+                            <Dropdown.Item
+                              onClick={() => handleinterestEditClick(rowData)}
+                            >
+                              Edit
+                            </Dropdown.Item>
+                          )}
                         <Dropdown.Item
                           onClick={() =>
                             handleinterestDeleteClick(rowData.interest_id)
