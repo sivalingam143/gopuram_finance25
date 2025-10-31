@@ -631,7 +631,7 @@ const DashBoard = () => {
   const marqueeText = caratEntries
     .map(([key, value]) => {
       const carat = key.split("_")[0];
-      return `${carat} carat price = ₹${(value || 0).toLocaleString("en-IN")}`;
+      return `${carat} carat Rate = ₹${(value || 0).toLocaleString("en-IN")}`;
     })
     .join(", ");
 
@@ -643,7 +643,7 @@ const DashBoard = () => {
           <Row className="mb-3 justify-content-center">
             <Col lg={6} md={8} xs={12} className="text-center">
               <button className="jewel-price-btn">
-                Today Jewel Price is ₹
+                Today Jewel Rate = ₹
                 {(jewelPrices.jewel_price || 0).toLocaleString("en-IN")}
               </button>
             </Col>
