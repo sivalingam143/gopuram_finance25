@@ -44,6 +44,7 @@ const DashBoard = () => {
   const [loadingBank, setLoadingBank] = useState(true);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [expandedRow, setExpandedRow] = useState(null);
+  const [jewelPrices, setJewelPrices] = useState({});
 
   const parsePeriod = (periodStr) => {
     const monthsMatch = periodStr.match(/(\d+)\s*month/);
@@ -356,6 +357,30 @@ const DashBoard = () => {
     }
   };
 
+  const fetchJewelPrices = async () => {
+    try {
+      const response = await fetch(`${API_DOMAIN}/company.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ search_text: "" }),
+      });
+      const responseData = await response.json();
+      if (responseData.head.code === 200 && responseData.body.company) {
+        const details = responseData.body.company.jewel_price_details;
+        if (details) {
+          try {
+            const parsed = JSON.parse(details);
+            setJewelPrices(parsed);
+          } catch (e) {
+            console.error("Parse error", e);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error fetching jewel prices:", e);
+    }
+  };
+
   const handleSearch = () => {
     let filtered = userData;
     if (searchTerm || placeSearchTerm) {
@@ -471,6 +496,7 @@ const DashBoard = () => {
     fetchinterestData();
     fetchActionData();
     fetchBankPledgeData();
+    fetchJewelPrices();
   }, []);
 
   const aggregatedInterestData = aggregateInterestData(interestData);
@@ -598,11 +624,39 @@ const DashBoard = () => {
     }
   }, [fromDate, toDate]);
 
+  const caratEntries = Object.entries(jewelPrices)
+    .filter(([key]) => key.endsWith("_carat_price"))
+    .sort(([a], [b]) => parseInt(b.split("_")[0]) - parseInt(a.split("_")[0]));
+
+  const marqueeText = caratEntries
+    .map(([key, value]) => {
+      const carat = key.split("_")[0];
+      return `${carat} carat price = ₹${(value || 0).toLocaleString("en-IN")}`;
+    })
+    .join(", ");
+
   return (
     <>
       <LoadingOverlay isLoading={isPageLoading} />
       <Container>
         <>
+          <Row className="mb-3 justify-content-center">
+            <Col lg={6} md={8} xs={12} className="text-center">
+              <button className="jewel-price-btn">
+                Today Jewel Price is ₹
+                {(jewelPrices.jewel_price || 0).toLocaleString("en-IN")}
+              </button>
+            </Col>
+          </Row>
+
+          <Row className="mb-4 justify-content-center">
+            <Col lg={12} md={12} xs={12} className="text-center">
+              <div className="marquee-container">
+                <div className="marquee-text">{marqueeText}</div>
+              </div>
+            </Col>
+          </Row>
+
           <Row>
             <Col lg="3" md="6" xs="12" className="py-3">
               <div className="counter-card cyan">
@@ -1284,6 +1338,98 @@ const DashBoard = () => {
           </Row>
         </>
       </Container>
+
+      <style jsx>{`
+        .jewel-price-btn {
+          background: linear-gradient(45deg, #d4af37, #ffd700, #daa520);
+          border: 2px solid #b8860b;
+          padding: 18px 35px;
+          font-size: 1.3em;
+          font-weight: bold;
+          border-radius: 10px;
+          color: #1a1a1a;
+          cursor: pointer;
+          transition: all 0.4s ease;
+          animation: pulse 2s infinite;
+          box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          width: 100%;
+          text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+        }
+        .jewel-price-btn:hover {
+          box-shadow: 0 10px 30px rgba(212, 175, 55, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          transform: translateY(-4px) scale(1.03);
+          background: linear-gradient(45deg, #ffd700, #d4af37, #b8860b);
+        }
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.9;
+            transform: scale(1.02);
+          }
+        }
+        .marquee-container {
+          background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+          padding: 18px;
+          border-radius: 10px;
+          box-shadow: 0 8px 25px rgba(30, 60, 114, 0.4),
+            inset 0 1px 0 rgba(255, 215, 0, 0.2);
+          overflow: hidden;
+          border: 2px solid #ffd700;
+          margin-top: 10px;
+          position: relative;
+        }
+        .marquee-container::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            #ffd700,
+            #ffed4e,
+            transparent
+          );
+          animation: shimmer 4s infinite;
+        }
+        .marquee-text {
+          white-space: nowrap;
+          font-size: 1.2em;
+          font-weight: 700;
+          color: #ffd700;
+          animation: scroll 30s linear infinite;
+          padding-left: 100%;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+          letter-spacing: 1.5px;
+        }
+        .marquee-container:hover .marquee-text {
+          animation-play-state: paused;
+        }
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-200%);
+          }
+        }
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+      `}</style>
     </>
   );
 };
