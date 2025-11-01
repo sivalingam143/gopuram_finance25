@@ -38,6 +38,7 @@ const BankPledge = () => {
         });
 
         const responseData = await response.json();
+        console.log(responseData);
         setLoading(false);
         if (responseData.head.code === 200) {
           setUserData(responseData.body.bank_pledge_details);
