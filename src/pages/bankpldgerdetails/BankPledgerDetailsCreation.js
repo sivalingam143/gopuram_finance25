@@ -1,13 +1,23 @@
-import React, { useState } from "react";
-import { Col, Container, Row, Alert, Modal } from "react-bootstrap";
-import { TextInputForm, DropDownUI } from "../../components/Forms";
+import React, { useState, useEffect } from "react";
+import {
+  Col,
+  Container,
+  Row,
+  Alert,
+  Modal,
+  Table,
+  Button,
+} from "react-bootstrap";
+import { TextInputForm } from "../../components/Forms";
 import { ClickButton } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
+import Select from "react-select";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import API_DOMAIN from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
+import { BsTrash } from "react-icons/bs";
 
 const BankPledgerDetailsCreation = () => {
   const location = useLocation();
@@ -19,9 +29,15 @@ const BankPledgerDetailsCreation = () => {
           name: "",
           mobile_no: "",
           address: "",
-          bank_details: "",
         };
   const [formData, setFormData] = useState(initialState);
+  const [banks, setBanks] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedBanks, setSelectedBanks] = useState(
+    type === "edit" && rowData.bank_details
+      ? JSON.parse(rowData.bank_details)
+      : []
+  );
 
   const [error, setError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -42,6 +58,68 @@ const BankPledgerDetailsCreation = () => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchBanks();
+  }, []);
+
+  const fetchBanks = async () => {
+    try {
+      const response = await fetch(`${API_DOMAIN}/bank_details.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          search_text: "",
+        }),
+      });
+      const responseData = await response.json();
+
+      if (responseData.head.code === 200) {
+        setBanks(
+          Array.isArray(responseData.body.bank)
+            ? responseData.body.bank
+            : [responseData.body.bank]
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching banks:", error);
+    }
+  };
+
+  const options = banks.map((bank) => ({
+    value: bank.bank_id,
+    label: bank.bank_name,
+  }));
+
+  const handleSelectChange = (option) => {
+    setSelectedOption(option);
+  };
+
+  const addBank = () => {
+    if (selectedOption) {
+      const bankObj = banks.find((b) => b.bank_id === selectedOption.value);
+      if (
+        bankObj &&
+        !selectedBanks.some((sb) => sb.bank_id === bankObj.bank_id)
+      ) {
+        setSelectedBanks([...selectedBanks, bankObj]);
+        setSelectedOption(null);
+      } else if (selectedBanks.some((sb) => sb.bank_id === bankObj.bank_id)) {
+        toast.error("Bank already added!", {
+          position: "top-center",
+          autoClose: 2000,
+          theme: "colored",
+        });
+      }
+    }
+  };
+
+  const removeBank = (bankId) => {
+    setSelectedBanks(selectedBanks.filter((sb) => sb.bank_id !== bankId));
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -50,7 +128,10 @@ const BankPledgerDetailsCreation = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          bank_details: JSON.stringify(selectedBanks),
+        }),
       });
       const responseData = await response.json();
       console.log("responseData", responseData);
@@ -89,6 +170,7 @@ const BankPledgerDetailsCreation = () => {
       setLoading(false);
     }
   };
+
   const handleUpdateSubmit = async () => {
     setLoading(true);
 
@@ -99,11 +181,11 @@ const BankPledgerDetailsCreation = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          edit_name: rowData.bank_pledger_details_id, // Include the pledger ID in the request
+          edit_name: rowData.bank_pledger_details_id,
           name: formData.name,
           mobile_no: formData.mobile_no,
           address: formData.address,
-          bank_details: formData.bank_details,
+          bank_details: JSON.stringify(selectedBanks),
         }),
       });
 
@@ -121,7 +203,6 @@ const BankPledgerDetailsCreation = () => {
           theme: "colored",
         });
 
-        // Navigate to the pledger list page after a delay
         setTimeout(() => {
           navigate("/console/master/bankpledgerdetails");
         }, 2000);
@@ -150,7 +231,7 @@ const BankPledgerDetailsCreation = () => {
   return (
     <div>
       <Container>
-        <Row className="regular justify-content-center">
+        <Row className="regular ">
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
               pagetitle={`Bank Pledger Details${
@@ -164,7 +245,16 @@ const BankPledgerDetailsCreation = () => {
           </Col>
 
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
+            {type === "edit" || type === "view" ? (
+              <TextInputForm
+                placeholder={"Pledger Name"}
+                labelname={"Pledger Name"}
+                name="name"
+                value={formData.name}
+                onChange={(e) => handleChange(e, "name")}
+                disabled={type === "view"}
+              ></TextInputForm>
+            ) : (
               <TextInputForm
                 placeholder={"Pledger Name"}
                 labelname={"Pledger Name"}
@@ -172,18 +262,19 @@ const BankPledgerDetailsCreation = () => {
                 value={formData.name}
                 onChange={(e) => handleChange(e, "name")}
               ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Pledger Name"}
-                labelname={"Pledger Name"}
-                name="name"
-                value={type === "view" ? rowData.name : formData.name}
-                onChange={(e) => handleChange(e, "name")}
-              ></TextInputForm>
             )}
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
+            {type === "edit" || type === "view" ? (
+              <TextInputForm
+                placeholder={"Mobile No"}
+                labelname={"Mobile No"}
+                name="mobile_no"
+                value={formData.mobile_no}
+                onChange={(e) => handleChange(e, "mobile_no")}
+                disabled={type === "view"}
+              ></TextInputForm>
+            ) : (
               <TextInputForm
                 placeholder={"Mobile No"}
                 labelname={"Mobile No"}
@@ -191,18 +282,19 @@ const BankPledgerDetailsCreation = () => {
                 value={formData.mobile_no}
                 onChange={(e) => handleChange(e, "mobile_no")}
               ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Mobile No"}
-                labelname={"Mobile No"}
-                name="mobile_no"
-                value={type === "view" ? rowData.mobile_no : formData.mobile_no}
-                onChange={(e) => handleChange(e, "mobile_no")}
-              ></TextInputForm>
             )}
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
+            {type === "edit" || type === "view" ? (
+              <TextInputForm
+                placeholder={"Address"}
+                labelname={"Address"}
+                name="address"
+                value={formData.address}
+                onChange={(e) => handleChange(e, "address")}
+                disabled={type === "view"}
+              ></TextInputForm>
+            ) : (
               <TextInputForm
                 placeholder={"Address"}
                 labelname={"Address"}
@@ -210,46 +302,89 @@ const BankPledgerDetailsCreation = () => {
                 value={formData.address}
                 onChange={(e) => handleChange(e, "address")}
               ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Address"}
-                labelname={"Address"}
-                name="address"
-                value={type === "view" ? rowData.address : formData.address}
-                onChange={(e) => handleChange(e, "address")}
-              ></TextInputForm>
             )}
           </Col>
+
+          {type !== "view" && (
+            <>
+              <Col lg="3" md="6" xs="12" className="py-3">
+                <label htmlFor="bank-select">Select Bank</label>
+                <Select
+                  id="bank-select"
+                  value={selectedOption}
+                  onChange={handleSelectChange}
+                  options={options}
+                  placeholder="Select Bank"
+                  isSearchable
+                />
+              </Col>
+              <Col lg="3 " md="6" xs="12" className="py-3 ">
+                <ClickButton
+                  label={<>Add</>}
+                  onClick={addBank}
+                  disabled={!selectedOption}
+                />
+              </Col>
+            </>
+          )}
+
           <Col lg="12" md="12" xs="12" className="py-3">
-            {type === "edit" ? (
-              <TextInputForm
-                placeholder={"Bank Details"}
-                labelname={"Bank Details"}
-                name="bank_details"
-                value={formData.bank_details}
-                onChange={(e) => handleChange(e, "bank_details")}
-                as="textarea"
-                rows={3}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Bank Details"}
-                labelname={"Bank Details"}
-                name="bank_details"
-                value={
-                  type === "view" ? rowData.bank_details : formData.bank_details
-                }
-                onChange={(e) => handleChange(e, "bank_details")}
-                as="textarea"
-                rows={3}
-              ></TextInputForm>
-            )}
+            <Table responsive bordered>
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Bank Name</th>
+                  <th>Account Limit</th>
+                  <th>Pledge Count Limit</th>
+                  {type !== "view" && <th>Action</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {selectedBanks.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={type !== "view" ? 5 : 4}
+                      className="text-center"
+                    >
+                      No banks added
+                    </td>
+                  </tr>
+                ) : (
+                  selectedBanks.map((bank, idx) => (
+                    <tr key={bank.bank_id || idx}>
+                      <td>{idx + 1}</td>
+                      <td>{bank.bank_name}</td>
+                      <td>{bank.account_limit}</td>
+                      <td>{bank.pledge_count_limit}</td>
+                      {type !== "view" && (
+                        <td>
+                          <Button
+                            size="sm"
+                            className="d-flex align-items-center justify-content-center delete-icon"
+                            onClick={() => removeBank(bank.bank_id)}
+                            style={{
+                              borderRadius: "50%",
+                              width: "35px",
+                              height: "35px",
+                              padding: 0,
+                            }}
+                          >
+                            <BsTrash size={18} />
+                          </Button>
+                        </td>
+                      )}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
           </Col>
+
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
               {type === "view" ? (
                 <ClickButton
-                  label={<>back</>}
+                  label={<>Back</>}
                   onClick={() => navigate("/console/master/bankpledgerdetails")}
                 ></ClickButton>
               ) : (
@@ -272,6 +407,7 @@ const BankPledgerDetailsCreation = () => {
                         <ClickButton
                           label={<>Update</>}
                           onClick={handleUpdateSubmit}
+                          disabled={loading}
                         ></ClickButton>
                       </span>
 
@@ -300,7 +436,7 @@ const BankPledgerDetailsCreation = () => {
                       />
                       <span className="mx-2">
                         <ClickButton
-                          label={loading ? <>Submitting...</> : <> Submit</>}
+                          label={loading ? <>Submitting...</> : <>Submit</>}
                           onClick={handleSubmit}
                           disabled={loading}
                         ></ClickButton>
@@ -341,7 +477,7 @@ const BankPledgerDetailsCreation = () => {
         <Modal.Footer>
           <ClickButton
             variant="secondary"
-            label={<> Close</>}
+            label={<>Close</>}
             onClick={() => redirectModal()}
           >
             Close

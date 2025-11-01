@@ -65,3 +65,6 @@ button {
   border-radius: 0px 8px 8px 0px !important;
   padding: 6.1px 12px !important;
 }
+.delete-icon {
+  color: red !important;
+}
