@@ -10,8 +10,8 @@ const JewelInterestPreview = () => {
   console.log({ type, rowData });
   return (
     <PDFViewer width="100%" height="1000">
-      {/* <ReceiptPDF data={rowData} /> */}
-      <ExamplePDF data={rowData} />
+      <ReceiptPDF data={rowData} />
+      {/* <ExamplePDF data={rowData} /> */}
     </PDFViewer>
   );
 };

@@ -57,7 +57,6 @@ const User = () => {
   const isAdmin = user.role === "Admin";
 
   useEffect(() => {
-
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -72,7 +71,7 @@ const User = () => {
         });
 
         const responseData = await response.json();
-       
+
         if (responseData.head.code === 200) {
           let sortedData = responseData.body.user;
 
@@ -89,7 +88,7 @@ const User = () => {
           }
 
           setUserData(sortedData);
-           setLoading(false);
+          setLoading(false);
         } else {
           throw new Error(responseData.head.msg);
         }
@@ -208,38 +207,29 @@ const User = () => {
             </Offcanvas>
           </Col> */}
           <Col lg={3} md={12} xs={12} className="py-2"></Col>
-          
+
           {loading ? (
             <LoadingOverlay isLoading={loading} />
           ) : (
-             <>
-          <Col lg="12" md="12" xs="12" className="px-0">
-            <div className="py-1">
-              {userData &&
-                userData.map((user, index) => (
-                  <MobileView
-                    key={index}
-                    sno={user.id}
-                    name={user.Name}
-                    subname={user.RoleSelection}
-                  />
-                ))}
-              {loading ? (
-                <center>
-                  <Spinner animation="border" variant="dark" />{" "}
-                </center>
-              ) : (
-                <TableUI
-                  headers={UserTablehead}
-                  body={userData}
-                  type="USER"
-                  pageview={"yes"}
-                  style={{ borderRadius: "5px" }}
-                />
-              )}
-            </div>
-          </Col>
-          </>
+            <>
+              <Col lg="12" md="12" xs="12" className="px-0">
+                <div className="py-1">
+                  {loading ? (
+                    <center>
+                      <Spinner animation="border" variant="dark" />{" "}
+                    </center>
+                  ) : (
+                    <TableUI
+                      headers={UserTablehead}
+                      body={userData}
+                      type="USER"
+                      pageview={"yes"}
+                      style={{ borderRadius: "5px" }}
+                    />
+                  )}
+                </div>
+              </Col>
+            </>
           )}
           <Col lg={12} md={12} xs={12}></Col>
         </Row>

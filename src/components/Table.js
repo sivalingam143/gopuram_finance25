@@ -8,6 +8,9 @@ import { MdChevronRight, MdChevronLeft } from "react-icons/md";
 import JewelPawnPdfG from "../pdf/JewelPawnPdfg";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import LoadingOverlay from "./LoadingOverlay";
+import InterestStatementPDF from "../pdf/InterestStatementPDF";
+import ReceiptPDF from "../pdf/jewelInterestPdf";
+import JewelPawnrecoveryPdf from "../pdf/jewelpawnRecoverPdf";
 
 const TableUI = ({
   headers,
@@ -17,6 +20,7 @@ const TableUI = ({
   rowData,
   planViewAction,
   pageview,
+  customActions,
 }) => {
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,8 +30,28 @@ const TableUI = ({
   const endIndex = Math.min(startIndex + itemsPerPage, body.length);
   const currentItems = body.slice(startIndex, endIndex);
 
+  // States for PDF download
+  const [pendingDownload, setPendingDownload] = useState(null);
+  const [tempData, setTempData] = useState(null);
+  const [downloadUrl, setDownloadUrl] = useState(null);
+
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const isAdmin = user.role === "Admin";
+
+  useEffect(() => {
+    if (downloadUrl && pendingDownload) {
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `${pendingDownload}_statement.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+      setDownloadUrl(null);
+      setPendingDownload(null);
+      setTempData(null);
+    }
+  }, [downloadUrl, pendingDownload]);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
@@ -67,6 +91,39 @@ const TableUI = ({
 
   const navigate = useNavigate();
 
+  const handleDownloadStatement = async (pawnRow) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${API_DOMAIN}/getintereststatementreport.php`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            receipt_no: pawnRow.receipt_no,
+          }),
+        }
+      );
+
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        setTempData({
+          statement: responseData.body,
+          customer: pawnRow,
+        });
+        setPendingDownload(pawnRow.receipt_no);
+      } else {
+        console.error("Error fetching statement:", responseData.head.msg);
+      }
+    } catch (error) {
+      console.error("Error fetching statement:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditClick = (rowData) => {
     navigate("/console/user/create", {
       state: { type: "edit", rowData: rowData },
@@ -105,7 +162,7 @@ const TableUI = ({
   };
 
   const handleJewelPawningEditClick = (rowData) => {
-    navigate("/console/pawn/jewelpawning/create", {
+    navigate("/console/customer/loancreation", {
       state: { type: "edit", rowData: rowData },
     });
   };
@@ -137,13 +194,15 @@ const TableUI = ({
         },
         body: JSON.stringify({
           delete_pawnjewelry_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 
       const responseData = await response.json();
 
       if (responseData.head.code === 200) {
-        navigate("/console/pawn/jewelpawning");
+        navigate("/console/master/customer");
         window.location.reload();
       } else {
         console.log(responseData.head.msg);
@@ -199,7 +258,7 @@ const TableUI = ({
     }
   };
   const handleinterestEditClick = (rowData) => {
-    navigate("/console/interest/create", {
+    navigate("/console/customer/interest", {
       state: { type: "edit", rowData: rowData },
     });
   };
@@ -213,13 +272,15 @@ const TableUI = ({
         },
         body: JSON.stringify({
           delete_interest_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 
       const responseData = await response.json();
 
       if (responseData.head.code === 200) {
-        navigate("/console/interest");
+        navigate("/console/customer/interest");
         window.location.reload();
       } else {
         console.log(responseData.head.msg);
@@ -336,7 +397,11 @@ const TableUI = ({
   //     state: { type: "view", rowData: rowData },
   //   });
   // };
-
+  const handleJewelcustomerViewClick = (rowData) => {
+    navigate("/console/master/customerdetails", {
+      state: { type: "view", rowData: rowData },
+    });
+  };
   const handleJewelcustomerEditClick = (rowData) => {
     navigate("/console/master/customer/create", {
       state: { type: "edit", rowData: rowData },
@@ -352,6 +417,8 @@ const TableUI = ({
         },
         body: JSON.stringify({
           delete_customer_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 
@@ -501,7 +568,7 @@ const TableUI = ({
     }
   };
   const handleJewelRecoveryEditClick = (rowData) => {
-    navigate("/console/master/jewelrecovery/create", {
+    navigate("/console/customer/jewelrecovery", {
       state: { type: "edit", rowData: rowData },
     });
   };
@@ -515,13 +582,15 @@ const TableUI = ({
         },
         body: JSON.stringify({
           delete_pawn_recovery_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
 
       const responseData = await response.json();
 
       if (responseData.head.code === 200) {
-        navigate("/console/master/jewelrecovery");
+        navigate(-1);
         // window.location.reload();
       } else {
         console.log(responseData.head.msg);
@@ -787,16 +856,16 @@ const TableUI = ({
                         </Button>
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
-                        <Dropdown.Item
+                        {/* <Dropdown.Item
                           onClick={() =>
                             handleJewelInterestprintviewClick(rowData)
                           }
                         >
                           print View
-                        </Dropdown.Item>
-                        {/* <PDFDownloadLink
+                        </Dropdown.Item> */}
+                        <PDFDownloadLink
                           document={<ReceiptPDF data={rowData} />}
-                          fileName={`${rowData.receipt_no}.pdf`}
+                          fileName={`${rowData.receipt_no}_interest.pdf`}
                         >
                           {({ blob, url, loading, error }) => (
                             <a
@@ -804,20 +873,21 @@ const TableUI = ({
                               role="button"
                               tabIndex="0"
                               href={url}
-                              download={`${rowData.receipt_no}.pdf`}
+                              download={`${rowData.receipt_no}_interest.pdf`}
                             >
-                              Download Pdf
+                              Download PDF
                             </a>
                           )}
-                        </PDFDownloadLink> */}
+                        </PDFDownloadLink>
 
-                        {isAdmin && ( // Show Edit option only if user is Admin
-                          <Dropdown.Item
-                            onClick={() => handleinterestEditClick(rowData)}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        )}
+                        {isAdmin &&
+                          rowIndex === body.length - 1 && ( // Show Edit option only if user is Admin and it's the last row
+                            <Dropdown.Item
+                              onClick={() => handleinterestEditClick(rowData)}
+                            >
+                              Edit
+                            </Dropdown.Item>
+                          )}
                         <Dropdown.Item
                           onClick={() =>
                             handleinterestDeleteClick(rowData.interest_id)
@@ -857,15 +927,15 @@ const TableUI = ({
 
                   return (
                     <>
+                      <td>{rowIndex + 1}</td>
                       <td>{formatDate(rowData.pawnjewelry_date)}</td>
                       <td>{rowData.receipt_no}</td>
-                      <td>{rowData.customer_no}</td>
-                      <td>{rowData.name}</td>
-                      <td>{rowData.mobile_number}</td>
+
                       <td>{rowData.original_amount}</td>
                       <td>{rowData.interest_rate}</td>
                       <td>{totalWeight.toFixed(2)}</td>
                       <td>{jewelNames}</td>
+                      <td>{rowData.Jewelry_recovery_agreed_period}</td>
                       <td>
                         <span
                           style={{
@@ -898,7 +968,7 @@ const TableUI = ({
                             </Button>
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
-                            <Dropdown.Item
+                            {/* <Dropdown.Item
                               onClick={() =>
                                 handleJewelPawningprintviewClick(rowData)
                               }
@@ -911,7 +981,40 @@ const TableUI = ({
                               }
                             >
                               OfficeCopy View
+                            </Dropdown.Item> */}
+                            {rowData?.status !== "நகை மீட்கபட்டது" && (
+                              <>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    customActions?.interest?.(rowData)
+                                  }
+                                >
+                                  Interest
+                                </Dropdown.Item>
+                              </>
+                            )}
+                            <Dropdown.Item
+                              onClick={() => handleDownloadStatement(rowData)}
+                            >
+                              Download Statement PDF
                             </Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={() => customActions?.recovery?.(rowData)}
+                            >
+                              Recovery
+                            </Dropdown.Item>
+                            {rowData?.status !== "நகை மீட்கபடவில்லை" && (
+                              <>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    customActions?.repledge?.(rowData)
+                                  }
+                                >
+                                  Re-pledge
+                                </Dropdown.Item>
+                              </>
+                            )}
+
                             {isAdmin && (
                               <Dropdown.Item
                                 onClick={() =>
@@ -1012,30 +1115,29 @@ const TableUI = ({
                         </Button>
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
-                        <Dropdown.Item
+                        {/* <Dropdown.Item
                           onClick={() =>
                             handleJewelRecoveryprintviewClick(rowData)
                           }
                         >
                           print View
-                        </Dropdown.Item>
-
-                        {/* <PDFDownloadLink
-                            document={<JewelPawnRecoverPdf data={rowData} />}
-                            fileName={`${rowData.receipt_no}.pdf`}
-                          >
-                            {({ blob, url, loading, error }) => (
-                              <a
-                                className="dropdown-item"
-                                role="button"
-                                tabIndex="0"
-                                href={url}
-                                download={`${rowData.receipt_no}.pdf`}
-                              >
-                                Download Pdf
-                              </a>
-                            )}
-                          </PDFDownloadLink> */}
+                        </Dropdown.Item> */}
+                        <PDFDownloadLink
+                          document={<JewelPawnrecoveryPdf data={rowData} />}
+                          fileName={`${rowData.receipt_no}_recovery.pdf`}
+                        >
+                          {({ blob, url, loading, error }) => (
+                            <a
+                              className="dropdown-item"
+                              role="button"
+                              tabIndex="0"
+                              href={url}
+                              download={`${rowData.receipt_no}_recovery.pdf`}
+                            >
+                              Download PDF
+                            </a>
+                          )}
+                        </PDFDownloadLink>
 
                         {/* <Dropdown.Item onClick={() => handleJewelRecoveryViewClick(rowData)}>View</Dropdown.Item> */}
 
@@ -1202,6 +1304,17 @@ const TableUI = ({
               {type === "customer" && (
                 <>
                   <td>{rowIndex + 1}</td>
+                  <td>
+                    {rowData.proof && rowData.proof.length > 0 ? (
+                      <img
+                        src={rowData.proof[0]}
+                        alt="Proof"
+                        className="customer-listing-img"
+                      />
+                    ) : (
+                      "-"
+                    )}
+                  </td>
                   <td>{rowData.customer_no}</td>
                   <td>{rowData.name}</td>
                   <td>{rowData.mobile_number}</td>
@@ -1220,6 +1333,11 @@ const TableUI = ({
                         >
                           View
                         </Dropdown.Item> */}
+                        <Dropdown.Item
+                          onClick={() => handleJewelcustomerViewClick(rowData)}
+                        >
+                          Customer Details
+                        </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => handleJewelcustomerEditClick(rowData)}
                         >
@@ -1484,6 +1602,19 @@ const TableUI = ({
             />
           </span>
         </div>
+      )}
+      {pendingDownload && tempData && (
+        <PDFDownloadLink
+          document={<InterestStatementPDF data={tempData} />}
+          fileName={`${pendingDownload}_statement.pdf`}
+        >
+          {({ blob, url, loading: pdfLoading, error }) => {
+            if (!pdfLoading && url && !error) {
+              setDownloadUrl(url);
+            }
+            return <div style={{ display: "none" }} />;
+          }}
+        </PDFDownloadLink>
       )}
     </>
   );

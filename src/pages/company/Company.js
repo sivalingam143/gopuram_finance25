@@ -39,7 +39,7 @@ const Company = () => {
 
         const responseData = await response.json();
         console.log(responseData);
-      
+
         if (responseData.head.code === 200) {
           //setUserData(responseData.body.company);
           setUserData(
@@ -47,7 +47,7 @@ const Company = () => {
               ? responseData.body.company
               : [responseData.body.company]
           );
-  setLoading(false);
+          setLoading(false);
         } else {
           throw new Error(responseData.head.msg);
         }
@@ -81,31 +81,31 @@ const Company = () => {
           <Col lg="3" md="12" xs="12" className="py-1"></Col>
           <Col lg={6} md={12} xs={12} className="py-2 text-end"></Col>
           <Col lg={3} md={12} xs={12} className="py-2"></Col>
-           {loading ? (
-<LoadingOverlay isLoading={loading} />
-) : (
-  <>
-          <Col lg="12" md="12" xs="12" className="px-0">
-            <div className="py-1">
-              {userData &&
-                userData.map((user, index) => (
-                  <MobileView
-                    key={index}
-                    sno={user.id}
-                    name={user.company_name}
-                    subname={user.mobile_number}
+          {loading ? (
+            <LoadingOverlay isLoading={loading} />
+          ) : (
+            <>
+              <Col lg="12" md="12" xs="12" className="px-0">
+                <div className="py-1">
+                  {/* {userData &&
+                    userData.map((user, index) => (
+                      <MobileView
+                        key={index}
+                        sno={user.id}
+                        name={user.company_name}
+                        subname={user.mobile_number}
+                      />
+                    ))} */}
+                  <TableUI
+                    headers={UserTablehead}
+                    body={userData}
+                    type="company"
+                    style={{ borderRadius: "5px" }}
                   />
-                ))}
-              <TableUI
-                headers={UserTablehead}
-                body={userData}
-                type="company"
-                style={{ borderRadius: "5px" }}
-              />
-            </div>
-          </Col>
-          </>
-)}
+                </div>
+              </Col>
+            </>
+          )}
           <Col lg={12} md={12} xs={12} className="py-2"></Col>
         </Row>
       </Container>

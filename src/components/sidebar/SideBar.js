@@ -39,7 +39,9 @@ const SideBar = ({ onLogout }) => {
 
   const handleLogout = () => {
     onLogout();
+
     localStorage.removeItem("user");
+
     navigate("/login");
   };
 
@@ -56,14 +58,13 @@ const SideBar = ({ onLogout }) => {
         <div className="list-group regular">
           <ul>
             <li>
-              <div className="user-logo mx-auto">
+              <div className="user-logo mx-auto py-3">
                 <img
                   src={require("./images/pngegg.png")}
                   className="img-fluid logo"
                   alt="Sri Krishna Finance"
                 />
               </div>
-              <h6 className="logoname py-3">GOPURAM FINANCE</h6>
             </li>
             {sidebarConfig.map((item, index) => (
               <li key={index}>

@@ -20,7 +20,7 @@ const CustomerCreations = () => {
   const [selectedProofType, setSelectedProofType] = useState("");
   const [proofNumber, setProofNumber] = useState("");
   const [showProofNumberInput, setShowProofNumberInput] = useState(false);
-  
+
   const proofOptions = [
     { label: "Aadhar Card", value: "aadhar" },
     { label: "PAN Card", value: "pan" },
@@ -34,28 +34,32 @@ const CustomerCreations = () => {
       ? {
           ...rowData,
           proof: rowData.proof.map((url, index) => {
-          const extension = url.split(".").pop()?.toLowerCase();
-          const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
-          return {
-            name: `file_${index + 1}.${extension}`,
-            data: url,
-            type: isImage ? "image" : "file",
-          };
-        }),
-        aadharproof: rowData.aadharproof.map((url, index) => {
-          const extension = url.split(".").pop()?.toLowerCase();
-          const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
-          return {
-            name: `file_${index + 1}.${extension}`,
-            data: url,
-            type: isImage ? "image" : "file",
-          };
-        }),
+            const extension = url.split(".").pop()?.toLowerCase();
+            const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+            return {
+              name: `file_${index + 1}.${extension}`,
+              data: url,
+              type: isImage ? "image" : "file",
+            };
+          }),
+          aadharproof: rowData.aadharproof.map((url, index) => {
+            const extension = url.split(".").pop()?.toLowerCase();
+            const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+            return {
+              name: `file_${index + 1}.${extension}`,
+              data: url,
+              type: isImage ? "image" : "file",
+            };
+          }),
           proof_number: rowData.proof_number || "",
           additional_number: rowData.addtionsonal_mobile_number || "",
           pincode: rowData.pincode || "",
           reference: rowData.reference || "",
-         
+          account_holder_name: rowData.account_holder_name || "",
+          bank_name: rowData.bank_name || "",
+          account_number: rowData.account_number || "",
+          ifsc_code: rowData.ifsc_code || "",
+          branch_name: rowData.branch_name || "",
         }
       : {
           customer_no: "",
@@ -70,6 +74,11 @@ const CustomerCreations = () => {
           aadharproof: [],
           proof_number: "",
           reference: "",
+          account_holder_name: "",
+          bank_name: "",
+          account_number: "",
+          ifsc_code: "",
+          branch_name: "",
         };
 
   const [formData, setFormData] = useState(initialState);
@@ -78,13 +87,14 @@ const CustomerCreations = () => {
   const [stream, setStream] = useState(null);
   const [previewFile, setPreviewFile] = useState(null);
   const [captureType, setCaptureType] = useState(null);
-useEffect(() => {
-  if (type === "edit" && rowData) {
-    setSelectedProofType(rowData.upload_type || "");
-    setProofNumber(rowData.proof_number || "");
-    setShowProofNumberInput(!!rowData.upload_type); // Show proof number input if upload_type exists
-  }
-}, [type, rowData]);
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+  useEffect(() => {
+    if (type === "edit" && rowData) {
+      setSelectedProofType(rowData.upload_type || "");
+      setProofNumber(rowData.proof_number || "");
+      setShowProofNumberInput(!!rowData.upload_type); // Show proof number input if upload_type exists
+    }
+  }, [type, rowData]);
   useEffect(() => {
     return () => {
       if (stream) {
@@ -171,55 +181,41 @@ useEffect(() => {
   };
 
   // 🔹 Handle when user moves focus away from the input
-const handlePlaceBlur = async () => {
-  const place = formData.place?.trim();
-  if (!place) return;
+  const handlePlaceBlur = async () => {
+    const place = formData.place?.trim();
+    if (!place) return;
 
-  const url = `https://api.postalpincode.in/postoffice/${encodeURIComponent(place)}`;
-  try {
-    const resp = await fetch(url);
-    const json = await resp.json();
-    console.log(json);
+    const url = `https://api.postalpincode.in/postoffice/${encodeURIComponent(
+      place
+    )}`;
+    try {
+      const resp = await fetch(url);
+      const json = await resp.json();
+      console.log(json);
 
-    if (Array.isArray(json) && json[0].PostOffice && json[0].PostOffice.length > 0) {
-      // Find Head Post Office if available
-      const headPO = json[0].PostOffice.find(po => po.BranchType === "Head Post Office");
+      if (
+        Array.isArray(json) &&
+        json[0].PostOffice &&
+        json[0].PostOffice.length > 0
+      ) {
+        // Find Head Post Office if available
+        const headPO = json[0].PostOffice.find(
+          (po) => po.BranchType === "Head Post Office"
+        );
 
-      const selectedPO = headPO || json[0].PostOffice[0];
+        const selectedPO = headPO || json[0].PostOffice[0];
 
-      setFormData(prev => ({
-        ...prev,
-        pincode: selectedPO.Pincode,
-      }));
+        setFormData((prev) => ({
+          ...prev,
+          pincode: selectedPO.Pincode,
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching pincode:", err);
     }
-  } catch (err) {
-    console.error("Error fetching pincode:", err);
-  }
-};
-
-
+  };
 
   const handleSubmit = async () => {
-    for (const key in formData) {
-      if (
-        key !== "proof" &&
-        key !== "aadharproof" &&
-        key !== "proof_number" &&
-        formData[key] === ""
-      ) {
-        toast.error(`${key.replace("_", " ")} cannot be empty!`, {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        return;
-      }
-    }
     if (selectedProofType && !proofNumber) {
       toast.error(`Proof number cannot be empty!`, {
         position: "top-center",
@@ -246,6 +242,13 @@ const handlePlaceBlur = async () => {
           aadharproof: formData.aadharproof.map((file) => ({
             data: file.data,
           })),
+          account_holder_name: formData.account_holder_name,
+          bank_name: formData.bank_name,
+          account_number: formData.account_number,
+          ifsc_code: formData.ifsc_code,
+          branch_name: formData.branch_name,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
       const responseData = await response.json();
@@ -300,7 +303,7 @@ const handlePlaceBlur = async () => {
 
   const handleUpdateSubmit = async () => {
     setLoading(true);
-     const convertToBase64IfUrl = async (file) => {
+    const convertToBase64IfUrl = async (file) => {
       const { data } = file;
       if (typeof data === "string" && data.startsWith("http")) {
         const response = await fetch(data);
@@ -315,8 +318,12 @@ const handlePlaceBlur = async () => {
       return file;
     };
 
-    const proofBase64Array = await Promise.all(formData.proof.map(convertToBase64IfUrl));
-    const aadharproofBase64Array = await Promise.all(formData.aadharproof.map(convertToBase64IfUrl));
+    const proofBase64Array = await Promise.all(
+      formData.proof.map(convertToBase64IfUrl)
+    );
+    const aadharproofBase64Array = await Promise.all(
+      formData.aadharproof.map(convertToBase64IfUrl)
+    );
     try {
       const response = await fetch(`${API_DOMAIN}/customer.php`, {
         method: "POST",
@@ -337,9 +344,17 @@ const handlePlaceBlur = async () => {
           reference: formData.reference,
           proof: proofBase64Array,
           aadharproof: aadharproofBase64Array,
+          account_holder_name: formData.account_holder_name,
+          bank_name: formData.bank_name,
+          account_number: formData.account_number,
+          ifsc_code: formData.ifsc_code,
+          branch_name: formData.branch_name,
+          login_id: user.id,
+          user_name: user.user_name,
         }),
       });
-      console.log(JSON.stringify({
+      console.log(
+        JSON.stringify({
           edit_customer_id: rowData.customer_id,
           customer_no: formData.customer_no,
           name: formData.name,
@@ -353,8 +368,17 @@ const handlePlaceBlur = async () => {
           reference: formData.reference,
           proof: proofBase64Array,
           aadharproof: aadharproofBase64Array,
-        }));
+          account_holder_name: formData.account_holder_name,
+          bank_name: formData.bank_name,
+          account_number: formData.account_number,
+          ifsc_code: formData.ifsc_code,
+          branch_name: formData.branch_name,
+          login_id: user.id,
+          user_name: user.user_name,
+        })
+      );
       const responseData = await response.json();
+      console.log(responseData);
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",
@@ -535,7 +559,9 @@ const handlePlaceBlur = async () => {
         }
       }, 100);
     } catch (err) {
-      console.warn("Webcam access failed or not available. Fallback to file upload.");
+      console.warn(
+        "Webcam access failed or not available. Fallback to file upload."
+      );
       toast.info("No camera detected. Opening file upload instead.", {
         position: "top-center",
         autoClose: 2000,
@@ -688,7 +714,7 @@ const handlePlaceBlur = async () => {
     );
   }
 
-//console.log(formData);
+  //console.log(formData);
   return (
     <div>
       <Container>
@@ -735,25 +761,25 @@ const handlePlaceBlur = async () => {
             />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
-  <TextInputForm
-    placeholder="Place"
-    labelname="Place"
-    name="place"
-    value={formData.place}
-    onChange={(e) => handleChange(e, "place")}   // ✅ only update state
-    onBlur={handlePlaceBlur}                     // ✅ fetch pincode only after blur
-  />
-</Col>
+            <TextInputForm
+              placeholder="Place"
+              labelname="Place"
+              name="place"
+              value={formData.place}
+              onChange={(e) => handleChange(e, "place")} // ✅ only update state
+              onBlur={handlePlaceBlur} // ✅ fetch pincode only after blur
+            />
+          </Col>
 
-<Col lg="3" md="4" xs="12" className="py-3">
-  <TextInputForm
-    placeholder="Pincode"
-    labelname="Pincode"
-    name="pincode"
-    value={formData.pincode}
-    onChange={(e) => handleChange(e, "pincode")}
-  />
-</Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder="Pincode"
+              labelname="Pincode"
+              name="pincode"
+              value={formData.pincode}
+              onChange={(e) => handleChange(e, "pincode")}
+            />
+          </Col>
 
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
@@ -785,7 +811,9 @@ const handlePlaceBlur = async () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <div className="mb-3">
-              <label htmlFor="proofType" className="form-label">Select Proof Type</label>
+              <label htmlFor="proofType" className="form-label">
+                Select Proof Type
+              </label>
               <select
                 id="proofType"
                 className="form-select"
@@ -802,7 +830,7 @@ const handlePlaceBlur = async () => {
               </select>
             </div>
           </Col>
-          
+
           {showProofNumberInput && (
             <Col lg="3" md="4" xs="12" className="py-3">
               <TextInputForm
@@ -818,7 +846,9 @@ const handlePlaceBlur = async () => {
           <Col lg="4" md="4" xs="12" className="py-5">
             <div className="file-upload">
               <label>
-                {type === "edit" ? "Preview Customer Photo" : "Upload Customer Photo"}
+                {type === "edit"
+                  ? "Preview Customer Photo"
+                  : "Upload Customer Photo"}
               </label>
               <input
                 type="file"
@@ -836,103 +866,100 @@ const handlePlaceBlur = async () => {
                 disabled={!selectedProofType || !proofNumber}
               />
               {formData.proof.map((file, index) => (
-                              <div
-                                key={index}
-                                className="file-item d-flex align-items-center mb-2"
-                              >
-                                {file.type === "image" ? (
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      width: "100px",
-                                      height: "100px",
-                                      marginRight: "10px",
-                                    }}
-                                  >
-                                    {isLoading && (
-                                      <div
-                                        style={{
-                                          position: "absolute",
-                                          top: 0,
-                                          left: 0,
-                                          width: "100px",
-                                          height: "100px",
-                                          display: "flex",
-                                          justifyContent: "center",
-                                          alignItems: "center",
-                                          backgroundColor: "#f8f8f8",
-                                          borderRadius: "5px",
-                                        }}
-                                      >
-                                        <div
-                                          className="spinner-border text-primary"
-                                          role="status"
-                                          style={{ width: "1.5rem", height: "1.5rem" }}
-                                        >
-                                          <span className="visually-hidden">Loading...</span>
-                                        </div>
-                                      </div>
-                                    )}
-                                    <img
-                                      src={file.data}
-                                      alt={`Preview ${file.name}`}
-                                      onLoad={() => setIsLoading(false)}
-                                      onError={(e) => {
-                                        e.target.src = "path/to/fallback-image.png";
-                                        toast.error(`Failed to load image: ${file.name}`, {
-                                          position: "top-center",
-                                          autoClose: 2000,
-                                          theme: "colored",
-                                        });
-                                        setIsLoading(false);
-                                      }}
-                                      style={{
-                                        width: "100px",
-                                        height: "100px",
-                                        objectFit: "cover",
-                                        borderRadius: "5px",
-                                        display: isLoading ? "none" : "block",
-                                      }}
-                                    />
-                                  </div>
-                                ) : (
-                                  <div
-                                    className="file-info"
-                                    style={{ marginRight: "10px" }}
-                                  >
-                                    <p>
-                                      <a
-                                        href={file.data}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                      >
-                                        {file.name}
-                                      </a>{" "}
-                                      ({file.type ? file.type.toUpperCase() : "UNKNOWN"})
-                                    </p>
-                                  </div>
-                                )}
-                                <ChooseButton
-                                  label="Preview"
-                                  className="btn btn-primary btn-sm me-2"
-                                  onClick={() => handlePreview(file)}
-                                />
-                                <ChooseButton
-                                  label="Delete"
-                                  className="btn btn-danger btn-sm"
-                                  onClick={() => handleImageDelete(index, "proof")}
-                                />
-                              </div>
-                            ))}
+                <div
+                  key={index}
+                  className="file-item d-flex align-items-center mb-2"
+                >
+                  {file.type === "image" ? (
+                    <div
+                      style={{
+                        position: "relative",
+                        width: "100px",
+                        height: "100px",
+                        marginRight: "10px",
+                      }}
+                    >
+                      {isLoading && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100px",
+                            height: "100px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "#f8f8f8",
+                            borderRadius: "5px",
+                          }}
+                        >
+                          <div
+                            className="spinner-border text-primary"
+                            role="status"
+                            style={{ width: "1.5rem", height: "1.5rem" }}
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
+                      )}
+                      <img
+                        src={file.data}
+                        alt={`Preview ${file.name}`}
+                        onLoad={() => setIsLoading(false)}
+                        onError={(e) => {
+                          e.target.src = "path/to/fallback-image.png";
+                          toast.error(`Failed to load image: ${file.name}`, {
+                            position: "top-center",
+                            autoClose: 2000,
+                            theme: "colored",
+                          });
+                          setIsLoading(false);
+                        }}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          objectFit: "cover",
+                          borderRadius: "5px",
+                          display: isLoading ? "none" : "block",
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="file-info" style={{ marginRight: "10px" }}>
+                      <p>
+                        <a
+                          href={file.data}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {file.name}
+                        </a>{" "}
+                        ({file.type ? file.type.toUpperCase() : "UNKNOWN"})
+                      </p>
+                    </div>
+                  )}
+                  <ChooseButton
+                    label="Preview"
+                    className="btn btn-primary btn-sm me-2"
+                    onClick={() => handlePreview(file)}
+                  />
+                  <ChooseButton
+                    label="Delete"
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleImageDelete(index, "proof")}
+                  />
+                </div>
+              ))}
             </div>
           </Col>
           <Col lg="4" md="4" xs="12" className="py-5">
             <div className="file-upload">
-             <label>
-  {type === "edit"
-    ? `Preview ${selectedProofType?.toLocaleLowerCase()} Files`
-    : `Upload ${selectedProofType?.toLocaleLowerCase()} Proof`}
-</label>
+              <label>
+                {type === "edit"
+                  ? `Preview ${selectedProofType?.toLocaleLowerCase()} Files`
+                  : `Upload ${selectedProofType?.toLocaleLowerCase()} Proof`}
+              </label>
 
               <input
                 type="file"
@@ -950,7 +977,7 @@ const handlePlaceBlur = async () => {
                 onClick={() => startWebcam("aadharproof")}
                 className="choosefilebtn"
               />
-               {formData.aadharproof && formData.aadharproof.length > 0 && (
+              {formData.aadharproof && formData.aadharproof.length > 0 && (
                 <div className="file-preview mt-2">
                   {formData.aadharproof.map((file, index) => (
                     <div
@@ -994,7 +1021,7 @@ const handlePlaceBlur = async () => {
                           </p>
                         </div>
                       )}
-                     
+
                       <ChooseButton
                         label="Preview"
                         className="btn btn-primary btn-sm me-2"
@@ -1010,6 +1037,59 @@ const handlePlaceBlur = async () => {
                 </div>
               )}
             </div>
+          </Col>
+          <Col lg="12" className="py-3">
+            <h5>Bank Details</h5>
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Account Holder Name"}
+              labelname={"Account Holder Name"}
+              name="account_holder_name"
+              value={formData.account_holder_name}
+              onChange={(e) => handleChange(e, "account_holder_name")}
+              disabled={type === "view"}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Bank Name"}
+              labelname={"Bank Name"}
+              name="bank_name"
+              value={formData.bank_name}
+              onChange={(e) => handleChange(e, "bank_name")}
+              disabled={type === "view"}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Account Number"}
+              labelname={"Account Number"}
+              name="account_number"
+              value={formData.account_number}
+              onChange={(e) => handleChange(e, "account_number")}
+              disabled={type === "view"}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"IFSC Code"}
+              labelname={"IFSC Code"}
+              name="ifsc_code"
+              value={formData.ifsc_code}
+              onChange={(e) => handleChange(e, "ifsc_code")}
+              disabled={type === "view"}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={"Branch Name"}
+              labelname={"Branch Name"}
+              name="branch_name"
+              value={formData.branch_name}
+              onChange={(e) => handleChange(e, "branch_name")}
+              disabled={type === "view"}
+            />
           </Col>
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
