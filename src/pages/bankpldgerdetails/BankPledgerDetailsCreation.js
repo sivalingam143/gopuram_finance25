@@ -35,7 +35,10 @@ const BankPledgerDetailsCreation = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedBanks, setSelectedBanks] = useState(
     type === "edit" && rowData.bank_details
-      ? JSON.parse(rowData.bank_details)
+      ? JSON.parse(rowData.bank_details).map((bank) => {
+          const { create_at, delete_at, ...filteredBank } = bank;
+          return filteredBank;
+        })
       : []
   );
 
@@ -77,11 +80,15 @@ const BankPledgerDetailsCreation = () => {
       const responseData = await response.json();
 
       if (responseData.head.code === 200) {
-        setBanks(
-          Array.isArray(responseData.body.bank)
-            ? responseData.body.bank
-            : [responseData.body.bank]
-        );
+        const bankData = Array.isArray(responseData.body.bank)
+          ? responseData.body.bank
+          : [responseData.body.bank];
+        // Filter out create_at and delete_at from fetched banks
+        const filteredBanks = bankData.map((bank) => {
+          const { create_at, delete_at, ...filteredBank } = bank;
+          return filteredBank;
+        });
+        setBanks(filteredBanks);
       }
     } catch (error) {
       console.error("Error fetching banks:", error);
@@ -104,7 +111,9 @@ const BankPledgerDetailsCreation = () => {
         bankObj &&
         !selectedBanks.some((sb) => sb.bank_id === bankObj.bank_id)
       ) {
-        setSelectedBanks([...selectedBanks, bankObj]);
+        // Filter out create_at and delete_at
+        const { create_at, delete_at, ...filteredBank } = bankObj;
+        setSelectedBanks([...selectedBanks, filteredBank]);
         setSelectedOption(null);
       } else if (selectedBanks.some((sb) => sb.bank_id === bankObj.bank_id)) {
         toast.error("Bank already added!", {
