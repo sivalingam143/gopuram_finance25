@@ -1204,6 +1204,23 @@ const TableUI = ({
                             print View
                           </Dropdown.Item> */}
                           <PDFDownloadLink
+                            document={<JewelPawnPdfG data={rowData} />}
+                            fileName={`${rowData.recipt_no}.pdf`}
+                          >
+                            {({ blob, url, loading, error }) => (
+                              <a
+                                className="dropdown-item"
+                                role="button"
+                                tabIndex="0"
+                                href={url}
+                                download={`${rowData.recipt_no}.pdf`}
+                              >
+                                Download Pdf
+                              </a>
+                            )}
+                          </PDFDownloadLink>
+
+                          {/* <PDFDownloadLink
                             document={<JewelPawnrecoveryPdf data={rowData} />}
                             fileName={`${rowData.receipt_no}_recovery.pdf`}
                           >
@@ -1218,7 +1235,7 @@ const TableUI = ({
                                 Download PDF
                               </a>
                             )}
-                          </PDFDownloadLink>
+                          </PDFDownloadLink> */}
 
                           {/* <Dropdown.Item onClick={() => handleJewelRecoveryViewClick(rowData)}>View</Dropdown.Item> */}
 
