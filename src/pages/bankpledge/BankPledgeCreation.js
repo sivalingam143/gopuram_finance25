@@ -439,22 +439,21 @@ const BankPledgeCreation = () => {
             />
           </Col>
 
-          <Col lg="12" className="py-3">
+          <Col lg="4" md="6" xs="12" className="py-3">
             <div className="file-upload">
               <label>
                 {isView ? "View Bank Detail Proof" : "Upload Bank Detail Proof"}
               </label>
-              {!isView && (
-                <input
-                  type="file"
-                  id="proof"
-                  accept="image/*,application/pdf"
-                  ref={proofInputRef}
-                  multiple
-                  onChange={(e) => handleFileChange(e.target.files, "proof")}
-                  style={{ display: "none" }}
-                />
-              )}
+              <input
+                type="file"
+                id="proof"
+                accept="image/*,application/pdf"
+                ref={proofInputRef}
+                multiple
+                onChange={(e) => handleFileChange(e.target.files, "proof")}
+                style={{ display: "none" }}
+                disabled={isView}
+              />
               {!isView && (
                 <ChooseButton
                   label="Choose File"
@@ -462,69 +461,96 @@ const BankPledgeCreation = () => {
                   className="choosefilebtn"
                 />
               )}
-              {formData.proof && formData.proof.length > 0 && (
-                <div className="file-preview mt-2">
-                  {formData.proof.map((file, index) => (
+              {formData.proof.map((file, index) => (
+                <div
+                  key={index}
+                  className="file-item d-flex align-items-center mb-2"
+                >
+                  {file.type === "image" ? (
                     <div
-                      key={index}
-                      className="file-item d-flex align-items-center mb-2"
+                      style={{
+                        position: "relative",
+                        width: "100px",
+                        height: "100px",
+                        marginRight: "10px",
+                      }}
                     >
-                      {file.type === "image" ? (
-                        <img
-                          src={file.data}
-                          alt={`Preview ${file.name}`}
-                          onError={(e) => {
-                            e.target.src = "/assets/fallback-image.png";
-                            toast.error(`Failed to load image: ${file.name}`, {
-                              position: "top-center",
-                              autoClose: 2000,
-                              theme: "colored",
-                            });
-                          }}
+                      {isLoading && (
+                        <div
                           style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
                             width: "100px",
                             height: "100px",
-                            marginRight: "10px",
-                            objectFit: "cover",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "#f8f8f8",
                             borderRadius: "5px",
                           }}
-                        />
-                      ) : (
-                        <div
-                          className="file-info"
-                          style={{ marginRight: "10px" }}
                         >
-                          <p>
-                            <a
-                              href={file.data}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {file.name}
-                            </a>{" "}
-                            ({file.type ? file.type.toUpperCase() : "UNKNOWN"})
-                          </p>
+                          <div
+                            className="spinner-border text-primary"
+                            role="status"
+                            style={{ width: "1.5rem", height: "1.5rem" }}
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
                         </div>
                       )}
-
-                      {!isView && (
-                        <>
-                          <ChooseButton
-                            label="Preview"
-                            className="btn btn-primary btn-sm me-2"
-                            onClick={() => handlePreview(file)}
-                          />
-                          <ChooseButton
-                            label="Delete"
-                            className="btn btn-danger btn-sm"
-                            onClick={() => handleImageDelete(index, "proof")}
-                          />
-                        </>
-                      )}
+                      <img
+                        src={file.data}
+                        alt={`Preview ${file.name}`}
+                        onLoad={() => setIsLoading(false)}
+                        onError={(e) => {
+                          e.target.src = "path/to/fallback-image.png";
+                          toast.error(`Failed to load image: ${file.name}`, {
+                            position: "top-center",
+                            autoClose: 2000,
+                            theme: "colored",
+                          });
+                          setIsLoading(false);
+                        }}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          objectFit: "cover",
+                          borderRadius: "5px",
+                          display: isLoading ? "none" : "block",
+                        }}
+                      />
                     </div>
-                  ))}
+                  ) : (
+                    <div className="file-info" style={{ marginRight: "10px" }}>
+                      <p>
+                        <a
+                          href={file.data}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {file.name}
+                        </a>{" "}
+                        ({file.type ? file.type.toUpperCase() : "UNKNOWN"})
+                      </p>
+                    </div>
+                  )}
+                  {!isView && (
+                    <>
+                      <ChooseButton
+                        label="Preview"
+                        className="btn btn-primary btn-sm me-2"
+                        onClick={() => handlePreview(file)}
+                      />
+                      <ChooseButton
+                        label="Delete"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleImageDelete(index, "proof")}
+                      />
+                    </>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
           </Col>
 
