@@ -244,98 +244,57 @@ const BankPledgerDetailsCreation = () => {
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
               pagetitle={`Bank Pledger Details${
-                type === "view"
-                  ? " view "
-                  : type === "edit"
-                  ? "  Edit "
-                  : " Creation "
+                type === "edit" ? " Edit" : " Creation"
               }`}
             ></PageNav>
           </Col>
 
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" || type === "view" ? (
-              <TextInputForm
-                placeholder={"Pledger Name"}
-                labelname={"Pledger Name"}
-                name="name"
-                value={formData.name}
-                onChange={(e) => handleChange(e, "name")}
-                disabled={type === "view"}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Pledger Name"}
-                labelname={"Pledger Name"}
-                name="name"
-                value={formData.name}
-                onChange={(e) => handleChange(e, "name")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Pledger Name"}
+              labelname={"Pledger Name"}
+              name="name"
+              value={formData.name}
+              onChange={(e) => handleChange(e, "name")}
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" || type === "view" ? (
-              <TextInputForm
-                placeholder={"Mobile No"}
-                labelname={"Mobile No"}
-                name="mobile_no"
-                value={formData.mobile_no}
-                onChange={(e) => handleChange(e, "mobile_no")}
-                disabled={type === "view"}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Mobile No"}
-                labelname={"Mobile No"}
-                name="mobile_no"
-                value={formData.mobile_no}
-                onChange={(e) => handleChange(e, "mobile_no")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Mobile No"}
+              labelname={"Mobile No"}
+              name="mobile_no"
+              value={formData.mobile_no}
+              onChange={(e) => handleChange(e, "mobile_no")}
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" || type === "view" ? (
-              <TextInputForm
-                placeholder={"Address"}
-                labelname={"Address"}
-                name="address"
-                value={formData.address}
-                onChange={(e) => handleChange(e, "address")}
-                disabled={type === "view"}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Address"}
-                labelname={"Address"}
-                name="address"
-                value={formData.address}
-                onChange={(e) => handleChange(e, "address")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Address"}
+              labelname={"Address"}
+              name="address"
+              value={formData.address}
+              onChange={(e) => handleChange(e, "address")}
+            ></TextInputForm>
           </Col>
 
-          {type !== "view" && (
-            <>
-              <Col lg="3" md="6" xs="12" className="py-3">
-                <label htmlFor="bank-select">Select Bank</label>
-                <Select
-                  id="bank-select"
-                  value={selectedOption}
-                  onChange={handleSelectChange}
-                  options={options}
-                  placeholder="Select Bank"
-                  isSearchable
-                />
-              </Col>
-              <Col lg="3 " md="6" xs="12" className="py-3 ">
-                <ClickButton
-                  label={<>Add</>}
-                  onClick={addBank}
-                  disabled={!selectedOption}
-                />
-              </Col>
-            </>
-          )}
+          <Col lg="3" md="6" xs="12" className="py-3">
+            <label htmlFor="bank-select">Select Bank</label>
+            <Select
+              id="bank-select"
+              value={selectedOption}
+              onChange={handleSelectChange}
+              options={options}
+              placeholder="Select Bank"
+              isSearchable
+            />
+          </Col>
+          <Col lg="3 " md="6" xs="12" className="py-3 ">
+            <ClickButton
+              label={<>Add</>}
+              onClick={addBank}
+              disabled={!selectedOption}
+            />
+          </Col>
 
           <Col lg="12" md="12" xs="12" className="py-3">
             <Table responsive bordered>
@@ -345,16 +304,13 @@ const BankPledgerDetailsCreation = () => {
                   <th>Bank Name</th>
                   <th>Account Limit</th>
                   <th>Pledge Count Limit</th>
-                  {type !== "view" && <th>Action</th>}
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {selectedBanks.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={type !== "view" ? 5 : 4}
-                      className="text-center"
-                    >
+                    <td colSpan={5} className="text-center">
                       No banks added
                     </td>
                   </tr>
@@ -365,23 +321,21 @@ const BankPledgerDetailsCreation = () => {
                       <td>{bank.bank_name}</td>
                       <td>{bank.account_limit}</td>
                       <td>{bank.pledge_count_limit}</td>
-                      {type !== "view" && (
-                        <td>
-                          <Button
-                            size="sm"
-                            className="d-flex align-items-center justify-content-center delete-icon"
-                            onClick={() => removeBank(bank.bank_id)}
-                            style={{
-                              borderRadius: "50%",
-                              width: "35px",
-                              height: "35px",
-                              padding: 0,
-                            }}
-                          >
-                            <BsTrash size={18} />
-                          </Button>
-                        </td>
-                      )}
+                      <td>
+                        <Button
+                          size="sm"
+                          className="d-flex align-items-center justify-content-center delete-icon"
+                          onClick={() => removeBank(bank.bank_id)}
+                          style={{
+                            borderRadius: "50%",
+                            width: "35px",
+                            height: "35px",
+                            padding: 0,
+                          }}
+                        >
+                          <BsTrash size={18} />
+                        </Button>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -391,77 +345,70 @@ const BankPledgerDetailsCreation = () => {
 
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
-              {type === "view" ? (
-                <ClickButton
-                  label={<>Back</>}
-                  onClick={() => navigate("/console/master/bankpledgerdetails")}
-                ></ClickButton>
-              ) : (
-                <>
-                  {type === "edit" ? (
-                    <>
-                      <ToastContainer
-                        position="top-center"
-                        autoClose={2000}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="colored"
-                      />
-                      <span className="mx-2">
-                        <ClickButton
-                          label={<>Update</>}
-                          onClick={handleUpdateSubmit}
-                          disabled={loading}
-                        ></ClickButton>
-                      </span>
+              <>
+                {type === "edit" ? (
+                  <>
+                    <ToastContainer
+                      position="top-center"
+                      autoClose={2000}
+                      hideProgressBar={false}
+                      newestOnTop={false}
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                      theme="colored"
+                    />
+                    <span className="mx-2">
+                      <ClickButton
+                        label={<>Update</>}
+                        onClick={handleUpdateSubmit}
+                        disabled={loading}
+                      ></ClickButton>
+                    </span>
 
-                      <span className="mx-2">
-                        <ClickButton
-                          label={<>Cancel</>}
-                          onClick={() =>
-                            navigate("/console/master/bankpledgerdetails")
-                          }
-                        ></ClickButton>
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <ToastContainer
-                        position="top-center"
-                        autoClose={2000}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="colored"
-                      />
-                      <span className="mx-2">
-                        <ClickButton
-                          label={loading ? <>Submitting...</> : <>Submit</>}
-                          onClick={handleSubmit}
-                          disabled={loading}
-                        ></ClickButton>
-                      </span>
-                      <span className="mx-2">
-                        <ClickButton
-                          label={<>Cancel</>}
-                          onClick={() =>
-                            navigate("/console/master/bankpledgerdetails")
-                          }
-                        ></ClickButton>
-                      </span>
-                    </>
-                  )}
-                </>
-              )}
+                    <span className="mx-2">
+                      <ClickButton
+                        label={<>Cancel</>}
+                        onClick={() =>
+                          navigate("/console/master/bankpledgerdetails")
+                        }
+                      ></ClickButton>
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <ToastContainer
+                      position="top-center"
+                      autoClose={2000}
+                      hideProgressBar={false}
+                      newestOnTop={false}
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                      theme="colored"
+                    />
+                    <span className="mx-2">
+                      <ClickButton
+                        label={loading ? <>Submitting...</> : <>Submit</>}
+                        onClick={handleSubmit}
+                        disabled={loading}
+                      ></ClickButton>
+                    </span>
+                    <span className="mx-2">
+                      <ClickButton
+                        label={<>Cancel</>}
+                        onClick={() =>
+                          navigate("/console/master/bankpledgerdetails")
+                        }
+                      ></ClickButton>
+                    </span>
+                  </>
+                )}
+              </>
             </div>
           </Col>
         </Row>
