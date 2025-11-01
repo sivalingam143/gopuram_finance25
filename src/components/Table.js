@@ -731,6 +731,40 @@ const TableUI = ({
     }
   };
 
+  const handleBankEditClick = (rowData) => {
+    navigate("/console/master/bank/create", {
+      state: { type: "edit", rowData: rowData },
+    });
+  };
+
+  const handleBankDeleteClick = async (bank_id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/bank_details.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_bank_id: bank_id,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (responseData.head.code === 200) {
+        navigate("/console/master/bank");
+        window.location.reload();
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <LoadingOverlay isLoading={loading} />
@@ -1260,6 +1294,37 @@ const TableUI = ({
                           onClick={() =>
                             handleJewelGroupDeleteClick(rowData.Group_id)
                           }
+                        >
+                          Delete
+                        </Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </td>
+                </>
+              )}
+              {type === "bank" && (
+                <>
+                  <td>{rowIndex + 1}</td>
+                  <td>{rowData.bank_name}</td>
+                  <td>{rowData.account_limit}</td>
+                  <td>{rowData.pledge_count_limit}</td>
+                  <td>
+                    <Dropdown>
+                      <Dropdown.Toggle>
+                        <Button className="action">
+                          <BiDotsVerticalRounded />
+                        </Button>
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        {isAdmin && (
+                          <Dropdown.Item
+                            onClick={() => handleBankEditClick(rowData)}
+                          >
+                            Edit
+                          </Dropdown.Item>
+                        )}
+                        <Dropdown.Item
+                          onClick={() => handleBankDeleteClick(rowData.bank_id)}
                         >
                           Delete
                         </Dropdown.Item>

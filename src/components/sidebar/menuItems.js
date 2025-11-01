@@ -48,6 +48,10 @@ const sidebarConfig = [
         path: "/console/master/action",
         text: "Action",
       },
+      {
+        path: "/console/master/bank",
+        text: "Bank",
+      },
       // {
       //   path: "/console/master/customer",
 

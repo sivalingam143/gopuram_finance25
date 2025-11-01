@@ -18,6 +18,7 @@ import ExpenseTwoCreation from "../pages/expensetwo/ExpenseTwoCreation";
 import InterestPayment from "../pages/customer/InterestPayment";
 import RecoveryPayment from "../pages/customer/RecoveryPayment";
 import LoanCreation from "../pages/customer/LoanCreation";
+import BankDetailsCreation from "../pages/bank/BankDetailsCreation";
 
 ///////////////////// Pdf preview /////////////////////////////
 
@@ -60,6 +61,7 @@ import JewelPawnofficePreview from "../pdf/jewelpawnofficepreview";
 import BankPledgeReport from "../pages/bledge_report";
 import BankPledge from "../pages/bankpledge/bankpledge";
 import ExpensePage from "../pages/expenses/ExpensePage";
+import BankDetails from "../pages/bank/BankDetails";
 
 const routes = [
   { path: "/console/dashboard", element: <DashBoard /> },
@@ -101,6 +103,8 @@ const routes = [
   },
   { path: "/console/master/group", element: <Group /> },
   { path: "/console/master/group/create", element: <GroupCreation /> },
+  { path: "/console/master/bank", element: <BankDetails /> },
+  { path: "/console/master/bank/create", element: <BankDetailsCreation /> },
   { path: "/console/master/customer", element: <Customer /> },
   { path: "/console/master/customerdetails", element: <CustomerDetails /> },
   { path: "/console/master/action", element: <Action /> },
