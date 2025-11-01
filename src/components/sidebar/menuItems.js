@@ -52,6 +52,10 @@ const sidebarConfig = [
         path: "/console/master/bank",
         text: "Bank",
       },
+      {
+        path: "/console/master/bankpledgerdetails",
+        text: "Bank Pledger Details",
+      },
       // {
       //   path: "/console/master/customer",
 

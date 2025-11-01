@@ -765,6 +765,39 @@ const TableUI = ({
     }
   };
 
+  const handleBankPledgerDetailsEditClick = (rowData) => {
+    navigate("/console/master/bankpledgerdetails/create", {
+      state: { type: "edit", rowData: rowData },
+    });
+  };
+  const handleBankPledgerDetailsDeleteClick = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/bank_pledger_details.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_bank_pledger_details_id: id,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (responseData.head.code === 200) {
+        navigate("/console/master/bankpledgerdetails");
+        window.location.reload();
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <LoadingOverlay isLoading={loading} />
@@ -1603,6 +1636,40 @@ const TableUI = ({
                             onClick={() =>
                               handleBankPledgeDeleteClick(
                                 rowData.bank_pledge_details_id
+                              )
+                            }
+                          >
+                            Delete
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </td>
+                  </>
+                )}
+                {type === "bankPledgerDetails" && (
+                  <>
+                    <td>{startIndex + rowIndex + 1}</td>
+                    <td>{rowData.name}</td>
+                    <td>{rowData.mobile_no}</td>
+                    <td>
+                      <Dropdown>
+                        <Dropdown.Toggle>
+                          <Button className="action">
+                            <BiDotsVerticalRounded />
+                          </Button>
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                          <Dropdown.Item
+                            onClick={() =>
+                              handleBankPledgerDetailsEditClick(rowData)
+                            }
+                          >
+                            Edit
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() =>
+                              handleBankPledgerDetailsDeleteClick(
+                                rowData.bank_pledger_details_id
                               )
                             }
                           >
