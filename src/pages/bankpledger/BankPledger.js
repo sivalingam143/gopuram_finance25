@@ -23,14 +23,8 @@ const BankPledger = () => {
     "No",
     "Name",
     "Mobile No",
-    "Address",
     "Bank Loan No",
     "Pawn Value",
-    "Interest Rate",
-    "Duration Month",
-    "Interest Amount",
-    "Pledge Due Date",
-    "Additional Charges",
     "Action",
   ];
   const fetchData = async () => {

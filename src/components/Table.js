@@ -1794,14 +1794,8 @@ const TableUI = ({
                     <td>{startIndex + rowIndex + 1}</td>
                     <td>{rowData.name}</td>
                     <td>{rowData.mobile_no}</td>
-                    <td>{rowData.address}</td>
                     <td>{rowData.bank_loan_no}</td>
                     <td>{rowData.pawn_value}</td>
-                    <td>{rowData.interest_rate}</td>
-                    <td>{rowData.duration_month}</td>
-                    <td>{rowData.interest_amount}</td>
-                    <td>{formatDate(rowData.pledge_due_date)}</td>
-                    <td>{rowData.additional_charges}</td>
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle>
