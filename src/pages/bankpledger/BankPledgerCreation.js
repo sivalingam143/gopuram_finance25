@@ -149,6 +149,28 @@ const BankPledgerCreation = () => {
     }
   }, [selectedBankId, bankList]);
 
+  // Auto-calculate interest_amount
+  useEffect(() => {
+    const pv = parseFloat(formData.pawn_value) || 0;
+    const ir = parseFloat(formData.interest_rate) || 0;
+    const dm = parseInt(formData.duration_month) || 0;
+    const interest = (pv * (ir / 100) * dm).toFixed(2);
+    setFormData((prev) => ({ ...prev, interest_amount: interest }));
+  }, [formData.pawn_value, formData.interest_rate, formData.duration_month]);
+
+  // Auto-calculate pledge_due_date
+  useEffect(() => {
+    if (formData.pledge_date && formData.duration_month) {
+      const pd = new Date(formData.pledge_date);
+      if (!isNaN(pd.getTime())) {
+        const due = new Date(pd);
+        due.setMonth(due.getMonth() + parseInt(formData.duration_month));
+        const dueStr = due.toISOString().split("T")[0];
+        setFormData((prev) => ({ ...prev, pledge_due_date: dueStr }));
+      }
+    }
+  }, [formData.pledge_date, formData.duration_month]);
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -461,6 +483,7 @@ const BankPledgerCreation = () => {
                 name="interest_amount"
                 value={formData.interest_amount}
                 onChange={(e) => handleChange(e, "interest_amount")}
+                disabled={true}
               ></TextInputForm>
             ) : (
               <TextInputForm
@@ -469,6 +492,7 @@ const BankPledgerCreation = () => {
                 name="interest_amount"
                 value={formData.interest_amount}
                 onChange={(e) => handleChange(e, "interest_amount")}
+                disabled={true}
               ></TextInputForm>
             )}
           </Col>
@@ -481,6 +505,7 @@ const BankPledgerCreation = () => {
                 type="date"
                 value={formData.pledge_due_date}
                 onChange={(e) => handleChange(e, "pledge_due_date")}
+                disabled={true}
               ></TextInputForm>
             ) : (
               <TextInputForm
@@ -490,6 +515,7 @@ const BankPledgerCreation = () => {
                 type="date"
                 value={formData.pledge_due_date}
                 onChange={(e) => handleChange(e, "pledge_due_date")}
+                disabled={true}
               ></TextInputForm>
             )}
           </Col>
