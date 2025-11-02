@@ -288,7 +288,7 @@ const BankPledgerCreation = () => {
   return (
     <div>
       <Container>
-        <Row className="regular justify-content-center">
+        <Row className="regular ">
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
               pagetitle={`Bank Pledger ${
@@ -297,7 +297,7 @@ const BankPledgerCreation = () => {
             ></PageNav>
           </Col>
 
-          <Col lg="12" md="12" xs="12" className="py-3">
+          <Col lg="3" md="12" xs="12" className="py-3">
             <label htmlFor="pledger-select">Select Bank Pledger Details</label>
             <Select
               id="pledger-select"
@@ -348,36 +348,6 @@ const BankPledgerCreation = () => {
             </Col>
           )}
 
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Name"}
-              labelname={"Name"}
-              name="name"
-              value={formData.name}
-              onChange={(e) => handleChange(e, "name")}
-              disabled={true}
-            ></TextInputForm>
-          </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Mobile No"}
-              labelname={"Mobile No"}
-              name="mobile_no"
-              value={formData.mobile_no}
-              onChange={(e) => handleChange(e, "mobile_no")}
-              disabled={true}
-            ></TextInputForm>
-          </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Address"}
-              labelname={"Address"}
-              name="address"
-              value={formData.address}
-              onChange={(e) => handleChange(e, "address")}
-              disabled={true}
-            ></TextInputForm>
-          </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
             {isEdit ? (
               <TextInputForm
