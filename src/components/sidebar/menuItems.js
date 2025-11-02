@@ -73,6 +73,11 @@ const sidebarConfig = [
     text: "customer",
     icon: <FiUsers />,
   },
+  {
+    path: "/console/master/bankpledger",
+    text: "Bank Pledger",
+    icon: <FiUsers />,
+  },
   // {
   //   path: "/console/pawn/jewelpawning",
   //   text: "Loan",

@@ -798,6 +798,40 @@ const TableUI = ({
     }
   };
 
+  const handleBankPledgerEditClick = (rowData) => {
+    navigate("/console/master/bankpledger/create", {
+      state: { type: "edit", rowData: rowData },
+    });
+  };
+
+  const handleBankPledgerDeleteClick = async (bank_pledge_id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/bankpledger.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_bank_pledger_id: bank_pledge_id,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (responseData.head.code === 200) {
+        navigate("/console/master/bankpledger");
+        window.location.reload();
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <LoadingOverlay isLoading={loading} />
@@ -1746,6 +1780,50 @@ const TableUI = ({
                           <Dropdown.Item
                             onClick={() =>
                               handleexpenseTwoDeleteClick(rowData.expense_id)
+                            }
+                          >
+                            Delete
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </td>
+                  </>
+                )}
+                {type === "bankPledger" && (
+                  <>
+                    <td>{startIndex + rowIndex + 1}</td>
+                    <td>{rowData.name}</td>
+                    <td>{rowData.mobile_no}</td>
+                    <td>{rowData.address}</td>
+                    <td>{rowData.bank_loan_no}</td>
+                    <td>{rowData.pawn_value}</td>
+                    <td>{rowData.interest_rate}</td>
+                    <td>{rowData.duration_month}</td>
+                    <td>{rowData.interest_amount}</td>
+                    <td>{formatDate(rowData.pledge_due_date)}</td>
+                    <td>{rowData.additional_charges}</td>
+                    <td>
+                      <Dropdown>
+                        <Dropdown.Toggle>
+                          <Button className="action">
+                            <BiDotsVerticalRounded />
+                          </Button>
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                          {isAdmin && (
+                            <Dropdown.Item
+                              onClick={() =>
+                                handleBankPledgerEditClick(rowData)
+                              }
+                            >
+                              Edit
+                            </Dropdown.Item>
+                          )}
+                          <Dropdown.Item
+                            onClick={() =>
+                              handleBankPledgerDeleteClick(
+                                rowData.bank_pledge_id
+                              )
                             }
                           >
                             Delete

@@ -20,6 +20,7 @@ import RecoveryPayment from "../pages/customer/RecoveryPayment";
 import LoanCreation from "../pages/customer/LoanCreation";
 import BankDetailsCreation from "../pages/bank/BankDetailsCreation";
 import BankPledgerDetailsCreation from "../pages/bankpldgerdetails/BankPledgerDetailsCreation";
+import BankPledgerCreation from "../pages/bankpledger/BankPledgerCreation";
 
 ///////////////////// Pdf preview /////////////////////////////
 
@@ -64,6 +65,7 @@ import BankPledge from "../pages/bankpledge/bankpledge";
 import ExpensePage from "../pages/expenses/ExpensePage";
 import BankDetails from "../pages/bank/BankDetails";
 import BankPledgerDetails from "../pages/bankpldgerdetails/BankPledgerDetails";
+import BankPledger from "../pages/bankpledger/BankPledger";
 
 const routes = [
   { path: "/console/dashboard", element: <DashBoard /> },
@@ -117,6 +119,11 @@ const routes = [
   },
   { path: "/console/master/customer", element: <Customer /> },
   { path: "/console/master/customerdetails", element: <CustomerDetails /> },
+  { path: "/console/master/bankpledger", element: <BankPledger /> },
+  {
+    path: "/console/master/bankpledger/create",
+    element: <BankPledgerCreation />,
+  },
   { path: "/console/master/action", element: <Action /> },
   { path: "/console/master/action/create", element: <ActionCreation /> },
   { path: "/console/master/products", element: <Products /> },
