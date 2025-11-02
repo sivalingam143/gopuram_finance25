@@ -36,7 +36,7 @@ const BankPledger = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/bankpledger.php`, {
+      const response = await fetch(`${API_DOMAIN}/bank_pledger.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
