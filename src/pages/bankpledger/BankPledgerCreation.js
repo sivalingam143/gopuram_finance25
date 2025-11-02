@@ -297,7 +297,7 @@ const BankPledgerCreation = () => {
             ></PageNav>
           </Col>
 
-          <Col lg="3" md="12" xs="12" className="py-3">
+          <Col lg="4" md="12" xs="12" className="py-3">
             <label htmlFor="pledger-select">Select Bank Pledger Details</label>
             <Select
               id="pledger-select"
@@ -309,6 +309,8 @@ const BankPledgerCreation = () => {
               isSearchable={true}
             />
           </Col>
+          <Col lg="4" className="py-3"></Col>
+          <Col lg="4" className="py-3"></Col>
 
           {bankList.length > 0 && (
             <Col lg="12" md="12" xs="12" className="py-3">
