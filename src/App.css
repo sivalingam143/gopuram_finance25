@@ -461,21 +461,58 @@ input:focus {
   animation: blink 1s infinite;
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .blink-text {
     animation: none;
   }
 }
 
-.status-active {
-  color: green;
+.status-cell {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
   font-weight: bold;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.status-active {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
 }
 
 .status-closed {
-  color: red;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  text-decoration: line-through;
+}
+
+.status-icon {
+  font-size: 1.2rem;
+}
+
+.due-days-cell {
+  padding: 0.5rem;
+}
+
+.due-days-text {
   font-weight: bold;
+  font-size: 0.875rem;
 }
 
 .due-days-closed {
@@ -483,7 +520,8 @@ input:focus {
   font-weight: bold;
 }
 
-.due-days {
-  font-weight: bold;
+@media (max-width: 768px) {
+  .status-badge {
+    transform: scale(0.9);
+  }
 }
-/* BankPledgerViewDetails.css */

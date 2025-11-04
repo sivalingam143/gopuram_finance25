@@ -11,6 +11,7 @@ import LoadingOverlay from "./LoadingOverlay";
 import InterestStatementPDF from "../pdf/InterestStatementPDF";
 import ReceiptPDF from "../pdf/jewelInterestPdf";
 import JewelPawnrecoveryPdf from "../pdf/jewelpawnRecoverPdf";
+import { MdCheckCircle, MdClose } from "react-icons/md";
 
 const TableUI = ({
   headers,
@@ -1814,14 +1815,24 @@ const TableUI = ({
                     <td>{rowData.pawn_value}</td>
                     <td>{rowData.pledge_date}</td>
                     <td>{rowData.pledge_due_date}</td>
-                    <td>
+                    <td className="status-cell">
                       <span
-                        className={`status-${rowData.status.toLowerCase()}`}
+                        className={`status-badge status-${rowData.status.toLowerCase()}`}
                       >
-                        {rowData.status}
+                        {rowData.status === "Active" ? (
+                          <>
+                            <MdCheckCircle className="status-icon" />
+                            Active
+                          </>
+                        ) : (
+                          <>
+                            <MdClose className="status-icon" />
+                            Closed
+                          </>
+                        )}
                       </span>
                     </td>
-                    <td>
+                    <td className="due-days-cell">
                       {rowData.status === "Closed" ? (
                         <span className="due-days-closed">—</span>
                       ) : (
@@ -1833,10 +1844,10 @@ const TableUI = ({
                           const isUrgent = daysLeft <= 10;
                           return (
                             <span
-                              className={`due-days ${
+                              className={`due-days-text ${
                                 isUrgent ? "blink-text" : ""
                               }`}
-                              style={{ color: isUrgent ? "red" : "green" }} // Keep inline color for simplicity
+                              style={{ color: isUrgent ? "red" : "green" }}
                             >
                               {daysLeft} days
                             </span>
