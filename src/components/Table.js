@@ -89,6 +89,14 @@ const TableUI = ({
     return `${day}-${month}-${year}`;
   };
 
+  const calculateDueDays = (pledgeDate, dueDate) => {
+    const pledge = new Date(pledgeDate);
+    const due = new Date(dueDate);
+    const diffTime = due.getTime() - pledge.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   const navigate = useNavigate();
 
   const handleDownloadStatement = async (pawnRow) => {
@@ -1796,6 +1804,27 @@ const TableUI = ({
                     <td>{rowData.mobile_no}</td>
                     <td>{rowData.bank_loan_no}</td>
                     <td>{rowData.pawn_value}</td>
+                    <td>{rowData.status}</td>
+                    <td>
+                      <span
+                        style={{
+                          color:
+                            calculateDueDays(
+                              rowData.pledge_date,
+                              rowData.pledge_due_date
+                            ) <= 10
+                              ? "red"
+                              : "green",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {calculateDueDays(
+                          rowData.pledge_date,
+                          rowData.pledge_due_date
+                        )}{" "}
+                        days
+                      </span>
+                    </td>
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle>
