@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Container, Row, Alert, Modal, Table } from "react-bootstrap";
+import { Col, Container, Row, Alert, Table } from "react-bootstrap";
 import Select from "react-select";
 import { TextInputForm, DropDownUI } from "../../components/Forms";
 import { ClickButton } from "../../components/ClickButton";
@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import API_DOMAIN from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
+
 const BankPledgerCreation = () => {
   const location = useLocation();
   const { type, rowData } = location.state || {};
@@ -49,17 +50,12 @@ const BankPledgerCreation = () => {
   const [formData, setFormData] = useState(initialState);
   console.log(formData);
   const [error, setError] = useState("");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pledgerData, setPledgerData] = useState([]);
   const [selectedPledger, setSelectedPledger] = useState(null);
   const [bankList, setBankList] = useState([]);
   const [selectedBankId, setSelectedBankId] = useState(null);
   const navigate = useNavigate();
-
-  const redirectModal = () => {
-    navigate("/console/master/bankpledger");
-  };
 
   const handleChange = (e, fieldName) => {
     const value = e.target ? e.target.value : e.value;
@@ -360,6 +356,10 @@ const BankPledgerCreation = () => {
     }
   };
 
+  // Get selected bank for display in closing mode
+  const selectedBank =
+    bankList.find((b) => b.id === selectedBankId) || bankList[0];
+
   return (
     <div>
       <Container>
@@ -371,186 +371,291 @@ const BankPledgerCreation = () => {
               }`}
             ></PageNav>
           </Col>
-          <Col lg="4" md="12" xs="12" className="py-3">
-            <label htmlFor="pledger-select">Select Bank Pledger Details</label>
-            <Select
-              id="pledger-select"
-              value={selectedPledger}
-              onChange={handlePledgerSelect}
-              options={options}
-              isDisabled={isEdit || isClosing}
-              placeholder="Search and select Pledger"
-              isSearchable={true}
-            />
-          </Col>
-          <Col lg="4" className="py-3"></Col>
-          <Col lg="4" className="py-3"></Col>
-          {bankList.length > 0 && (
-            <Col lg="12" md="12" xs="12" className="py-3">
-              <Table bordered responsive>
-                <thead>
-                  <tr>
-                    <th>S.No</th>
-                    <th>Bank Name</th>
-                    <th>Account Limit</th>
-                    <th>Pledge Count Limit</th>
-                    <th>Select</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bankList.map((bank, index) => (
-                    <tr key={bank.id}>
-                      <td>{index + 1}</td>
-                      <td>{bank.bank_name}</td>
-                      <td>{bank.account_limit}</td>
-                      <td>{bank.pledge_count_limit}</td>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={selectedBankId === bank.id}
-                          onChange={(e) => {
-                            setSelectedBankId(
-                              e.target.checked ? bank.id : null
-                            );
-                          }}
-                          disabled={isEdit || isClosing}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Col>
-          )}
-          {/* Existing fields with updated disabled logic */}
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Pledge Date"}
-              labelname={"Pledge Date"}
-              name="pledge_date"
-              type="date"
-              value={formData.pledge_date}
-              onChange={(e) => handleChange(e, "pledge_date")}
-              disabled={isClosing || (isEdit && false)} // Adjust per field as needed; here enabled for edit
-            ></TextInputForm>
-          </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Bank Loan No"}
-              labelname={"Bank Loan No"}
-              name="bank_loan_no"
-              value={formData.bank_loan_no}
-              onChange={(e) => handleChange(e, "bank_loan_no")}
-              disabled={isClosing || (isEdit && true)} // Disabled for edit and closing
-            ></TextInputForm>
-          </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Pawn Value"}
-              labelname={"Pawn Value"}
-              name="pawn_value"
-              value={formData.pawn_value}
-              onChange={(e) => handleChange(e, "pawn_value")}
-              disabled={isClosing || (isEdit && true)}
-            ></TextInputForm>
-          </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Interest Rate"}
-              labelname={"Interest Rate"}
-              name="interest_rate"
-              value={formData.interest_rate}
-              onChange={(e) => handleChange(e, "interest_rate")}
-              disabled={isClosing || (isEdit && false)}
-            ></TextInputForm>
-          </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Duration Month"}
-              labelname={"Duration Month"}
-              name="duration_month"
-              value={formData.duration_month}
-              onChange={(e) => handleChange(e, "duration_month")}
-              disabled={isClosing || (isEdit && false)}
-            ></TextInputForm>
-          </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Interest Amount"}
-              labelname={"Interest Amount"}
-              name="interest_amount"
-              value={formData.interest_amount}
-              onChange={(e) => handleChange(e, "interest_amount")}
-              disabled={isClosing || (isEdit && true)}
-            ></TextInputForm>
-          </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Pledge Due Date"}
-              labelname={"Pledge Due Date"}
-              name="pledge_due_date"
-              type="date"
-              value={formData.pledge_due_date}
-              onChange={(e) => handleChange(e, "pledge_due_date")}
-              disabled={isClosing || (isEdit && true)}
-            ></TextInputForm>
-          </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={"Additional Charges"}
-              labelname={"Additional Charges"}
-              name="additional_charges"
-              value={formData.additional_charges}
-              onChange={(e) => handleChange(e, "additional_charges")}
-              disabled={isClosing || (isEdit && false)}
-            ></TextInputForm>
-          </Col>
-          {/* New extra 4 fields for closing mode */}
-          {isClosing && (
+
+          {isClosing ? (
             <>
+              {/* Cards for static info in closing mode */}
+              <Row className="mb-4">
+                <Col lg={4}>
+                  <div className="customer-card bg-light border rounded p-3 h-100">
+                    <h5 className="mb-3">Pledger Information</h5>
+                    <ul className="list-unstyled">
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Name:</strong>
+                        <span>{formData.name || "N/A"}</span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Mobile No:</strong>
+                        <span>{formData.mobile_no || "N/A"}</span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Address:</strong>
+                        <span>{formData.address || "N/A"}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </Col>
+                <Col lg={4}>
+                  <div className="customer-card bg-light border rounded p-3 h-100">
+                    <h5 className="mb-3">Bank Details</h5>
+                    <ul className="list-unstyled">
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Bank Name:</strong>
+                        <span>{selectedBank?.bank_name || "N/A"}</span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Account Limit:</strong>
+                        <span>{selectedBank?.account_limit || "N/A"}</span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Pledge Count Limit:</strong>
+                        <span>{selectedBank?.pledge_count_limit || "N/A"}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </Col>
+                <Col lg={4}>
+                  <div className="customer-card bg-light border rounded p-3 h-100">
+                    <h5 className="mb-3">Pledge Summary</h5>
+                    <ul className="list-unstyled">
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Bank Loan No:</strong>
+                        <span>{formData.bank_loan_no || "N/A"}</span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Pawn Value:</strong>
+                        <span>
+                          ₹
+                          {parseFloat(
+                            formData.pawn_value || 0
+                          ).toLocaleString()}
+                        </span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Interest Rate:</strong>
+                        <span>{formData.interest_rate || "N/A"}%</span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Duration Month:</strong>
+                        <span>{formData.duration_month || "N/A"} months</span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Interest Amount:</strong>
+                        <span>
+                          ₹
+                          {parseFloat(
+                            formData.interest_amount || 0
+                          ).toLocaleString()}
+                        </span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Pledge Due Date:</strong>
+                        <span>{formData.pledge_due_date || "N/A"}</span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
+                        <strong>Additional Charges:</strong>
+                        <span>
+                          ₹
+                          {parseFloat(
+                            formData.additional_charges || 0
+                          ).toLocaleString()}
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </Col>
+              </Row>
+
+              {/* Closing input fields inside a card */}
+              <Col lg={12} className="py-3">
+                <div className="customer-card bg-light border rounded p-3">
+                  <h5 className="mb-3">Closing Details</h5>
+                  <Row>
+                    <Col lg={3} md={6} xs={12} className="py-2">
+                      <TextInputForm
+                        placeholder={"Closing Date"}
+                        labelname={"Closing Date"}
+                        name="closing_date"
+                        type="date"
+                        value={formData.closing_date}
+                        onChange={(e) => handleChange(e, "closing_date")}
+                      />
+                    </Col>
+                    <Col lg={3} md={6} xs={12} className="py-2">
+                      <TextInputForm
+                        placeholder={"Closing Amount"}
+                        labelname={"Closing Amount"}
+                        name="closing_amount"
+                        value={formData.closing_amount}
+                        onChange={(e) => handleChange(e, "closing_amount")}
+                      />
+                    </Col>
+                    <Col lg={3} md={6} xs={12} className="py-2">
+                      <TextInputForm
+                        placeholder={"Closing Interest Amount"}
+                        labelname={"Closing Interest Amount"}
+                        name="closing_interest_amount"
+                        value={formData.closing_interest_amount}
+                        onChange={(e) =>
+                          handleChange(e, "closing_interest_amount")
+                        }
+                      />
+                    </Col>
+                    <Col lg={3} md={6} xs={12} className="py-2">
+                      <TextInputForm
+                        placeholder={"Extra Charges"}
+                        labelname={"Extra Charges"}
+                        name="extra_charges"
+                        value={formData.extra_charges}
+                        onChange={(e) => handleChange(e, "extra_charges")}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </Col>
+            </>
+          ) : (
+            <>
+              {/* Original form for create/edit modes */}
+              <Col lg="4" md="12" xs="12" className="py-3">
+                <label htmlFor="pledger-select">
+                  Select Bank Pledger Details
+                </label>
+                <Select
+                  id="pledger-select"
+                  value={selectedPledger}
+                  onChange={handlePledgerSelect}
+                  options={options}
+                  isDisabled={isEdit}
+                  placeholder="Search and select Pledger"
+                  isSearchable={true}
+                />
+              </Col>
+              <Col lg="4" className="py-3"></Col>
+              <Col lg="4" className="py-3"></Col>
+              {bankList.length > 0 && (
+                <Col lg="12" md="12" xs="12" className="py-3">
+                  <Table bordered responsive>
+                    <thead>
+                      <tr>
+                        <th>S.No</th>
+                        <th>Bank Name</th>
+                        <th>Account Limit</th>
+                        <th>Pledge Count Limit</th>
+                        <th>Select</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bankList.map((bank, index) => (
+                        <tr key={bank.id}>
+                          <td>{index + 1}</td>
+                          <td>{bank.bank_name}</td>
+                          <td>{bank.account_limit}</td>
+                          <td>{bank.pledge_count_limit}</td>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedBankId === bank.id}
+                              onChange={(e) => {
+                                setSelectedBankId(
+                                  e.target.checked ? bank.id : null
+                                );
+                              }}
+                              disabled={isEdit}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </Col>
+              )}
+              {/* Existing fields with updated disabled logic */}
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Closing Date"}
-                  labelname={"Closing Date"}
-                  name="closing_date"
+                  placeholder={"Pledge Date"}
+                  labelname={"Pledge Date"}
+                  name="pledge_date"
                   type="date"
-                  value={formData.closing_date}
-                  onChange={(e) => handleChange(e, "closing_date")}
-                  disabled={false}
+                  value={formData.pledge_date}
+                  onChange={(e) => handleChange(e, "pledge_date")}
+                  disabled={isEdit && false}
                 ></TextInputForm>
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Closing Amount"}
-                  labelname={"Closing Amount"}
-                  name="closing_amount"
-                  value={formData.closing_amount}
-                  onChange={(e) => handleChange(e, "closing_amount")}
-                  disabled={false}
+                  placeholder={"Bank Loan No"}
+                  labelname={"Bank Loan No"}
+                  name="bank_loan_no"
+                  value={formData.bank_loan_no}
+                  onChange={(e) => handleChange(e, "bank_loan_no")}
+                  disabled={isEdit && true}
                 ></TextInputForm>
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Closing Interest Amount"}
-                  labelname={"Closing Interest Amount"}
-                  name="closing_interest_amount"
-                  value={formData.closing_interest_amount}
-                  onChange={(e) => handleChange(e, "closing_interest_amount")}
-                  disabled={false}
+                  placeholder={"Pawn Value"}
+                  labelname={"Pawn Value"}
+                  name="pawn_value"
+                  value={formData.pawn_value}
+                  onChange={(e) => handleChange(e, "pawn_value")}
+                  disabled={isEdit && true}
                 ></TextInputForm>
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Extra Charges"}
-                  labelname={"Extra Charges"}
-                  name="extra_charges"
-                  value={formData.extra_charges}
-                  onChange={(e) => handleChange(e, "extra_charges")}
-                  disabled={false}
+                  placeholder={"Interest Rate"}
+                  labelname={"Interest Rate"}
+                  name="interest_rate"
+                  value={formData.interest_rate}
+                  onChange={(e) => handleChange(e, "interest_rate")}
+                  disabled={isEdit && false}
+                ></TextInputForm>
+              </Col>
+              <Col lg="4" md="6" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Duration Month"}
+                  labelname={"Duration Month"}
+                  name="duration_month"
+                  value={formData.duration_month}
+                  onChange={(e) => handleChange(e, "duration_month")}
+                  disabled={isEdit && false}
+                ></TextInputForm>
+              </Col>
+              <Col lg="4" md="6" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Interest Amount"}
+                  labelname={"Interest Amount"}
+                  name="interest_amount"
+                  value={formData.interest_amount}
+                  onChange={(e) => handleChange(e, "interest_amount")}
+                  disabled={isEdit && true}
+                ></TextInputForm>
+              </Col>
+              <Col lg="4" md="6" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Pledge Due Date"}
+                  labelname={"Pledge Due Date"}
+                  name="pledge_due_date"
+                  type="date"
+                  value={formData.pledge_due_date}
+                  onChange={(e) => handleChange(e, "pledge_due_date")}
+                  disabled={isEdit && true}
+                ></TextInputForm>
+              </Col>
+              <Col lg="4" md="6" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Additional Charges"}
+                  labelname={"Additional Charges"}
+                  name="additional_charges"
+                  value={formData.additional_charges}
+                  onChange={(e) => handleChange(e, "additional_charges")}
+                  disabled={isEdit && false}
                 ></TextInputForm>
               </Col>
             </>
           )}
+
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
               <>
@@ -599,28 +704,6 @@ const BankPledgerCreation = () => {
           </Alert>
         )}
       </Container>
-      <Modal
-        show={showSuccessModal}
-        onHide={() => setShowSuccessModal(false)}
-        centered
-      >
-        <Modal.Body className="text-center">
-          <img
-            src={require("../../components/sidebar/images/output-onlinegiftools.gif")}
-            alt="Success GIF"
-          />
-          <p>Bank Pledger saved successfully!</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <ClickButton
-            variant="secondary"
-            label={<> Close</>}
-            onClick={() => redirectModal()}
-          >
-            Close
-          </ClickButton>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };
