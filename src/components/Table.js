@@ -89,12 +89,15 @@ const TableUI = ({
     return `${day}-${month}-${year}`;
   };
 
-  const calculateDueDays = (pledgeDate, dueDate) => {
-    const pledge = new Date(pledgeDate);
-    const due = new Date(dueDate);
-    const diffTime = due.getTime() - pledge.getTime();
+  const calculateDueDays = (pledgeDate, pledgeDueDate) => {
+    const dueDate = new Date(pledgeDueDate + "T00:00:00");
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const diffTime = dueDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+
+    return Math.max(0, diffDays);
   };
 
   const navigate = useNavigate();
