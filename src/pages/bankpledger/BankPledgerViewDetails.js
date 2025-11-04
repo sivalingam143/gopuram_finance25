@@ -12,6 +12,7 @@ const BankPledgerViewDetails = () => {
   const navigate = useNavigate();
   const { records = [], loanNo } = location.state || {};
   const [filteredRecords, setFilteredRecords] = useState(records);
+  console.log(filteredRecords);
   const [detailsSearchText, setDetailsSearchText] = useState("");
   const [loading, setLoading] = useState(false);
 
