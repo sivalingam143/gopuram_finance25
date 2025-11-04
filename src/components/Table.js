@@ -1807,9 +1807,10 @@ const TableUI = ({
                   <>
                     <td>{startIndex + rowIndex + 1}</td>
                     <td>{rowData.name}</td>
-                    <td>{rowData.mobile_no}</td>
                     <td>{rowData.bank_loan_no}</td>
                     <td>{rowData.pawn_value}</td>
+                    <td>{rowData.pledge_date}</td>
+                    <td>{rowData.pledge_due_date}</td>
                     <td>{rowData.status}</td>
                     <td>
                       {rowData.status === "Closed" ? (
@@ -1845,38 +1846,52 @@ const TableUI = ({
                           </Button>
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                          {isAdmin && (
+                          {rowData.status === "Closed" ? (
+                            // Closed என்றால் Delete மட்டும்
                             <Dropdown.Item
                               onClick={() =>
-                                handleBankPledgerEditClick(rowData)
+                                handleBankPledgerDeleteClick(
+                                  rowData.bank_pledge_id
+                                )
                               }
                             >
-                              Edit
+                              Delete
                             </Dropdown.Item>
+                          ) : (
+                            <>
+                              {isAdmin && (
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    handleBankPledgerEditClick(rowData)
+                                  }
+                                >
+                                  Edit
+                                </Dropdown.Item>
+                              )}
+                              <Dropdown.Item
+                                onClick={() =>
+                                  handleBankPledgerClosingClick(rowData)
+                                }
+                              >
+                                Closing
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() =>
+                                  handleBankPledgerDeleteClick(
+                                    rowData.bank_pledge_id
+                                  )
+                                }
+                              >
+                                Delete
+                              </Dropdown.Item>
+                            </>
                           )}
-                          {rowData.status !== "Closed" && (
-                            <Dropdown.Item
-                              onClick={() =>
-                                handleBankPledgerClosingClick(rowData)
-                              }
-                            >
-                              Closing
-                            </Dropdown.Item>
-                          )}
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleBankPledgerDeleteClick(
-                                rowData.bank_pledge_id
-                              )
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
                     </td>
                   </>
                 )}
+
                 {type === "bankPledgerSummary" && (
                   <>
                     <td>{startIndex + rowIndex + 1}</td>

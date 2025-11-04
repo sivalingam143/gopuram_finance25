@@ -18,9 +18,10 @@ const BankPledgerViewDetails = () => {
   const UserTablehead = [
     "No",
     "Name",
-    "Mobile No",
     "Bank Loan No",
     "Pawn Value",
+    "Pledge Date",
+    "Pledge Due Date",
     "Status",
     "Due Days",
     "Action",
