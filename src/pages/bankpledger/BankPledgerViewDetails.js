@@ -13,7 +13,7 @@ const BankPledgerViewDetails = () => {
   const { records = [], loanNo } = location.state || {};
   const [filteredRecords, setFilteredRecords] = useState(records);
   const [detailsSearchText, setDetailsSearchText] = useState("");
-  const [loading, setLoading] = useState(false); // If needed for future
+  const [loading, setLoading] = useState(false);
 
   const UserTablehead = [
     "No",
@@ -86,14 +86,12 @@ const BankPledgerViewDetails = () => {
         </Row>
         <Row>
           <Col lg="12" md="12" xs="12" className="py-2">
-            <h4>Details for Loan No: {loanNo}</h4>
             <Row className="py-1">
               <Col lg="4" md="6" xs="12">
                 <TextInputForm
                   placeholder={"Search by Name"}
                   prefix_icon={<FaMagnifyingGlass />}
                   onChange={(e) => handleDetailsSearch(e.target.value)}
-                  labelname={"Search Details"}
                   value={detailsSearchText}
                 />
               </Col>
