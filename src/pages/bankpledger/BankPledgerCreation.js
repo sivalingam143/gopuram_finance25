@@ -379,6 +379,7 @@ const BankPledgerCreation = () => {
                 name="bank_loan_no"
                 value={formData.bank_loan_no}
                 onChange={(e) => handleChange(e, "bank_loan_no")}
+                disabled={true}
               ></TextInputForm>
             ) : (
               <TextInputForm
@@ -398,6 +399,7 @@ const BankPledgerCreation = () => {
                 name="pawn_value"
                 value={formData.pawn_value}
                 onChange={(e) => handleChange(e, "pawn_value")}
+                disabled={true}
               ></TextInputForm>
             ) : (
               <TextInputForm
