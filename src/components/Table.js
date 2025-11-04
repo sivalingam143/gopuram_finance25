@@ -812,6 +812,12 @@ const TableUI = ({
     });
   };
 
+  const handleBankPledgerClosingClick = (rowData) => {
+    navigate("/console/master/bankpledger/create", {
+      state: { type: "closing", rowData: rowData },
+    });
+  };
+
   const handleBankPledgerDeleteClick = async (bank_pledge_id) => {
     setLoading(true);
     try {
@@ -1840,6 +1846,15 @@ const TableUI = ({
                               }
                             >
                               Edit
+                            </Dropdown.Item>
+                          )}
+                          {rowData.status !== "Closed" && (
+                            <Dropdown.Item
+                              onClick={() =>
+                                handleBankPledgerClosingClick(rowData)
+                              }
+                            >
+                              Closing
                             </Dropdown.Item>
                           )}
                           <Dropdown.Item

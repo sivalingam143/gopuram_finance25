@@ -9,12 +9,16 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import API_DOMAIN from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
-
 const BankPledgerCreation = () => {
   const location = useLocation();
   const { type, rowData } = location.state || {};
-  const initialState =
-    type === "edit"
+  const mode =
+    type === "closing" ? "closing" : type === "edit" ? "edit" : "create";
+  const isEdit = type === "edit";
+  const isClosing = type === "closing";
+
+  let initialState =
+    mode !== "create"
       ? { ...rowData }
       : {
           bank_pledger_details_id: "",
@@ -31,6 +35,17 @@ const BankPledgerCreation = () => {
           pledge_due_date: "",
           additional_charges: "",
         };
+
+  if (isClosing) {
+    initialState = {
+      ...initialState,
+      closing_date: "",
+      closing_amount: "",
+      closing_interest_amount: "",
+      extra_charges: "",
+    };
+  }
+
   const [formData, setFormData] = useState(initialState);
   console.log(formData);
   const [error, setError] = useState("");
@@ -41,7 +56,6 @@ const BankPledgerCreation = () => {
   const [bankList, setBankList] = useState([]);
   const [selectedBankId, setSelectedBankId] = useState(null);
   const navigate = useNavigate();
-  const isEdit = type === "edit";
 
   const redirectModal = () => {
     navigate("/console/master/bankpledger");
@@ -49,7 +63,6 @@ const BankPledgerCreation = () => {
 
   const handleChange = (e, fieldName) => {
     const value = e.target ? e.target.value : e.value;
-
     setFormData({
       ...formData,
       [fieldName]: value,
@@ -57,7 +70,6 @@ const BankPledgerCreation = () => {
   };
 
   const [showAlert, setShowAlert] = useState(false);
-
   const fetchPledgers = async () => {
     try {
       const response = await fetch(`${API_DOMAIN}/bank_pledger_details.php`, {
@@ -78,13 +90,11 @@ const BankPledgerCreation = () => {
       console.error("Error fetching pledgers:", error);
     }
   };
-
   useEffect(() => {
     fetchPledgers();
   }, []);
-
   useEffect(() => {
-    if (isEdit && rowData) {
+    if ((isEdit || isClosing) && rowData) {
       const fakeOption = {
         value: rowData.bank_pledger_details_id,
         label: rowData.name,
@@ -96,14 +106,12 @@ const BankPledgerCreation = () => {
       const selId = banks.length > 0 ? banks[0].id : null;
       setSelectedBankId(selId);
     }
-  }, [rowData, isEdit]);
-
+  }, [rowData, isEdit, isClosing]);
   const options = pledgerData.map((p) => ({
     value: p.bank_pledger_details_id,
     label: p.name,
     data: p,
   }));
-
   const handlePledgerSelect = (option) => {
     setSelectedPledger(option);
     if (option) {
@@ -131,7 +139,6 @@ const BankPledgerCreation = () => {
       }));
     }
   };
-
   useEffect(() => {
     if (selectedBankId !== null && bankList.length > 0) {
       const bank = bankList.find((b) => b.id === selectedBankId);
@@ -148,19 +155,28 @@ const BankPledgerCreation = () => {
       }));
     }
   }, [selectedBankId, bankList]);
-
   // Auto-calculate interest_amount
   useEffect(() => {
-    const pv = parseFloat(formData.pawn_value) || 0;
-    const ir = parseFloat(formData.interest_rate) || 0;
-    const dm = parseInt(formData.duration_month) || 0;
-    const interest = (pv * (ir / 100) * dm).toFixed(2);
-    setFormData((prev) => ({ ...prev, interest_amount: interest }));
-  }, [formData.pawn_value, formData.interest_rate, formData.duration_month]);
-
+    if (mode === "create" || mode === "edit") {
+      const pv = parseFloat(formData.pawn_value) || 0;
+      const ir = parseFloat(formData.interest_rate) || 0;
+      const dm = parseInt(formData.duration_month) || 0;
+      const interest = (pv * (ir / 100) * dm).toFixed(2);
+      setFormData((prev) => ({ ...prev, interest_amount: interest }));
+    }
+  }, [
+    formData.pawn_value,
+    formData.interest_rate,
+    formData.duration_month,
+    mode,
+  ]);
   // Auto-calculate pledge_due_date
   useEffect(() => {
-    if (formData.pledge_date && formData.duration_month) {
+    if (
+      (mode === "create" || mode === "edit") &&
+      formData.pledge_date &&
+      formData.duration_month
+    ) {
       const pd = new Date(formData.pledge_date);
       if (!isNaN(pd.getTime())) {
         const due = new Date(pd);
@@ -169,8 +185,7 @@ const BankPledgerCreation = () => {
         setFormData((prev) => ({ ...prev, pledge_due_date: dueStr }));
       }
     }
-  }, [formData.pledge_date, formData.duration_month]);
-
+  }, [formData.pledge_date, formData.duration_month, mode]);
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -183,7 +198,6 @@ const BankPledgerCreation = () => {
       });
       const responseData = await response.json();
       console.log("responseData", responseData);
-
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",
@@ -219,9 +233,9 @@ const BankPledgerCreation = () => {
     }
   };
 
+  // Existing handleUpdateSubmit remains unchanged
   const handleUpdateSubmit = async () => {
     setLoading(true);
-
     try {
       const response = await fetch(`${API_DOMAIN}/bank_pledger.php`, {
         method: "POST",
@@ -245,9 +259,7 @@ const BankPledgerCreation = () => {
           additional_charges: formData.additional_charges,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",
@@ -259,7 +271,6 @@ const BankPledgerCreation = () => {
           progress: undefined,
           theme: "colored",
         });
-
         setTimeout(() => {
           navigate("/console/master/bankpledger");
         }, 2000);
@@ -281,8 +292,72 @@ const BankPledgerCreation = () => {
     } catch (error) {
       console.error("Error updating bank_pledger:", error.message);
     }
-
     setLoading(false);
+  };
+
+  // New handler for closing
+  const handleClosingSubmit = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/bank_pledger.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          edit_bank_pledger_id: rowData.bank_pledge_id,
+          closing_date: formData.closing_date,
+          closing_amount: formData.closing_amount,
+          closing_interest_amount: formData.closing_interest_amount,
+          extra_charges: formData.extra_charges,
+          status: "Closed",
+        }),
+      });
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        toast.success(responseData.head.msg, {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        setTimeout(() => {
+          navigate("/console/master/bankpledger");
+        }, 2000);
+      } else {
+        toast.error(responseData.head.msg, {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        console.error(
+          responseData.message || "Unknown error occurred during closing"
+        );
+      }
+    } catch (error) {
+      console.error("Error closing bank_pledger:", error.message);
+    }
+    setLoading(false);
+  };
+
+  // Unified submit handler
+  const handleFormSubmit = () => {
+    if (isClosing) {
+      handleClosingSubmit();
+    } else if (isEdit) {
+      handleUpdateSubmit();
+    } else {
+      handleSubmit();
+    }
   };
 
   return (
@@ -292,11 +367,10 @@ const BankPledgerCreation = () => {
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
               pagetitle={`Bank Pledger ${
-                type === "edit" ? " Edit " : " Creation "
+                isClosing ? "Closing" : isEdit ? "Edit" : "Creation"
               }`}
             ></PageNav>
           </Col>
-
           <Col lg="4" md="12" xs="12" className="py-3">
             <label htmlFor="pledger-select">Select Bank Pledger Details</label>
             <Select
@@ -304,14 +378,13 @@ const BankPledgerCreation = () => {
               value={selectedPledger}
               onChange={handlePledgerSelect}
               options={options}
-              isDisabled={isEdit}
+              isDisabled={isEdit || isClosing}
               placeholder="Search and select Pledger"
               isSearchable={true}
             />
           </Col>
           <Col lg="4" className="py-3"></Col>
           <Col lg="4" className="py-3"></Col>
-
           {bankList.length > 0 && (
             <Col lg="12" md="12" xs="12" className="py-3">
               <Table bordered responsive>
@@ -340,7 +413,7 @@ const BankPledgerCreation = () => {
                               e.target.checked ? bank.id : null
                             );
                           }}
-                          disabled={isEdit}
+                          disabled={isEdit || isClosing}
                         />
                       </td>
                     </tr>
@@ -349,229 +422,173 @@ const BankPledgerCreation = () => {
               </Table>
             </Col>
           )}
-
+          {/* Existing fields with updated disabled logic */}
           <Col lg="4" md="6" xs="12" className="py-3">
-            {isEdit ? (
-              <TextInputForm
-                placeholder={"Pledge Date"}
-                labelname={"Pledge Date"}
-                name="pledge_date"
-                type="date"
-                value={formData.pledge_date}
-                onChange={(e) => handleChange(e, "pledge_date")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Pledge Date"}
-                labelname={"Pledge Date"}
-                name="pledge_date"
-                type="date"
-                value={formData.pledge_date}
-                onChange={(e) => handleChange(e, "pledge_date")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Pledge Date"}
+              labelname={"Pledge Date"}
+              name="pledge_date"
+              type="date"
+              value={formData.pledge_date}
+              onChange={(e) => handleChange(e, "pledge_date")}
+              disabled={isClosing || (isEdit && false)} // Adjust per field as needed; here enabled for edit
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {isEdit ? (
-              <TextInputForm
-                placeholder={"Bank Loan No"}
-                labelname={"Bank Loan No"}
-                name="bank_loan_no"
-                value={formData.bank_loan_no}
-                onChange={(e) => handleChange(e, "bank_loan_no")}
-                disabled={true}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Bank Loan No"}
-                labelname={"Bank Loan No"}
-                name="bank_loan_no"
-                value={formData.bank_loan_no}
-                onChange={(e) => handleChange(e, "bank_loan_no")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Bank Loan No"}
+              labelname={"Bank Loan No"}
+              name="bank_loan_no"
+              value={formData.bank_loan_no}
+              onChange={(e) => handleChange(e, "bank_loan_no")}
+              disabled={isClosing || (isEdit && true)} // Disabled for edit and closing
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {isEdit ? (
-              <TextInputForm
-                placeholder={"Pawn Value"}
-                labelname={"Pawn Value"}
-                name="pawn_value"
-                value={formData.pawn_value}
-                onChange={(e) => handleChange(e, "pawn_value")}
-                disabled={true}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Pawn Value"}
-                labelname={"Pawn Value"}
-                name="pawn_value"
-                value={formData.pawn_value}
-                onChange={(e) => handleChange(e, "pawn_value")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Pawn Value"}
+              labelname={"Pawn Value"}
+              name="pawn_value"
+              value={formData.pawn_value}
+              onChange={(e) => handleChange(e, "pawn_value")}
+              disabled={isClosing || (isEdit && true)}
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {isEdit ? (
-              <TextInputForm
-                placeholder={"Interest Rate"}
-                labelname={"Interest Rate"}
-                name="interest_rate"
-                value={formData.interest_rate}
-                onChange={(e) => handleChange(e, "interest_rate")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Interest Rate"}
-                labelname={"Interest Rate"}
-                name="interest_rate"
-                value={formData.interest_rate}
-                onChange={(e) => handleChange(e, "interest_rate")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Interest Rate"}
+              labelname={"Interest Rate"}
+              name="interest_rate"
+              value={formData.interest_rate}
+              onChange={(e) => handleChange(e, "interest_rate")}
+              disabled={isClosing || (isEdit && false)}
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {isEdit ? (
-              <TextInputForm
-                placeholder={"Duration Month"}
-                labelname={"Duration Month"}
-                name="duration_month"
-                value={formData.duration_month}
-                onChange={(e) => handleChange(e, "duration_month")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Duration Month"}
-                labelname={"Duration Month"}
-                name="duration_month"
-                value={formData.duration_month}
-                onChange={(e) => handleChange(e, "duration_month")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Duration Month"}
+              labelname={"Duration Month"}
+              name="duration_month"
+              value={formData.duration_month}
+              onChange={(e) => handleChange(e, "duration_month")}
+              disabled={isClosing || (isEdit && false)}
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {isEdit ? (
-              <TextInputForm
-                placeholder={"Interest Amount"}
-                labelname={"Interest Amount"}
-                name="interest_amount"
-                value={formData.interest_amount}
-                onChange={(e) => handleChange(e, "interest_amount")}
-                disabled={true}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Interest Amount"}
-                labelname={"Interest Amount"}
-                name="interest_amount"
-                value={formData.interest_amount}
-                onChange={(e) => handleChange(e, "interest_amount")}
-                disabled={true}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Interest Amount"}
+              labelname={"Interest Amount"}
+              name="interest_amount"
+              value={formData.interest_amount}
+              onChange={(e) => handleChange(e, "interest_amount")}
+              disabled={isClosing || (isEdit && true)}
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {isEdit ? (
-              <TextInputForm
-                placeholder={"Pledge Due Date"}
-                labelname={"Pledge Due Date"}
-                name="pledge_due_date"
-                type="date"
-                value={formData.pledge_due_date}
-                onChange={(e) => handleChange(e, "pledge_due_date")}
-                disabled={true}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Pledge Due Date"}
-                labelname={"Pledge Due Date"}
-                name="pledge_due_date"
-                type="date"
-                value={formData.pledge_due_date}
-                onChange={(e) => handleChange(e, "pledge_due_date")}
-                disabled={true}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Pledge Due Date"}
+              labelname={"Pledge Due Date"}
+              name="pledge_due_date"
+              type="date"
+              value={formData.pledge_due_date}
+              onChange={(e) => handleChange(e, "pledge_due_date")}
+              disabled={isClosing || (isEdit && true)}
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {isEdit ? (
-              <TextInputForm
-                placeholder={"Additional Charges"}
-                labelname={"Additional Charges"}
-                name="additional_charges"
-                value={formData.additional_charges}
-                onChange={(e) => handleChange(e, "additional_charges")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Additional Charges"}
-                labelname={"Additional Charges"}
-                name="additional_charges"
-                value={formData.additional_charges}
-                onChange={(e) => handleChange(e, "additional_charges")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={"Additional Charges"}
+              labelname={"Additional Charges"}
+              name="additional_charges"
+              value={formData.additional_charges}
+              onChange={(e) => handleChange(e, "additional_charges")}
+              disabled={isClosing || (isEdit && false)}
+            ></TextInputForm>
           </Col>
+          {/* New extra 4 fields for closing mode */}
+          {isClosing && (
+            <>
+              <Col lg="4" md="6" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Closing Date"}
+                  labelname={"Closing Date"}
+                  name="closing_date"
+                  type="date"
+                  value={formData.closing_date}
+                  onChange={(e) => handleChange(e, "closing_date")}
+                  disabled={false}
+                ></TextInputForm>
+              </Col>
+              <Col lg="4" md="6" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Closing Amount"}
+                  labelname={"Closing Amount"}
+                  name="closing_amount"
+                  value={formData.closing_amount}
+                  onChange={(e) => handleChange(e, "closing_amount")}
+                  disabled={false}
+                ></TextInputForm>
+              </Col>
+              <Col lg="4" md="6" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Closing Interest Amount"}
+                  labelname={"Closing Interest Amount"}
+                  name="closing_interest_amount"
+                  value={formData.closing_interest_amount}
+                  onChange={(e) => handleChange(e, "closing_interest_amount")}
+                  disabled={false}
+                ></TextInputForm>
+              </Col>
+              <Col lg="4" md="6" xs="12" className="py-3">
+                <TextInputForm
+                  placeholder={"Extra Charges"}
+                  labelname={"Extra Charges"}
+                  name="extra_charges"
+                  value={formData.extra_charges}
+                  onChange={(e) => handleChange(e, "extra_charges")}
+                  disabled={false}
+                ></TextInputForm>
+              </Col>
+            </>
+          )}
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
               <>
-                {isEdit ? (
-                  <>
-                    <ToastContainer
-                      position="top-center"
-                      autoClose={2000}
-                      hideProgressBar={false}
-                      newestOnTop={false}
-                      closeOnClick
-                      rtl={false}
-                      pauseOnFocusLoss
-                      draggable
-                      pauseOnHover
-                      theme="colored"
-                    />
-                    <span className="mx-2">
-                      <ClickButton
-                        label={<>Update</>}
-                        onClick={handleUpdateSubmit}
-                      ></ClickButton>
-                    </span>
-
-                    <span className="mx-2">
-                      <ClickButton
-                        label={<>Cancel</>}
-                        onClick={() => navigate("/console/master/bankpledger")}
-                      ></ClickButton>
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <ToastContainer
-                      position="top-center"
-                      autoClose={2000}
-                      hideProgressBar={false}
-                      newestOnTop={false}
-                      closeOnClick
-                      rtl={false}
-                      pauseOnFocusLoss
-                      draggable
-                      pauseOnHover
-                      theme="colored"
-                    />
-                    <span className="mx-2">
-                      <ClickButton
-                        label={loading ? <>Submitting...</> : <> Submit</>}
-                        onClick={handleSubmit}
-                        disabled={loading}
-                      ></ClickButton>
-                    </span>
-                    <span className="mx-2">
-                      <ClickButton
-                        label={<>Cancel</>}
-                        onClick={() => navigate("/console/master/bankpledger")}
-                      ></ClickButton>
-                    </span>
-                  </>
-                )}
+                <ToastContainer
+                  position="top-center"
+                  autoClose={2000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="colored"
+                />
+                <span className="mx-2">
+                  <ClickButton
+                    label={
+                      loading ? (
+                        <>Processing...</>
+                      ) : isClosing ? (
+                        <>Closing</>
+                      ) : isEdit ? (
+                        <>Update</>
+                      ) : (
+                        <>Submit</>
+                      )
+                    }
+                    onClick={handleFormSubmit}
+                    disabled={loading}
+                  ></ClickButton>
+                </span>
+                <span className="mx-2">
+                  <ClickButton
+                    label={<>Cancel</>}
+                    onClick={() => navigate("/console/master/bankpledger")}
+                  ></ClickButton>
+                </span>
               </>
             </div>
           </Col>
