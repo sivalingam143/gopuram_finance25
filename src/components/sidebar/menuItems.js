@@ -95,11 +95,11 @@ const sidebarConfig = [
   //     // },
   //   ],
   // },
-  {
-    path: "/console/pawn/bankpledge",
-    text: "Bank Pledge",
-    icon: <AiFillGolden />,
-  },
+  // {
+  //   path: "/console/pawn/bankpledge",
+  //   text: "Bank Pledge",
+  //   icon: <AiFillGolden />,
+  // },
 
   // {
   //   text: "Interest | Closing",
