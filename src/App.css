@@ -443,3 +443,47 @@ input:focus {
 }
 
 /* jewel price details */
+
+/* BankPledgerViewDetails.css */
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.blink-text {
+  animation: blink 1s infinite;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .blink-text {
+    animation: none;
+  }
+}
+
+.status-active {
+  color: green;
+  font-weight: bold;
+}
+
+.status-closed {
+  color: red;
+  font-weight: bold;
+}
+
+.due-days-closed {
+  color: gray;
+  font-weight: bold;
+}
+
+.due-days {
+  font-weight: bold;
+}
+/* BankPledgerViewDetails.css */

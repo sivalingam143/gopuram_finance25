@@ -1814,31 +1814,34 @@ const TableUI = ({
                     <td>{rowData.pawn_value}</td>
                     <td>{rowData.pledge_date}</td>
                     <td>{rowData.pledge_due_date}</td>
-                    <td>{rowData.status}</td>
+                    <td>
+                      <span
+                        className={`status-${rowData.status.toLowerCase()}`}
+                      >
+                        {rowData.status}
+                      </span>
+                    </td>
                     <td>
                       {rowData.status === "Closed" ? (
-                        <span style={{ color: "gray", fontWeight: "bold" }}>
-                          —
-                        </span>
+                        <span className="due-days-closed">—</span>
                       ) : (
-                        <span
-                          style={{
-                            color:
-                              calculateDueDays(
-                                rowData.pledge_date,
-                                rowData.pledge_due_date
-                              ) <= 10
-                                ? "red"
-                                : "green",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {calculateDueDays(
+                        (() => {
+                          const daysLeft = calculateDueDays(
                             rowData.pledge_date,
                             rowData.pledge_due_date
-                          )}{" "}
-                          days
-                        </span>
+                          );
+                          const isUrgent = daysLeft <= 10;
+                          return (
+                            <span
+                              className={`due-days ${
+                                isUrgent ? "blink-text" : ""
+                              }`}
+                              style={{ color: isUrgent ? "red" : "green" }} // Keep inline color for simplicity
+                            >
+                              {daysLeft} days
+                            </span>
+                          );
+                        })()
                       )}
                     </td>
                     <td>
@@ -1850,7 +1853,6 @@ const TableUI = ({
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                           {rowData.status === "Closed" ? (
-                            // Closed என்றால் Delete மட்டும்
                             <Dropdown.Item
                               onClick={() =>
                                 handleBankPledgerDeleteClick(
