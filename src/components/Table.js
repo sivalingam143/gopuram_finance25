@@ -1877,6 +1877,30 @@ const TableUI = ({
                     </td>
                   </>
                 )}
+                {type === "bankPledgerSummary" && (
+                  <>
+                    <td>{startIndex + rowIndex + 1}</td>
+                    <td>{rowData.loan_no}</td>
+                    <td>
+                      <Dropdown>
+                        <Dropdown.Toggle>
+                          <Button className="action">
+                            <BiDotsVerticalRounded />
+                          </Button>
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                          <Dropdown.Item
+                            onClick={() =>
+                              customActions?.viewDetails?.(rowData.records)
+                            }
+                          >
+                            View Details
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </td>
+                  </>
+                )}
               </tr>
             ))
           )}

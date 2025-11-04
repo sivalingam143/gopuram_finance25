@@ -66,6 +66,7 @@ import ExpensePage from "../pages/expenses/ExpensePage";
 import BankDetails from "../pages/bank/BankDetails";
 import BankPledgerDetails from "../pages/bankpldgerdetails/BankPledgerDetails";
 import BankPledger from "../pages/bankpledger/BankPledger";
+import BankPledgerViewDetails from "../pages/bankpledger/BankPledgerViewDetails";
 
 const routes = [
   { path: "/console/dashboard", element: <DashBoard /> },
@@ -120,6 +121,10 @@ const routes = [
   { path: "/console/master/customer", element: <Customer /> },
   { path: "/console/master/customerdetails", element: <CustomerDetails /> },
   { path: "/console/master/bankpledger", element: <BankPledger /> },
+  {
+    path: "/console/master/bankpledger/viewdetails",
+    element: <BankPledgerViewDetails />,
+  },
   {
     path: "/console/master/bankpledger/create",
     element: <BankPledgerCreation />,
