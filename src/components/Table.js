@@ -1812,24 +1812,30 @@ const TableUI = ({
                     <td>{rowData.pawn_value}</td>
                     <td>{rowData.status}</td>
                     <td>
-                      <span
-                        style={{
-                          color:
-                            calculateDueDays(
-                              rowData.pledge_date,
-                              rowData.pledge_due_date
-                            ) <= 10
-                              ? "red"
-                              : "green",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {calculateDueDays(
-                          rowData.pledge_date,
-                          rowData.pledge_due_date
-                        )}{" "}
-                        days
-                      </span>
+                      {rowData.status === "Closed" ? (
+                        <span style={{ color: "gray", fontWeight: "bold" }}>
+                          —
+                        </span>
+                      ) : (
+                        <span
+                          style={{
+                            color:
+                              calculateDueDays(
+                                rowData.pledge_date,
+                                rowData.pledge_due_date
+                              ) <= 10
+                                ? "red"
+                                : "green",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {calculateDueDays(
+                            rowData.pledge_date,
+                            rowData.pledge_due_date
+                          )}{" "}
+                          days
+                        </span>
+                      )}
                     </td>
                     <td>
                       <Dropdown>
