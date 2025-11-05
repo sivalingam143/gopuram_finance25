@@ -13,9 +13,16 @@ const BankPledgerCreation = () => {
   const location = useLocation();
   const { type, rowData } = location.state || {};
   const mode =
-    type === "closing" ? "closing" : type === "edit" ? "edit" : "create";
+    type === "closing"
+      ? "closing"
+      : type === "edit"
+      ? "edit"
+      : type === "view"
+      ? "view"
+      : "create";
   const isEdit = type === "edit";
   const isClosing = type === "closing";
+  const isView = type === "view";
   let initialState =
     mode !== "create"
       ? { ...rowData }
@@ -85,7 +92,7 @@ const BankPledgerCreation = () => {
     fetchPledgers();
   }, []);
   useEffect(() => {
-    if ((isEdit || isClosing) && rowData) {
+    if ((isEdit || isClosing || isView) && rowData) {
       const fakeOption = {
         value: rowData.bank_pledger_details_id,
         label: rowData.name,
@@ -97,7 +104,7 @@ const BankPledgerCreation = () => {
       const selId = banks.length > 0 ? banks[0].id : null;
       setSelectedBankId(selId);
     }
-  }, [rowData, isEdit, isClosing]);
+  }, [rowData, isEdit, isClosing, isView]);
   const options = pledgerData.map((p) => ({
     value: p.bank_pledger_details_id,
     label: p.name,
@@ -358,13 +365,19 @@ const BankPledgerCreation = () => {
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
               pagetitle={`Bank Pledger ${
-                isClosing ? "Closing" : isEdit ? "Edit" : "Creation"
+                isView
+                  ? "View"
+                  : isClosing
+                  ? "Closing"
+                  : isEdit
+                  ? "Edit"
+                  : "Creation"
               }`}
             ></PageNav>
           </Col>
-          {isClosing ? (
+          {isClosing || isView ? (
             <>
-              {/* Cards for static info in closing mode */}
+              {/* Cards for static info in closing/view mode */}
               <Row className="mb-4">
                 <Col lg={4}>
                   <div className="customer-card bg-light border rounded p-3 h-100">
@@ -459,53 +472,94 @@ const BankPledgerCreation = () => {
                   </div>
                 </Col>
               </Row>
-              {/* Closing input fields inside a card */}
-              <Col lg={12} className="py-3">
-                <div className="customer-card bg-light border rounded p-3">
-                  <h5 className="mb-3">Closing Details</h5>
-                  <Row>
-                    <Col lg={3} md={6} xs={12} className="py-2">
-                      <TextInputForm
-                        placeholder={"Closing Date"}
-                        labelname={"Closing Date"}
-                        name="closing_date"
-                        type="date"
-                        value={formData.closing_date}
-                        onChange={(e) => handleChange(e, "closing_date")}
-                      />
-                    </Col>
-                    <Col lg={3} md={6} xs={12} className="py-2">
-                      <TextInputForm
-                        placeholder={"Closing Amount"}
-                        labelname={"Closing Amount"}
-                        name="closing_amount"
-                        value={formData.closing_amount}
-                        onChange={(e) => handleChange(e, "closing_amount")}
-                      />
-                    </Col>
-                    <Col lg={3} md={6} xs={12} className="py-2">
-                      <TextInputForm
-                        placeholder={"Closing Interest Amount"}
-                        labelname={"Closing Interest Amount"}
-                        name="closing_interest_amount"
-                        value={formData.closing_interest_amount}
-                        onChange={(e) =>
-                          handleChange(e, "closing_interest_amount")
-                        }
-                      />
-                    </Col>
-                    <Col lg={3} md={6} xs={12} className="py-2">
-                      <TextInputForm
-                        placeholder={"Extra Charges"}
-                        labelname={"Extra Charges"}
-                        name="extra_charges"
-                        value={formData.extra_charges}
-                        onChange={(e) => handleChange(e, "extra_charges")}
-                      />
-                    </Col>
-                  </Row>
-                </div>
-              </Col>
+              <Row className="mb-4">
+                <Col lg={4}>
+                  <div className="customer-card bg-light border rounded p-3 h-100">
+                    <h5 className="mb-3">Closing Details</h5>
+                    <ul className="list-unstyled">
+                      {isClosing ? (
+                        <>
+                          <li className="mb-2">
+                            <TextInputForm
+                              placeholder={"Closing Date"}
+                              labelname={"Closing Date"}
+                              name="closing_date"
+                              type="date"
+                              value={formData.closing_date}
+                              onChange={(e) => handleChange(e, "closing_date")}
+                            />
+                          </li>
+                          <li className="mb-2">
+                            <TextInputForm
+                              placeholder={"Closing Amount"}
+                              labelname={"Closing Amount"}
+                              name="closing_amount"
+                              value={formData.closing_amount}
+                              onChange={(e) =>
+                                handleChange(e, "closing_amount")
+                              }
+                            />
+                          </li>
+                          <li className="mb-2">
+                            <TextInputForm
+                              placeholder={"Closing Interest Amount"}
+                              labelname={"Closing Interest Amount"}
+                              name="closing_interest_amount"
+                              value={formData.closing_interest_amount}
+                              onChange={(e) =>
+                                handleChange(e, "closing_interest_amount")
+                              }
+                            />
+                          </li>
+                          <li className="mb-2">
+                            <TextInputForm
+                              placeholder={"Extra Charges"}
+                              labelname={"Extra Charges"}
+                              name="extra_charges"
+                              value={formData.extra_charges}
+                              onChange={(e) => handleChange(e, "extra_charges")}
+                            />
+                          </li>
+                        </>
+                      ) : (
+                        <>
+                          <li className="mb-2 d-flex justify-content-between">
+                            <strong>Closing Date:</strong>
+                            <span>{formData.closing_date || "N/A"}</span>
+                          </li>
+                          <li className="mb-2 d-flex justify-content-between">
+                            <strong>Closing Amount:</strong>
+                            <span>
+                              ₹
+                              {parseFloat(
+                                formData.closing_amount || 0
+                              ).toLocaleString()}
+                            </span>
+                          </li>
+                          <li className="mb-2 d-flex justify-content-between">
+                            <strong>Closing Interest Amount:</strong>
+                            <span>
+                              ₹
+                              {parseFloat(
+                                formData.closing_interest_amount || 0
+                              ).toLocaleString()}
+                            </span>
+                          </li>
+                          <li className="mb-2 d-flex justify-content-between">
+                            <strong>Extra Charges:</strong>
+                            <span>
+                              ₹
+                              {parseFloat(
+                                formData.extra_charges || 0
+                              ).toLocaleString()}
+                            </span>
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                </Col>
+              </Row>
             </>
           ) : (
             <>
@@ -673,29 +727,40 @@ const BankPledgerCreation = () => {
                   pauseOnHover
                   theme="colored"
                 />
-                <span className="mx-2">
-                  <ClickButton
-                    label={
-                      loading ? (
-                        <>Processing...</>
-                      ) : isClosing ? (
-                        <>Closing</>
-                      ) : isEdit ? (
-                        <>Update</>
-                      ) : (
-                        <>Submit</>
-                      )
-                    }
-                    onClick={handleFormSubmit}
-                    disabled={loading}
-                  ></ClickButton>
-                </span>
-                <span className="mx-2">
-                  <ClickButton
-                    label={<>Cancel</>}
-                    onClick={() => navigate("/console/master/bankpledger")}
-                  ></ClickButton>
-                </span>
+                {isView ? (
+                  <span className="mx-2">
+                    <ClickButton
+                      label={<>Back</>}
+                      onClick={() => navigate("/console/master/bankpledger")}
+                    ></ClickButton>
+                  </span>
+                ) : (
+                  <>
+                    <span className="mx-2">
+                      <ClickButton
+                        label={
+                          loading ? (
+                            <>Processing...</>
+                          ) : isClosing ? (
+                            <>Closing</>
+                          ) : isEdit ? (
+                            <>Update</>
+                          ) : (
+                            <>Submit</>
+                          )
+                        }
+                        onClick={handleFormSubmit}
+                        disabled={loading}
+                      ></ClickButton>
+                    </span>
+                    <span className="mx-2">
+                      <ClickButton
+                        label={<>Cancel</>}
+                        onClick={() => navigate("/console/master/bankpledger")}
+                      ></ClickButton>
+                    </span>
+                  </>
+                )}
               </>
             </div>
           </Col>

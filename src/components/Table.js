@@ -752,6 +752,11 @@ const TableUI = ({
       state: { type: "edit", rowData: rowData },
     });
   };
+  const handleBankPledgerViewClick = (rowData) => {
+    navigate("/console/master/bankpledger/create", {
+      state: { type: "view", rowData: rowData },
+    });
+  };
   const handleBankPledgerClosingClick = (rowData) => {
     navigate("/console/master/bankpledger/create", {
       state: { type: "closing", rowData: rowData },
@@ -1777,15 +1782,24 @@ const TableUI = ({
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                           {rowData.status === "Closed" ? (
-                            <Dropdown.Item
-                              onClick={() =>
-                                handleBankPledgerDeleteClick(
-                                  rowData.bank_pledge_id
-                                )
-                              }
-                            >
-                              Delete
-                            </Dropdown.Item>
+                            <>
+                              <Dropdown.Item
+                                onClick={() =>
+                                  handleBankPledgerViewClick(rowData)
+                                }
+                              >
+                                View
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() =>
+                                  handleBankPledgerDeleteClick(
+                                    rowData.bank_pledge_id
+                                  )
+                                }
+                              >
+                                Delete
+                              </Dropdown.Item>
+                            </>
                           ) : (
                             <>
                               {isAdmin && (
