@@ -12,7 +12,6 @@ import InterestStatementPDF from "../pdf/InterestStatementPDF";
 import ReceiptPDF from "../pdf/jewelInterestPdf";
 import JewelPawnrecoveryPdf from "../pdf/jewelpawnRecoverPdf";
 import { MdCheckCircle, MdClose } from "react-icons/md";
-
 const TableUI = ({
   headers,
   body,
@@ -30,15 +29,12 @@ const TableUI = ({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, body.length);
   const currentItems = body.slice(startIndex, endIndex);
-
   // States for PDF download
   const [pendingDownload, setPendingDownload] = useState(null);
   const [tempData, setTempData] = useState(null);
   const [downloadUrl, setDownloadUrl] = useState(null);
-
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const isAdmin = user.role === "Admin";
-
   useEffect(() => {
     if (downloadUrl && pendingDownload) {
       const link = document.createElement("a");
@@ -53,7 +49,6 @@ const TableUI = ({
       setTempData(null);
     }
   }, [downloadUrl, pendingDownload]);
-
   const nextPage = () => {
     if (currentPage < totalPages) {
       setLoading(true);
@@ -63,7 +58,6 @@ const TableUI = ({
       }, 500); // simulate delay
     }
   };
-
   const prevPage = () => {
     if (currentPage > 1) {
       setLoading(true);
@@ -73,36 +67,28 @@ const TableUI = ({
       }, 500); // simulate delay
     }
   };
-
   // useEffect(() => {
-  //   setLoading(true);
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //   }, 1000);
+  // setLoading(true);
+  // setTimeout(() => {
+  // setLoading(false);
+  // }, 1000);
   // }, []);
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth() returns month from 0-11
     const year = date.getFullYear();
-
     return `${day}-${month}-${year}`;
   };
-
   const calculateDueDays = (pledgeDate, pledgeDueDate) => {
     const dueDate = new Date(pledgeDueDate + "T00:00:00");
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     const diffTime = dueDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
     return Math.max(0, diffDays);
   };
-
   const navigate = useNavigate();
-
   const handleDownloadStatement = async (pawnRow) => {
     setLoading(true);
     try {
@@ -118,7 +104,6 @@ const TableUI = ({
           }),
         }
       );
-
       const responseData = await response.json();
       if (responseData.head.code === 200) {
         setTempData({
@@ -135,7 +120,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleEditClick = (rowData) => {
     navigate("/console/user/create", {
       state: { type: "edit", rowData: rowData },
@@ -153,7 +137,6 @@ const TableUI = ({
           delete_user_id: user_id,
         }),
       });
-
       const responseData = await response.json();
       if (responseData.head.code === 200) {
         navigate("/console/user");
@@ -172,13 +155,11 @@ const TableUI = ({
       state: { type: "edit", rowData: rowData },
     });
   };
-
   const handleJewelPawningEditClick = (rowData) => {
     navigate("/console/customer/loancreation", {
       state: { type: "edit", rowData: rowData },
     });
   };
-
   const handleJewelPawningprintviewClick = (rowData) => {
     navigate("/console/jewelpawn", {
       state: { type: "pdfview", rowData: rowData },
@@ -189,13 +170,11 @@ const TableUI = ({
       state: { type: "pdfview", rowData: rowData },
     });
   };
-
   const handleJewelRecoveryprintviewClick = (rowData) => {
     navigate("/console/jewelpawnrevery", {
       state: { type: "pdfview", rowData: rowData },
     });
   };
-
   const handleJewelPawningDeleteClick = async (id) => {
     setLoading(true);
     try {
@@ -210,9 +189,7 @@ const TableUI = ({
           user_name: user.user_name,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/master/customer");
         window.location.reload();
@@ -230,7 +207,6 @@ const TableUI = ({
       state: { type: "edit", rowData: rowData },
     });
   };
-
   const handleJewelPawngprintviewClick = (rowData) => {
     navigate("/console/jewelpawng", {
       state: { type: "pdfview", rowData: rowData },
@@ -241,7 +217,6 @@ const TableUI = ({
       state: { type: "pdfview", rowData: rowData },
     });
   };
-
   const handleJewelPawngDeleteClick = async (id) => {
     setLoading(true);
     try {
@@ -254,9 +229,7 @@ const TableUI = ({
           delete_pawnjewelry_id: id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/pawn/jewelpawng");
         window.location.reload();
@@ -288,9 +261,7 @@ const TableUI = ({
           user_name: user.user_name,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/customer/interest");
         window.location.reload();
@@ -303,7 +274,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleJewelEstimateEditClick = (rowData) => {
     navigate("/console/master/jewelestimate/create", {
       state: { type: "edit", rowData: rowData },
@@ -321,9 +291,7 @@ const TableUI = ({
           delete_pawnjewelry_estimate_id: id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/master/jewelestimate");
         // window.location.reload();
@@ -336,7 +304,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleJewelUnitEditClick = (rowData) => {
     navigate("/console/master/unit/create", {
       state: { type: "edit", rowData: rowData },
@@ -354,12 +321,10 @@ const TableUI = ({
           delete_unit_id: unit_id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/master/unit");
-        //  window.location.reload();
+        // window.location.reload();
       } else {
         console.log(responseData.head.msg);
         setLoading(false);
@@ -369,7 +334,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleJewelGroupEditClick = (rowData) => {
     navigate("/console/master/group/create", {
       state: { type: "edit", rowData: rowData },
@@ -387,9 +351,7 @@ const TableUI = ({
           delete_Group_id: id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/master/group");
         window.location.reload();
@@ -403,11 +365,10 @@ const TableUI = ({
       setLoading(true);
     }
   };
-
   // const handleJewelcustomerViewClick = (rowData) => {
-  //   navigate("/console/master/customer/create", {
-  //     state: { type: "view", rowData: rowData },
-  //   });
+  // navigate("/console/master/customer/create", {
+  // state: { type: "view", rowData: rowData },
+  // });
   // };
   const handleJewelcustomerViewClick = (rowData) => {
     navigate("/console/master/customerdetails", {
@@ -433,9 +394,7 @@ const TableUI = ({
           user_name: user.user_name,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/master/customer");
         // window.location.reload();
@@ -448,7 +407,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleJewelCategoryEditClick = (rowData) => {
     navigate("/console/master/category/create", {
       state: { type: "edit", rowData: rowData },
@@ -466,9 +424,7 @@ const TableUI = ({
           delete_category_id: id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/master/category");
         // window.location.reload();
@@ -499,9 +455,7 @@ const TableUI = ({
           delete_bank_pledge_id: id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/pawn/bankpledge");
       } else {
@@ -513,7 +467,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handlecategoryTwoEditClick = (rowData) => {
     navigate("/console/expense/category/create", {
       state: { type: "edit", rowData: rowData },
@@ -532,7 +485,6 @@ const TableUI = ({
           delete_category_id: id,
         }),
       });
-
       const responseData = await response.json();
       console.log(responseData);
       if (responseData.head.code === 200) {
@@ -546,7 +498,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleexpenseTwoEditClick = (rowData) => {
     navigate("/console/expense/create", {
       state: { type: "edit", rowData: rowData },
@@ -565,9 +516,7 @@ const TableUI = ({
           delete_expense_id: id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/expense");
       } else {
@@ -598,9 +547,7 @@ const TableUI = ({
           user_name: user.user_name,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate(-1);
         // window.location.reload();
@@ -613,7 +560,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleProductEditClick = (rowData) => {
     navigate("/console/master/products/create", {
       state: { type: "edit", rowData: rowData },
@@ -654,7 +600,6 @@ const TableUI = ({
   };
   const handleActionDeleteClick = async (action_id) => {
     setLoading(true);
-
     try {
       const response = await fetch(`${API_DOMAIN}/action.php`, {
         method: "POST",
@@ -742,13 +687,11 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleBankEditClick = (rowData) => {
     navigate("/console/master/bank/create", {
       state: { type: "edit", rowData: rowData },
     });
   };
-
   const handleBankDeleteClick = async (bank_id) => {
     setLoading(true);
     try {
@@ -761,9 +704,7 @@ const TableUI = ({
           delete_bank_id: bank_id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/master/bank");
         window.location.reload();
@@ -776,7 +717,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleBankPledgerDetailsEditClick = (rowData) => {
     navigate("/console/master/bankpledgerdetails/create", {
       state: { type: "edit", rowData: rowData },
@@ -794,9 +734,7 @@ const TableUI = ({
           delete_bank_pledger_details_id: id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/master/bankpledgerdetails");
         window.location.reload();
@@ -809,19 +747,16 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   const handleBankPledgerEditClick = (rowData) => {
     navigate("/console/master/bankpledger/create", {
       state: { type: "edit", rowData: rowData },
     });
   };
-
   const handleBankPledgerClosingClick = (rowData) => {
     navigate("/console/master/bankpledger/create", {
       state: { type: "closing", rowData: rowData },
     });
   };
-
   const handleBankPledgerDeleteClick = async (bank_pledge_id) => {
     setLoading(true);
     try {
@@ -834,9 +769,7 @@ const TableUI = ({
           delete_bank_pledger_id: bank_pledge_id,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         navigate("/console/master/bankpledger");
         window.location.reload();
@@ -849,7 +782,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
   return (
     <>
       <LoadingOverlay isLoading={loading} />
@@ -914,7 +846,6 @@ const TableUI = ({
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                           {/* <Dropdown.Item onClick={() => handleViewClick(rowData)}>View</Dropdown.Item> */}
-
                           {isAdmin && ( // Show Edit option only if user is Admin
                             <Dropdown.Item
                               onClick={() => handleEditClick(rowData)}
@@ -972,7 +903,6 @@ const TableUI = ({
                         return `${dd}-${mm}-${yyyy}`;
                       })()}
                     </td>
-
                     <td>{rowData.name}</td>
                     <td>{rowData.receipt_no}</td>
                     <td>{rowData.mobile_number}</td>
@@ -1008,7 +938,6 @@ const TableUI = ({
                               </a>
                             )}
                           </PDFDownloadLink>
-
                           {isAdmin &&
                             rowIndex === body.length - 1 && ( // Show Edit option only if user is Admin and it's the last row
                               <Dropdown.Item
@@ -1036,7 +965,6 @@ const TableUI = ({
                       : typeof rowData.jewel_product === "string"
                       ? JSON.parse(rowData.jewel_product)
                       : [];
-
                     const totalWeight = jewelList.reduce(
                       (sum, jewel) => sum + parseFloat(jewel.weight || 0),
                       0
@@ -1053,13 +981,11 @@ const TableUI = ({
                           }`
                       )
                       .join(", ");
-
                     return (
                       <>
                         <td>{startIndex + rowIndex + 1}</td>
                         <td>{formatDate(rowData.pawnjewelry_date)}</td>
                         <td>{rowData.receipt_no}</td>
-
                         <td>{rowData.original_amount}</td>
                         <td>{rowData.interest_rate}</td>
                         <td>{totalWeight.toFixed(2)}</td>
@@ -1145,7 +1071,6 @@ const TableUI = ({
                                   </Dropdown.Item>
                                 </>
                               )}
-
                               {isAdmin && (
                                 <Dropdown.Item
                                   onClick={() =>
@@ -1170,7 +1095,6 @@ const TableUI = ({
                       </>
                     );
                   })()}
-
                 {type === "jewelPawng" && (
                   <>
                     {" "}
@@ -1271,7 +1195,6 @@ const TableUI = ({
                               </a>
                             )}
                           </PDFDownloadLink>
-
                           {/* <PDFDownloadLink
                             document={<JewelPawnrecoveryPdf data={rowData} />}
                             fileName={`${rowData.receipt_no}_recovery.pdf`}
@@ -1288,9 +1211,7 @@ const TableUI = ({
                               </a>
                             )}
                           </PDFDownloadLink> */}
-
                           {/* <Dropdown.Item onClick={() => handleJewelRecoveryViewClick(rowData)}>View</Dropdown.Item> */}
-
                           {isAdmin && ( // Show Edit option only if user is Admin
                             <Dropdown.Item
                               onClick={() =>
@@ -1400,7 +1321,6 @@ const TableUI = ({
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                           {/* <Dropdown.Item onClick={() => handleJewelGroupViewClick(rowData)}>View</Dropdown.Item> */}
-
                           {isAdmin && ( // Show Edit option only if user is Admin
                             <Dropdown.Item
                               onClick={() => handleJewelGroupEditClick(rowData)}
@@ -1555,7 +1475,6 @@ const TableUI = ({
                     <td>{startIndex + rowIndex + 1}</td>
                     <td>{rowData.product_eng}</td>
                     <td>{rowData.product_tam}</td>
-
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle>
@@ -1586,7 +1505,6 @@ const TableUI = ({
                     <td>{startIndex + rowIndex + 1}</td>
                     <td>{rowData.receipt_no}</td>
                     <td>{rowData.name}</td>
-
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle>
@@ -1619,7 +1537,6 @@ const TableUI = ({
                     <td>{rowData.expense_name}</td>
                     <td>{rowData.expense_type}</td>
                     <td>{rowData.amount}</td>
-
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle>
@@ -1635,7 +1552,6 @@ const TableUI = ({
                               Edit
                             </Dropdown.Item>
                           )}
-
                           <Dropdown.Item
                             onClick={() =>
                               handleExpenseDeleteClick(rowData.expense_id)
@@ -1648,13 +1564,11 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-
                 {type === "street" && (
                   <>
                     <td>{startIndex + rowIndex + 1}</td>
                     <td>{rowData.street_eng}</td>
                     <td>{rowData.street_tam}</td>
-
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle>
@@ -1685,7 +1599,6 @@ const TableUI = ({
                     <td>{startIndex + rowIndex + 1}</td>
                     <td>{formatDate(rowData.bank_pledge_date)}</td>
                     <td>{rowData.customer_no}</td>
-
                     <td>{rowData.receipt_no}</td>
                     <td>{rowData.bank_loan_no}</td>
                     <td>
@@ -1811,7 +1724,7 @@ const TableUI = ({
                   <>
                     <td>{startIndex + rowIndex + 1}</td>
                     <td>{rowData.name}</td>
-                    <td>{rowData.bank_loan_no}</td>
+                    <td>{rowData.pawn_loan_no}</td>
                     <td>{rowData.pawn_value}</td>
                     <td>{rowData.pledge_date}</td>
                     <td>{rowData.pledge_due_date}</td>
@@ -1907,7 +1820,6 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-
                 {type === "bankPledgerSummary" && (
                   <>
                     <td>{startIndex + rowIndex + 1}</td>
@@ -1922,7 +1834,10 @@ const TableUI = ({
                         <Dropdown.Menu>
                           <Dropdown.Item
                             onClick={() =>
-                              customActions?.viewDetails?.(rowData.records)
+                              customActions?.viewDetails?.(
+                                rowData.records,
+                                rowData.loan_no
+                              )
                             }
                           >
                             View Details
@@ -1974,5 +1889,4 @@ const TableUI = ({
     </>
   );
 };
-
 export default TableUI;

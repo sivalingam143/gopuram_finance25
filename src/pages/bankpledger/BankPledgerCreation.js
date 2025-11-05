@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import API_DOMAIN from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
-
 const BankPledgerCreation = () => {
   const location = useLocation();
   const { type, rowData } = location.state || {};
@@ -17,7 +16,6 @@ const BankPledgerCreation = () => {
     type === "closing" ? "closing" : type === "edit" ? "edit" : "create";
   const isEdit = type === "edit";
   const isClosing = type === "closing";
-
   let initialState =
     mode !== "create"
       ? { ...rowData }
@@ -29,6 +27,7 @@ const BankPledgerCreation = () => {
           bank_details: "",
           pledge_date: "",
           bank_loan_no: "",
+          pawn_loan_no: "",
           pawn_value: "",
           interest_rate: "",
           duration_month: "",
@@ -36,7 +35,6 @@ const BankPledgerCreation = () => {
           pledge_due_date: "",
           additional_charges: "",
         };
-
   if (isClosing) {
     initialState = {
       ...initialState,
@@ -46,7 +44,6 @@ const BankPledgerCreation = () => {
       extra_charges: "",
     };
   }
-
   const [formData, setFormData] = useState(initialState);
   console.log(formData);
   const [error, setError] = useState("");
@@ -56,7 +53,6 @@ const BankPledgerCreation = () => {
   const [bankList, setBankList] = useState([]);
   const [selectedBankId, setSelectedBankId] = useState(null);
   const navigate = useNavigate();
-
   const handleChange = (e, fieldName) => {
     const value = e.target ? e.target.value : e.value;
     setFormData({
@@ -64,7 +60,6 @@ const BankPledgerCreation = () => {
       [fieldName]: value,
     });
   };
-
   const [showAlert, setShowAlert] = useState(false);
   const fetchPledgers = async () => {
     try {
@@ -228,7 +223,6 @@ const BankPledgerCreation = () => {
       setLoading(false);
     }
   };
-
   // Existing handleUpdateSubmit remains unchanged
   const handleUpdateSubmit = async () => {
     setLoading(true);
@@ -247,6 +241,7 @@ const BankPledgerCreation = () => {
           bank_details: formData.bank_details,
           pledge_date: formData.pledge_date,
           bank_loan_no: formData.bank_loan_no,
+          pawn_loan_no: formData.pawn_loan_no,
           pawn_value: formData.pawn_value,
           interest_rate: formData.interest_rate,
           duration_month: formData.duration_month,
@@ -290,7 +285,6 @@ const BankPledgerCreation = () => {
     }
     setLoading(false);
   };
-
   // New handler for closing
   const handleClosingSubmit = async () => {
     setLoading(true);
@@ -344,7 +338,6 @@ const BankPledgerCreation = () => {
     }
     setLoading(false);
   };
-
   // Unified submit handler
   const handleFormSubmit = () => {
     if (isClosing) {
@@ -355,11 +348,9 @@ const BankPledgerCreation = () => {
       handleSubmit();
     }
   };
-
   // Get selected bank for display in closing mode
   const selectedBank =
     bankList.find((b) => b.id === selectedBankId) || bankList[0];
-
   return (
     <div>
       <Container>
@@ -371,7 +362,6 @@ const BankPledgerCreation = () => {
               }`}
             ></PageNav>
           </Col>
-
           {isClosing ? (
             <>
               {/* Cards for static info in closing mode */}
@@ -423,6 +413,10 @@ const BankPledgerCreation = () => {
                         <span>{formData.bank_loan_no || "N/A"}</span>
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
+                        <strong>Pawn Loan No:</strong>
+                        <span>{formData.pawn_loan_no || "N/A"}</span>
+                      </li>
+                      <li className="mb-2 d-flex justify-content-between">
                         <strong>Pawn Value:</strong>
                         <span>
                           ₹
@@ -465,7 +459,6 @@ const BankPledgerCreation = () => {
                   </div>
                 </Col>
               </Row>
-
               {/* Closing input fields inside a card */}
               <Col lg={12} className="py-3">
                 <div className="customer-card bg-light border rounded p-3">
@@ -594,6 +587,16 @@ const BankPledgerCreation = () => {
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
+                  placeholder={"Pawn Loan No"}
+                  labelname={"Pawn Loan No"}
+                  name="pawn_loan_no"
+                  value={formData.pawn_loan_no}
+                  onChange={(e) => handleChange(e, "pawn_loan_no")}
+                  disabled={isEdit && true}
+                ></TextInputForm>
+              </Col>
+              <Col lg="4" md="6" xs="12" className="py-3">
+                <TextInputForm
                   placeholder={"Pawn Value"}
                   labelname={"Pawn Value"}
                   name="pawn_value"
@@ -655,7 +658,6 @@ const BankPledgerCreation = () => {
               </Col>
             </>
           )}
-
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
               <>
@@ -707,5 +709,4 @@ const BankPledgerCreation = () => {
     </div>
   );
 };
-
 export default BankPledgerCreation;

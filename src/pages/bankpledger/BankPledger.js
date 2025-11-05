@@ -8,16 +8,13 @@ import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
-
 const BankPledger = () => {
   const navigate = useNavigate();
   const [loanSearchText, setLoanSearchText] = useState("");
   const [allGroupedData, setAllGroupedData] = useState([]);
   const [groupedData, setGroupedData] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  const summaryHeaders = ["S.No", "Bank Loan No", "Action"];
-
+  const summaryHeaders = ["S.No", "Pawn Loan No", "Action"];
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -31,7 +28,6 @@ const BankPledger = () => {
         }),
       });
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         const grouped = responseData.body.grouped_pledger || [];
         setAllGroupedData(grouped);
@@ -45,7 +41,6 @@ const BankPledger = () => {
       console.error("Error fetching data:", error.message);
     }
   };
-
   const updateGroupedData = (data) => {
     let filtered = data;
     if (loanSearchText) {
@@ -57,29 +52,23 @@ const BankPledger = () => {
     }
     setGroupedData(filtered);
   };
-
   useEffect(() => {
     fetchData();
   }, []);
-
   useEffect(() => {
     updateGroupedData(allGroupedData);
   }, [loanSearchText]);
-
   const handleLoanSearch = (value) => {
     setLoanSearchText(value);
   };
-
   const handleViewDetails = (records, loanNo) => {
     navigate("/console/master/bankpledger/viewdetails", {
       state: { records, loanNo },
     });
   };
-
   const customActions = {
     viewDetails: handleViewDetails,
   };
-
   return (
     <div>
       <LoadingOverlay isLoading={loading} />
@@ -98,7 +87,7 @@ const BankPledger = () => {
           </Col>
           <Col lg="3" md="5" xs="12" className="py-1">
             <TextInputForm
-              placeholder={"Search by Loan No"}
+              placeholder={"Search by Pawn Loan No"}
               prefix_icon={<FaMagnifyingGlass />}
               onChange={(e) => handleLoanSearch(e.target.value)}
               labelname={"Search Loan"}
@@ -128,5 +117,4 @@ const BankPledger = () => {
     </div>
   );
 };
-
 export default BankPledger;

@@ -6,7 +6,6 @@ import { TextInputForm } from "../../components/Forms";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import LoadingOverlay from "../../components/LoadingOverlay";
-
 const BankPledgerViewDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,11 +14,10 @@ const BankPledgerViewDetails = () => {
   console.log(filteredRecords);
   const [detailsSearchText, setDetailsSearchText] = useState("");
   const [loading, setLoading] = useState(false);
-
   const UserTablehead = [
     "No",
     "Name",
-    "Bank Loan No",
+    "Pawn Loan No",
     "Pawn Value",
     "Pledge Date",
     "Pledge Due Date",
@@ -27,7 +25,6 @@ const BankPledgerViewDetails = () => {
     "Due Days",
     "Action",
   ];
-
   useEffect(() => {
     // Filter by name on search change
     if (detailsSearchText) {
@@ -41,15 +38,12 @@ const BankPledgerViewDetails = () => {
       setFilteredRecords([...records]);
     }
   }, [detailsSearchText, records]);
-
   const handleDetailsSearch = (value) => {
     setDetailsSearchText(value);
   };
-
   const handleBack = () => {
     navigate("/console/master/bankpledger");
   };
-
   if (!records || records.length === 0) {
     return (
       <div>
@@ -71,7 +65,6 @@ const BankPledgerViewDetails = () => {
       </div>
     );
   }
-
   return (
     <div>
       <LoadingOverlay isLoading={loading} />
@@ -117,5 +110,4 @@ const BankPledgerViewDetails = () => {
     </div>
   );
 };
-
 export default BankPledgerViewDetails;
