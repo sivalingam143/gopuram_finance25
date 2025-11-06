@@ -257,7 +257,8 @@ const BalanceSheet = () => {
 
       {/* Date Filter Section */}
       <Row className="mb-3">
-        <Col md={4}>
+        <Col md={3 }>
+
           <Form.Group>
             <Form.Label>From Date</Form.Label>
             <Form.Control
@@ -267,7 +268,7 @@ const BalanceSheet = () => {
             />
           </Form.Group>
         </Col>
-        <Col md={4}>
+        <Col md={3 } >
           <Form.Group>
             <Form.Label>To Date</Form.Label>
             <Form.Control
@@ -277,7 +278,7 @@ const BalanceSheet = () => {
             />
           </Form.Group>
         </Col>
-        <Col md={4} className="d-flex align-items-end">
+        <Col md={3 } className="d-flex align-items-end">
           {/* <Button className="custom-btn" onClick={filterEntries}>
             Apply Filter
           </Button> */}

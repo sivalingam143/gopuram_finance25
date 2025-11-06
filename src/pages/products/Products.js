@@ -85,16 +85,16 @@ const Products = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span className="nav-list">Products</span>
+              <span className="nav-list">Product</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add New</>}
+              label={<>Add Product</>}
               onClick={() => navigate("/console/master/Products/create")}
             />
           </Col>
-          <Col lg="3" md="12" xs="12" className="py-1">
+          <Col lg="3" md="12" xs="12" className="py-1" style={{ marginLeft: "-10px" }}>
             <TextInputForm
               placeholder={"Search Product"}
               prefix_icon={<FaMagnifyingGlass />}

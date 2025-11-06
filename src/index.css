@@ -1,7 +1,25 @@
+
+/* === Global Jewel Finance Theme === */
+:root {
+  --gold-light: #fff8dc;     /* soft cream gold */
+  --gold-mid: #f7d36e;       /* rich gold */
+  --gold-dark: #d4af37;      /* deep metallic gold */
+  --gold-glow: #ffefba;      /* glow highlight */
+  --text-dark: #3b2f1e;      /* elegant brown text */
+  --card-bg: #ffffff;        /* white card background */
+  --accent-blue: #1e3c72;    /* accent for buttons or highlights */
+  --accent-green: #52c242;   /* accent for success */
+}
+
+
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: "regular" !important;
-  background-color: #e5e5e5 !important;
+  font-family: "Inter", "Noto Sans Tamil", sans-serif !important;
+  background-color: #f8f9fa;
+  color: #212529;
+ 
 }
+
+

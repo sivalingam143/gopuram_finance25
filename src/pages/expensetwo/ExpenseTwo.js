@@ -65,7 +65,7 @@ const ExpenseTwo = () => {
               onClick={() => navigate("/console/expense/create")}
             ></ClickButton>
           </Col>
-          <Col lg="3" md="5" xs="12" className="py-1">
+          <Col lg="3" md="5" xs="12" className="py-1" style={{ marginLeft: "-11px" }}>
             <TextInputForm
               placeholder={"Search Expense Data"}
               prefix_icon={<FaMagnifyingGlass />}

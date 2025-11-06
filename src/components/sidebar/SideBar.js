@@ -98,12 +98,32 @@ const SideBar = ({ onLogout }) => {
                               }}
                             >
                               <span className="list-icon">
-                                <LuDot />
+                                {subItem.icon ? subItem.icon : <LuDot />}{" "}
+                                {/* ✅ shows custom icon or dot */}
                               </span>
                               <span className="list-text">{subItem.text}</span>
                             </NavLink>
                           </li>
                         ))}
+
+                        {/* {item.subMenu.map((subItem, subIndex) => (
+                          <li key={subIndex}>
+                            <NavLink
+                              to={subItem.path}
+                              className="nav-link"
+                              onClick={() => {
+                                if (window.innerWidth <= 768) {
+                                  setIsSidebarOpen(false);
+                                }
+                              }}
+                            >
+                              <span className="list-icon">
+                                <LuDot />
+                              </span>
+                              <span className="list-text">{subItem.text}</span>
+                            </NavLink>
+                          </li>
+                        ))} */}
                       </ul>
                     </Collapse>
                   </>

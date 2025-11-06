@@ -15,7 +15,7 @@ button {
   cursor: pointer;
 }
 
-.create-btn {
+/* .create-btn {
   border: 1px solid#0757df !important;
   width: 120px;
   height: 46px;
@@ -26,18 +26,38 @@ button {
   background: #0757df !important;
   padding: 1px;
   margin-top: 20px;
-}
+} */
 .choosefilebtn {
-  border: 1px solid#0757df !important;
+   border: none !important;
   width: 120px;
   height: 46px;
   color: #ffffff !important;
   border-radius: 6px !important;
   transition: 0.5s all;
   font-family: "regular" !important;
-  background: #0757df !important;
+   background: #041a3f !important;
+  margin-top: 20px;
   margin-left: 20px !important;
 }
+.choosefilebtn:hover {
+  background: #06285f !important;  /* slightly lighter hover shade */
+}
+ .previewbtn {
+  border: none !important;
+  width: 120px;
+  height: 46px;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+  transition: 0.3s all;
+  font-family: "regular" !important;
+  background:#0757df !important;
+  margin-top: 20px;
+  margin-left: 20px !important;
+  cursor: pointer;
+}
+
+
+
 .add-new {
   background-color: #0757df;
   display: inline-block;
@@ -54,14 +74,53 @@ button {
   color: #0757df !important;
 }
 
-.delete {
-  color: #0757df !important;
+/* .delete {
+  border: 1px solid#ca293e !important;
+  width: 120px;
+  height: 46px;
+  color: #ffffff !important;
   border-radius: 6px !important;
-  font-weight: 800 !important;
   transition: 0.5s all;
-  font-size: 28px !important;
   font-family: "regular" !important;
-  background: none !important;
-  border-radius: 0px 8px 8px 0px !important;
-  padding: 6.1px 12px !important;
+  background: #f85a5a !important;
+  padding: 1px;
+  margin-top: 20px;
+} */
+
+.create-btn,
+.delete,.cancel
+ {
+  width: 120px;
+  height: 46px;
+  color: #ffffff !important;
+  border-radius: 8px        !important;
+  transition: 0.3s all;
+  font-family: "regular" !important;
+  font-weight: 500;
+  padding: 1px;
+  margin-top: 20px;
+  border: none !important;
+  
+}
+
+/* Submit (Blue) */
+.create-btn {
+  background: #041a3f !important;
+}
+
+/* Cancel (Red) */
+.delete {
+  background: #FF0000 !important;
+}
+.cancel {
+ background: #FF0000 !important;
+ margin-left: 10px !important;
+}
+/* Hover effects */
+.create-btn:hover {
+  background: #004ecb !important;
+}
+
+.delete:hover {
+  background: #b02a37 !important;
 }

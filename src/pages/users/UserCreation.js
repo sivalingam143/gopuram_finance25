@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Col, Container, Row, Alert, Modal } from "react-bootstrap";
 import { TextInputForm, DropDownUI } from "../../components/Forms";
 import { VscEyeClosed, VscEye } from "react-icons/vsc";
-import { ClickButton } from "../../components/ClickButton";
+import { ClickButton,Delete } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
+
 const DropList = [
   {
     value: "Admin",
@@ -348,7 +349,8 @@ const UserCreation = () => {
           </Col>
 
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
-            <div className="text-center">
+            <div style={{ textAlign: "right", paddingRight: "5px" }}>
+
               {type === "view" ? (
                 <ClickButton
                   label={<>back</>}
@@ -378,10 +380,10 @@ const UserCreation = () => {
                       </span>
 
                       <span className="mx-2">
-                        <ClickButton
+                        <Delete
                           label={<>Cancel</>}
                           onClick={() => navigate("/console/user")}
-                        ></ClickButton>
+                        ></Delete>
                       </span>
                     </>
                   ) : (
@@ -406,10 +408,10 @@ const UserCreation = () => {
                         ></ClickButton>
                       </span>
                       <span className="mx-2">
-                        <ClickButton
-                          label={<>Cancel</>}
+                        <Delete
+                          label="Cancel"
                           onClick={() => navigate("/console/user")}
-                        ></ClickButton>
+                        ></Delete>
                       </span>
                     </>
                   )}

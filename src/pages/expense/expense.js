@@ -71,9 +71,22 @@ const ExpenseEntry = () => {
           </div>
         </Col>
         <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-          <ClickButton label="Add Transaction" onClick={() => navigate("/console/transaction/create")} />
-        </Col>
-        <Col lg="3" md="5" xs="12" className="py-1">
+  <ClickButton
+    label="Add Transaction"
+    onClick={() => navigate("/console/transaction/create")}
+    style={{
+      backgroundColor: "#041a3b",
+      color: "white",
+      border: "none",
+      borderRadius: "8px",
+      padding: "8px 18px",
+      fontWeight: "500",
+      boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
+    }}
+  />
+</Col>
+
+        <Col lg="3" md="5" xs="12" className="py-1" style={{ marginLeft: "-10px" }}>
           <TextInputForm
             placeholder={"Search Transaction"}
             onChange={(e) => setSearchText(e.target.value)}

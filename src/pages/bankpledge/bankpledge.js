@@ -73,7 +73,7 @@ const BankPledge = () => {
               onClick={() => navigate("/console/pawn/bankpledge/create")}
             ></ClickButton>
           </Col>
-          <Col lg="3" md="5" xs="12" className="py-1">
+          <Col lg="3" md="5" xs="12" className="py-1" style={{ marginLeft: "-10px" }}>
             <TextInputForm
               placeholder={"Search..."}
               prefix_icon={<FaMagnifyingGlass />}

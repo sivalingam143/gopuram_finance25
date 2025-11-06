@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Col, Container, Row, Alert, Form } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
-import { ClickButton } from "../../components/ClickButton";
+import { ClickButton,Delete } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -217,11 +217,16 @@ setLoading(true);
             </Form.Select>
           </Form.Group>
         </Col>
+<Col
+  lg="12"
+  className="py-3 d-flex flex-row justify-content-end align-items-center"
+  style={{ paddingRight: "50px", gap: "15px" }}
+>
 
-        <Col
+        {/* <Col
           lg="12"
           className="py-3 text-center d-flex flex-row justify-content-center gap-3"
-        >
+        > */}
           {type === "edit" ? (
             <ClickButton label="Update" onClick={handleUpdateSubmit} disabled={loading} />
           ) : (
@@ -230,7 +235,7 @@ setLoading(true);
             onClick={handleSubmit} 
             disabled={loading} />
           )}
-          <ClickButton
+          <Delete
             label="Cancel"
             onClick={() => navigate("/console/master/products")}
           />

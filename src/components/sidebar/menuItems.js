@@ -1,19 +1,23 @@
-import {
-  MdOutlineDashboard,
-  MdOutlinePerson,
-  MdOutlineStorefront,
-} from "react-icons/md";
-import { FaSquarePlus, FaPersonCircleQuestion } from "react-icons/fa6";
-import { AiFillGolden } from "react-icons/ai";
-import { RiDeviceRecoverLine } from "react-icons/ri";
-import { LuMousePointer2 } from "react-icons/lu";
-import { FiUsers } from "react-icons/fi";
-import { IoMdCash } from "react-icons/io";
+import { MdSpaceDashboard,} from "react-icons/md";
+import {FiUsers} from "react-icons/fi";
+import { BsBuildings,BsBarChartFill} from "react-icons/bs";
+import { FaMoneyBillTrendUp } from "react-icons/fa6";
+import { PiUsersThreeBold } from "react-icons/pi";
+import { RiBankLine } from "react-icons/ri";
+import { TbArrowsShuffle } from "react-icons/tb";
+import { MdCategory } from "react-icons/md";
+import { GiSettingsKnobs } from "react-icons/gi";
+import { FaCogs, FaBoxes} from "react-icons/fa";
+import { MdOutlineDashboard } from "react-icons/md";
+import { FaChartLine } from "react-icons/fa";
+import { RiFileList3Line } from "react-icons/ri";
+import { AiOutlineCalendar } from "react-icons/ai";
+import { HiOutlineDocumentText } from "react-icons/hi";
 
 const sidebarConfig = [
   {
     path: "/console/dashboard",
-    icon: <MdOutlineDashboard />,
+    icon: <MdSpaceDashboard />,
     text: "Dashboard",
   },
   // {
@@ -23,29 +27,32 @@ const sidebarConfig = [
   // },
   {
     path: "/console/user",
-    icon: <MdOutlinePerson />,
+    icon: <FiUsers />,
     text: "User & Access",
   },
   {
     path: "/console/company",
-    icon: <MdOutlineStorefront />,
+    icon: <BsBuildings />,
     text: "Company",
   },
   {
     text: "Master",
-    icon: <FaSquarePlus />,
+    icon: <FaCogs />,
     subMenu: [
       {
         path: "/console/master/group",
         text: "Group",
+         icon: <MdCategory />
+        
       },
       {
         path: "/console/master/products",
-
+         icon: <FaBoxes />, 
         text: "Products",
       },
       {
         path: "/console/master/action",
+         icon: <GiSettingsKnobs />,
         text: "Action",
       },
       // {
@@ -62,8 +69,8 @@ const sidebarConfig = [
   },
   {
     path: "/console/master/customer",
-    text: "customer",
-    icon: <FiUsers />,
+    icon: <PiUsersThreeBold />,
+    text: "Customer",
   },
   // {
   //   path: "/console/pawn/jewelpawning",
@@ -85,7 +92,7 @@ const sidebarConfig = [
   {
     path: "/console/pawn/bankpledge",
     text: "Bank Pledge",
-    icon: <AiFillGolden />,
+    icon: <RiBankLine />,
   },
 
   // {
@@ -105,40 +112,46 @@ const sidebarConfig = [
 
   {
     path: "/console/transaction",
-    icon: <FaPersonCircleQuestion />,
+    icon: <TbArrowsShuffle />,
     text: "Transaction",
   },
   {
     path: "/console/expense",
     text: "Expense",
-    icon: <IoMdCash />,
+    icon: <FaMoneyBillTrendUp />,
   },
   {
     text: "Reports",
-    icon: <FaSquarePlus />,
+    icon: <BsBarChartFill />,
     subMenu: [
       {
         path: "/console/report/balancesheet",
-        text: "balancesheet DayBook",
+        text: "Balancesheet DayBook",
+        icon: <MdOutlineDashboard />
       },
       {
         path: "/console/advancereport/pawn",
         text: "Advance Report",
+         icon: <FaChartLine />,
       },
       {
         path: "/console/report/bledge",
         text: "Bledge Report",
+         icon: <RiFileList3Line />,
       },
       {
         path: "/console/report/dailyreport",
         text: "Daily Report",
+        icon: <AiOutlineCalendar />,
       },
       {
         path: "/console/report/government",
         text: "Government Report",
+         icon: <HiOutlineDocumentText />,
       },
     ],
   },
 ];
 
 export default sidebarConfig;
+

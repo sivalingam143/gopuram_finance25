@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from "react";
+import "./Dashboard.css";
+import { Container, Row, Col, Spinner, Table, Form } from "react-bootstrap";
+import { MaterialReactTable } from "material-react-table";
 import {
-  Container,
-  Row,
-  Col,
-  Spinner,
-  Table,
   Button,
-  Form,
-} from "react-bootstrap";
+  Chip,
+  Stack,
+  IconButton,
+  Tooltip,
+  Typography,Card, CardContent
+} from "@mui/material";
 import { MdOutlinePerson } from "react-icons/md";
 import { AiFillGolden } from "react-icons/ai";
 import { RiDeviceRecoverLine } from "react-icons/ri";
+import { Link } from "react-router-dom";
 import API_DOMAIN from "../config/config";
 import dayjs from "dayjs";
 import "./tablecus.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoadingOverlay from "../components/LoadingOverlay";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import SmsIcon from "@mui/icons-material/Sms";
+import { motion } from "framer-motion";
 
 const DashBoard = () => {
   const [userecoveryData, setUserrecoveryData] = useState([]);
@@ -499,6 +505,27 @@ const DashBoard = () => {
     fetchJewelPrices();
   }, []);
 
+  useEffect(() => {
+    if (jewelpawnData.length > 0 && interestData.length > 0) {
+      const merged = jewelpawnData.map((pawn) => {
+        const interestMatch = interestData.find(
+          (int) => int.receipt_no === pawn.receipt_no
+        );
+
+        return {
+          ...pawn,
+          interest_payment_periods:
+            interestMatch?.interest_payment_periods || "N/A",
+          total_interest_income: interestMatch
+            ? parseFloat(interestMatch.interest_income || 0)
+            : 0,
+        };
+      });
+
+      setFilteredData(merged);
+    }
+  }, [jewelpawnData, interestData]);
+
   const aggregatedInterestData = aggregateInterestData(interestData);
 
   const isPageLoading =
@@ -635,6 +662,478 @@ const DashBoard = () => {
     })
     .join(", ");
 
+  // Define columns for MaterialReactTable
+
+  const columns = [
+    {
+      accessorKey: "pawnjewelry_date",
+      header: "Date",
+      Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
+    },
+    { accessorKey: "receipt_no", header: "Loan Number" },
+    { accessorKey: "customer_no", header: "Customer Number" },
+    { accessorKey: "name", header: "Customer Name" },
+    { accessorKey: "place", header: "Location" },
+    { accessorKey: "mobile_number", header: "Mobile Number" },
+    {
+      accessorKey: "original_amount",
+      header: "Principal Amount (₹)",
+      Cell: ({ cell }) =>
+        `₹${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
+    },
+    { accessorKey: "interest_rate", header: "Interest Rate (%)" },
+    {
+      accessorKey: "jewel_product",
+      header: "Pawned Items",
+      Cell: ({ cell }) => {
+        try {
+          const jewels = Array.isArray(cell.getValue())
+            ? cell.getValue()
+            : JSON.parse(cell.getValue());
+          return jewels.map((j) => j.JewelName).join(", ");
+        } catch {
+          return "-";
+        }
+      },
+    },
+    {
+      accessorKey: "total_weight",
+      header: "Jewelry Weight (g)",
+      Cell: ({ row }) => {
+        try {
+          const jewels = Array.isArray(row.original.jewel_product)
+            ? row.original.jewel_product
+            : JSON.parse(row.original.jewel_product || "[]");
+          const total = jewels.reduce(
+            (sum, j) => sum + parseFloat(j.weight || 0),
+            0
+          );
+          return total > 0 ? total.toFixed(2) : "-";
+        } catch {
+          return "-";
+        }
+      },
+    },
+    {
+      accessorKey: "net_weight",
+      header: "Net Weight (g)",
+      Cell: ({ row }) => {
+        try {
+          const jewels = Array.isArray(row.original.jewel_product)
+            ? row.original.jewel_product
+            : JSON.parse(row.original.jewel_product || "[]");
+          const total = jewels.reduce(
+            (sum, j) => sum + parseFloat(j.net || 0),
+            0
+          );
+          return total > 0 ? total.toFixed(2) : "-";
+        } catch {
+          return "-";
+        }
+      },
+    },
+    {
+      accessorKey: "jewel_value",
+      header: "Jewelry Value (Pawned)",
+      Cell: ({ row }) => {
+        const jewelList = Array.isArray(row.original.jewel_product)
+          ? row.original.jewel_product
+          : JSON.parse(row.original.jewel_product || "[]");
+
+        const totalNetWeight = jewelList.reduce(
+          (sum, jewel) => sum + parseFloat(jewel.net || 0),
+          0
+        );
+
+        const originalAmount = parseFloat(row.original.original_amount || 0);
+
+        // Prevent division by zero
+        if (!totalNetWeight || totalNetWeight === 0) {
+          return "Infinity";
+        }
+
+        const value = originalAmount / totalNetWeight;
+        return `₹${Math.round(value).toLocaleString("en-IN")}`;
+      },
+    },
+
+    {
+      accessorKey: "interest_payment_period",
+      header: "Interest Outstanding",
+      muiTableHeadCellProps: {
+        align: "center", // centers the header text horizontally
+      },
+      Cell: ({ row }) => {
+        const period = row.original.interest_payment_period || 0;
+        const amount = row.original.interest_payment_amount || 0;
+
+        return (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <span style={{ fontSize: "13px", color: "#000" }}>
+              {period ? `${period} months` : "N/A"}
+            </span>
+            <span style={{ color: "green", fontWeight: 500 }}>
+              ₹{Math.round(amount).toLocaleString("en-IN")}
+            </span>
+          </div>
+        );
+      },
+    },
+
+    // {
+    //   accessorKey: "interest_payment_amount",
+    //   header: "Interest Outstanding (₹)",
+    //   Cell: ({ row }) => (
+    //     <span style={{ color: "green", fontWeight: 500 }}>
+    //       ₹
+    //       {Math.round(parseFloat(row.original.interest_payment_amount || 0)).toLocaleString(
+    //         "en-IN"
+    //       )}
+    //     </span>
+    //   ),
+    // },
+    {
+      accessorKey: "interest_paid",
+      header: "Interest Paid (₹)",
+      Cell: ({ row }) => {
+        const months = row.original.interest_payment_periods || "N/A";
+        const total = parseFloat(row.original.total_interest_income || 0);
+
+        return (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <span style={{ fontSize: "13px", color: "#000" }}>{months}</span>
+            <span style={{ color: "green", fontWeight: 500 }}>
+              ₹{Math.round(total).toLocaleString("en-IN")}
+            </span>
+          </div>
+        );
+      },
+    },
+
+    {
+      accessorKey: "total_appraisal",
+      header: "Total Appraisal (₹)",
+      muiTableBodyCellProps: {
+        align: "center", // aligns all cell values to the right
+      },
+      Cell: ({ row }) => {
+        const total =
+          parseFloat(row.original.original_amount || 0) +
+          parseFloat(row.original.interest_payment_amount || 0);
+        return `₹${Math.round(total).toLocaleString("en-IN")}`;
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      Cell: ({ cell }) => {
+        const value = cell.getValue();
+        const isActive = value === "நகை மீட்கபட்டது";
+
+        return (
+          <Chip
+            label={isActive ? "Active" : "Inactive"}
+            color={isActive ? "success" : "error"}
+            size="small"
+            sx={{
+              fontWeight: "bold",
+              color: "#fff",
+            }}
+          />
+        );
+      },
+    },
+
+    {
+      accessorKey: "overdue_months",
+      header: "Interest Overdue (Months)",
+      muiTableHeadCellProps: {
+        align: "center", // centers the header text horizontally
+      },
+      muiTableBodyCellProps: {
+        align: "center", // aligns all cell values to the center
+      },
+      Cell: ({ row }) => {
+        const months = getMonthsDifference(row.original.pawnjewelry_date);
+        return months;
+      },
+    },
+    {
+      accessorKey: "alert",
+      header: "Alert",
+      muiTableHeadCellProps: {
+        align: "center", // centers the header text horizontally
+      },
+      muiTableBodyCellProps: {
+        align: "center", // aligns all cell values to the center
+      },
+      Cell: ({ row }) => {
+        const item = row.original;
+        const alertContent = item.alertContent;
+        const isInactive = item.status !== "நகை மீட்கபட்டது"; // inactive condition
+
+        if (!isInactive) {
+          return <span style={{ color: "#999" }}>-</span>;
+        }
+
+        return (
+          <Stack direction="row" spacing={1} justifyContent="center">
+            <Tooltip title="Send WhatsApp">
+              <IconButton
+                onClick={() => {
+                  const url = `https://wa.me/${
+                    item.mobile_number
+                  }?text=${encodeURIComponent(alertContent)}`;
+                  window.open(url, "_blank");
+                }}
+                sx={{
+                  backgroundColor: "#25D366",
+                  color: "#4be760ff",
+                  "&:hover": { backgroundColor: "#1DA851" },
+                }}
+                size="medium"
+              >
+                <WhatsAppIcon fontSize="medium" />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Send SMS">
+              <IconButton
+                onClick={() =>
+                  (window.location.href = `sms:${
+                    item.mobile_number
+                  }?body=${encodeURIComponent(alertContent)}`)
+                }
+                sx={{
+                  backgroundColor: "#2b5585ff",
+                  color: "#3080e9ff",
+                  "&:hover": { backgroundColor: "#389ee2ff" },
+                }}
+                size="medium"
+              >
+                <SmsIcon fontSize="medium" />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        );
+      },
+    },
+
+    // {
+    //   accessorKey: "alert",
+    //   header: "Alert",
+    //   muiTableHeadCellProps: {
+    //     align: "center",
+    //   },
+    //   muiTableBodyCellProps: {
+    //     align: "center",
+    //   },
+    //   Cell: ({ row }) => {
+    //     const item = row.original;
+    //     const alertContent = item.alertContent;
+    //     if (item.status === "நகை மீட்கபட்டது")
+    //       return <span style={{ color: "#999" }}>-</span>;
+
+    //     return (
+    //       <Stack direction="row" spacing={1} justifyContent="center">
+    //         <Tooltip title="Send WhatsApp">
+    //           <IconButton
+    //             onClick={() => {
+    //               const url = `https://wa.me/${
+    //                 item.mobile_number
+    //               }?text=${encodeURIComponent(alertContent)}`;
+    //               window.open(url, "_blank");
+    //             }}
+    //             sx={{
+    //               backgroundColor: "#25D366",
+    //               color: "#4ae69dff",
+    //               "&:hover": { backgroundColor: "#1DA851" },
+    //             }}
+    //             size="medium"
+    //           >
+    //             <WhatsAppIcon fontSize="medium" />
+    //           </IconButton>
+    //         </Tooltip>
+
+    //         <Tooltip title="Send SMS">
+    //           <IconButton
+    //             onClick={() =>
+    //               (window.location.href = `sms:${
+    //                 item.mobile_number
+    //               }?body=${encodeURIComponent(alertContent)}`)
+    //             }
+    //             sx={{
+    //               backgroundColor: "#e4205bff",
+    //               color: "#d42626ff",
+    //               "&:hover": { backgroundColor: "#c91818ff" },
+    //             }}
+    //             size="medium"
+    //           >
+    //             <SmsIcon fontSize="medium" />
+    //           </IconButton>
+    //         </Tooltip>
+    //       </Stack>
+    //     );
+    //   },
+    // },
+  ];
+  const noticeColumns = [
+    {
+      accessorFn: (_, index) => index + 1,
+      id: "sno",
+      header: "S.No",
+      size: 30,
+       muiTableHeadCellProps: {
+        align: "left", // centers the header text horizontally
+      },
+      muiTableBodyCellProps: {
+        align: "left", // centers the header text horizontally
+      },
+      Cell: ({ cell }) => (
+        <strong style={{ fontWeight: 600 }}>{cell.getValue()}</strong>
+      ),
+    },
+    {
+      accessorKey: "pawnjewelry_date",
+      header: "Loan Date",
+       muiTableHeadCellProps: {
+        align: "left", // centers the header text horizontally
+      },
+      Cell: ({ cell }) =>
+        cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-",
+    },
+    { accessorKey: "receipt_no", header: "Loan Number", muiTableHeadCellProps: {
+        align: "left", // centers the header text horizontally
+      }, },
+    { accessorKey: "name", header: "Customer Name", muiTableHeadCellProps: {
+        align: "left", // centers the header text horizontally
+      }, },
+    {
+      accessorKey: "jewel_product",
+      header: "Ornaments", muiTableHeadCellProps: {
+        align: "left", // centers the header text horizontally
+      },
+      Cell: ({ cell }) => {
+        try {
+          const jewels = Array.isArray(cell.getValue())
+            ? cell.getValue()
+            : JSON.parse(cell.getValue());
+          return jewels.map((j) => j.JewelName).join(", ");
+        } catch {
+          return "-";
+        }
+      },
+    },
+    {
+      accessorKey: "notice_date",
+      header: "Notice Date",
+       muiTableHeadCellProps: {
+        align: "left", // centers the header text horizontally
+      },
+      Cell: ({ cell }) => (
+        <Chip
+          label={
+            cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-"
+          }
+          color="default"
+          variant="outlined"
+        />
+      ),
+    },
+    {
+      accessorKey: "notice_no",
+      header: "Notice No",
+       muiTableHeadCellProps: {
+        align: "left", // centers the header text horizontally
+      },
+      Cell: ({ cell }) => {
+        const n = parseInt(cell.getValue());
+        let bgColor = "#ccc";
+        if (n === 1) bgColor = "#fbff12";
+        else if (n === 2) bgColor = "#fc8319";
+        else if (n === 3) bgColor = "#f20707";
+
+        return (
+          <Chip
+            label={`Notice ${n}`}
+            sx={{
+              backgroundColor: bgColor,
+              color: "#000",
+              fontWeight: "bold",
+              borderRadius: "6px",
+            }}
+          />
+        );
+      },
+    },
+  ];
+  const actionColumns = [
+    {
+      accessorFn: (_, index) => index + 1,
+      id: "sno",
+      header: "S.No",
+      size: 50,
+      Cell: ({ cell }) => (
+        <strong style={{ fontWeight: 600 }}>{cell.getValue()}</strong>
+      ),
+    },
+    { accessorKey: "receipt_no", header: "Loan Number" },
+    { accessorKey: "name", header: "Customer Name" },
+    {
+      accessorKey: "jewel_product",
+      header: "Ornaments",
+      Cell: ({ cell }) =>
+        Array.isArray(cell.getValue())
+          ? cell
+              .getValue()
+              .map((j) => j.JewelName)
+              .join(", ")
+          : cell.getValue(),
+    },
+    {
+      accessorKey: "original_amount",
+      header: "Loan Amount (₹)",
+      Cell: ({ cell }) =>
+        `₹${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
+    },
+    {
+      accessorKey: "action_date",
+      header: "Action Date",
+      Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
+    },
+  ];
+  const historyColumns = [
+    {
+      accessorKey: "created_at",
+      header: "Date",
+      Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY HH:mm"),
+    },
+    { accessorKey: "receipt_no", header: "Receipt No" },
+    {
+      accessorKey: "old_value",
+      header: "Old Value",
+      Cell: ({ cell }) => getValueDisplay(cell.getValue()),
+    },
+    {
+      accessorKey: "new_value",
+      header: "New Value",
+      Cell: ({ cell }) => getValueDisplay(cell.getValue()),
+    },
+    { accessorKey: "remarks", header: "Remarks" },
+  ];
+
   return (
     <>
       <LoadingOverlay isLoading={isPageLoading} />
@@ -656,8 +1155,68 @@ const DashBoard = () => {
               </div>
             </Col>
           </Row>
+          <Row className="mt-3 justify-content-center">
+  {[
+    {
+      title: "Customer",
+      value: customerData.length,
+      color: "#009688",
+      icon: <MdOutlinePerson size={40} />,
+      link: "/console/master/customer",
+    },
+    {
+      title: "Jewelry Pawn",
+      value: jewelpawnData.length,
+      color: "#03A9F4",
+      icon: <AiFillGolden size={40} />,
+      link: "/console/jewel-pawn",
+    },
+    {
+      title: "Jewelry Recovery",
+      value: userecoveryData.length,
+      color: "#4CAF50",
+      icon: <RiDeviceRecoverLine size={40} />,
+      link: "/console/recovery",
+    },
+  ].map((stat, index) => (
+    <Col key={index} lg={3} md={4} sm={6} xs={12} className="mb-3">
+      <Link
+        to={stat.link}
+        style={{ textDecoration: "none" }}
+      >
+        <motion.div
+          whileHover={{ scale: 1.07, y: -5 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 180 }}
+        >
+          <Card
+            sx={{
+              borderRadius: 4,
+              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+              background: `linear-gradient(135deg, ${stat.color} 30%, ${stat.color}CC 90%)`,
+              color: "#fff",
+              cursor: "pointer",
+              textAlign: "center",
+            }}
+          >
+            <CardContent>
+              <div style={{ fontSize: "2.5rem" }}>{stat.icon}</div>
+              <Typography variant="h4" sx={{ fontWeight: 700, mt: 1 }}>
+                {stat.value}
+              </Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                {stat.title}
+              </Typography>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </Link>
+    </Col>
+  ))}
+</Row>
 
-          <Row>
+
+          {/* <Row>
             <Col lg="3" md="6" xs="12" className="py-3">
               <div className="counter-card cyan">
                 <span>
@@ -691,7 +1250,7 @@ const DashBoard = () => {
                 <span className="count-name regular">Jewelry Recovery</span>
               </div>
             </Col>
-          </Row>
+          </Row> */}
 
           <Row className="mt-4">
             <Col lg="12">
@@ -714,13 +1273,132 @@ const DashBoard = () => {
                   />
                 </Col>
                 <Col lg="3" md="6" xs="12">
-                  <Button variant="secondary" onClick={handleClear}>
+                  <Button
+                    variant="contained"
+                    onClick={handleClear}
+                    sx={{
+                      backgroundColor: "#dc3545 !important",
+                      color: "#fff !important",
+                      "&:hover": {
+                        backgroundColor: "#b02a37 !important",
+                      },
+                    }}
+                  >
                     Clear
                   </Button>
                 </Col>
               </Row>
-              <div className="balance-table-wrapper">
-                <Table bordered hover responsive className="table">
+              <div
+                className="balance-table-wrapper"
+                // style={{
+                //   overflowX: "auto",
+                //   whiteSpace: "nowrap",
+                //   maxWidth: "100%",
+                // }}
+              >
+                <MaterialReactTable
+                  columns={columns}
+                  data={filteredData}
+                  enableExpanding
+                  enableExpandAll={false} // hides top-left expand-all button
+                  displayColumnDefOptions={{
+                    "mrt-row-expand": { header: "", size: 0 }, // removes "Expand" text
+                  }}
+                  muiTableBodyRowProps={({ row }) => ({
+                    className: getRowClass(
+                      getMonthsDifference(row.original.pawnjewelry_date)
+                    ),
+                  })}
+                  muiTableBodyCellProps={{
+                    sx: {
+                      fontWeight: "bold", // Bold all body text
+                      fontSize: "14px",
+                      color: "#000",
+                    },
+                  }}
+                  muiTableHeadCellProps={{
+                    sx: {
+                      fontWeight: "900", // extra bold
+                      fontSize: "15px", // larger font
+                      color: "#212529", // dark text
+                      textTransform: "uppercase", // professional look
+                      backgroundColor: "#f8f9fa", // subtle gray background
+                      borderBottom: "2px solid #dee2e6",
+                      textAlign: "center",
+                    },
+                  }}
+                  renderDetailPanel={({ row }) => {
+                    const item = row.original;
+                    const matchingBank = bankPledgeData.find(
+                      (bp) =>
+                        bp.customer_no === item.customer_no &&
+                        bp.receipt_no === item.receipt_no
+                    );
+
+                    if (!matchingBank) {
+                      return (
+                        <div
+                          style={{
+                            padding: 12,
+                            display: "flex",
+                            justifyContent: "center", // center horizontally
+                            alignItems: "center", // center vertically
+                            height: "100px",
+                            fontWeight: 500,
+                            color: "#777",
+                          }}
+                        >
+                          No Bank Pledge Details
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div style={{ padding: 12, background: "#f8f9fa" }}>
+                        <h6 style={{ marginBottom: 8 }}>Bank Pledge Details</h6>
+                        <table className="table table-sm">
+                          <thead className="table-dark">
+                            <tr>
+                              <th>Pledge Date</th>
+                              <th>Bank Loan No</th>
+                              <th>Assessor</th>
+                              <th>Bank Name</th>
+                              <th>Pawn Value</th>
+                              <th>Interest</th>
+                              <th>Due Date</th>
+                              <th>Closing Date</th>
+                              <th>Closing Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>{matchingBank.bank_pledge_date || "-"}</td>
+                              <td>{matchingBank.bank_loan_no || "-"}</td>
+                              <td>{matchingBank.bank_assessor_name || "-"}</td>
+                              <td>{matchingBank.bank_name || "-"}</td>
+                              <td>
+                                ₹
+                                {Number(
+                                  matchingBank.bank_pawn_value || 0
+                                ).toLocaleString("en-IN")}
+                              </td>
+                              <td>{matchingBank.bank_interest || "-"}</td>
+                              <td>{matchingBank.bank_due_date || "-"}</td>
+                              <td>{matchingBank.closing_date || "-"}</td>
+                              <td>
+                                ₹
+                                {Number(
+                                  matchingBank.closing_amount || 0
+                                ).toLocaleString("en-IN")}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    );
+                  }}
+                />
+                {/* <Table bordered hover responsive className="table">
                   <thead>
                     <tr>
                       <th>Date</th>
@@ -1013,7 +1691,7 @@ const DashBoard = () => {
                       </tr>
                     )}
                   </tbody>
-                </Table>
+                </Table> */}
               </div>
               <Row className="mt-5">
                 <Col lg="12">
@@ -1028,76 +1706,62 @@ const DashBoard = () => {
                       />
                     </Col>
                     <Col lg="3" md="6" xs="12">
-                      <Button variant="secondary" onClick={handleNoticeClear}>
+                      <Button
+                        variant="contained"
+                        onClick={handleNoticeClear}
+                        sx={{
+                          backgroundColor: "#dc3545 !important",
+                          color: "#fff !important",
+                          "&:hover": {
+                            backgroundColor: "#b02a37 !important",
+                          },
+                        }}
+                      >
                         Clear
                       </Button>
                     </Col>
                   </Row>
-                  <div className="notice-table-wrapper table-responsive shadow-sm rounded border">
-                    <Table
-                      bordered
-                      hover
-                      className="table table-striped align-middle mb-0"
-                    >
-                      <thead className="table-dark text-center">
-                        <tr>
-                          <th style={{ width: "5%" }}>S.No</th>
-                          <th style={{ width: "12%" }}>Loan Date</th>
-                          <th style={{ width: "15%" }}>Loan Number</th>
-                          <th style={{ width: "20%" }}>Customer Name</th>
-                          <th style={{ width: "25%" }}>Ornaments</th>
-                          <th style={{ width: "20%" }}>Notice Date</th>
-                          <th style={{ width: "15%" }}>Notice No</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {handleNoticeSearch().length > 0 ? (
-                          handleNoticeSearch().map((notice, index) => (
-                            <tr key={index} className="text-center">
-                              <td>{index + 1}</td>
-                              <td>
-                                {dayjs(notice.pawnjewelry_date).format(
-                                  "DD-MM-YYYY"
-                                )}
-                              </td>
-                              <td>{notice.receipt_no}</td>
-                              <td className="text-capitalize">{notice.name}</td>
-                              <td>{notice.jewel_product}</td>
-                              <td>
-                                <span className="badge bg-light text-dark">
-                                  {notice.notice_date}
-                                </span>
-                              </td>
-                              <td>
-                                <span
-                                  className="badge text-dark"
-                                  style={{
-                                    minWidth: "90px",
-                                    backgroundColor:
-                                      notice.notice_no === 1
-                                        ? "#fbff12" // Lemon color
-                                        : notice.notice_no === 2
-                                        ? "#fc8319" // Orange color
-                                        : "#f20707", // Red color
-                                  }}
-                                >
-                                  Notice {notice.notice_no}
-                                </span>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td
-                              colSpan="6"
-                              className="text-center text-muted py-4"
-                            >
-                              No notice alerts found at this time.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
+                  <div className="notice-table-wrapper shadow-sm rounded border p-3">
+                    <MaterialReactTable
+                      columns={noticeColumns}
+                      data={handleNoticeSearch()}
+                      enablePagination={true}
+                      enableSorting={true}
+                      enableColumnFilters={false}
+                      muiTableHeadCellProps={{
+                        sx: {
+                          fontWeight: "bold",
+                          fontSize: "14px",
+                          textAlign: "center",
+                          backgroundColor: "#212529",
+                          color: "#fff",
+                        },
+                      }}
+                      muiTableBodyCellProps={{
+                        sx: {
+                          fontWeight: "bold",
+                          fontSize: "13px",
+
+                        },
+                      }}
+                      muiTableContainerProps={{
+                        sx: {
+                          borderRadius: "8px",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        },
+                      }}
+                      renderEmptyRowsFallback={() => (
+                        <div
+                          style={{
+                            textAlign: "center",
+                            padding: "20px",
+                            color: "#777",
+                          }}
+                        >
+                          No notice alerts found at this time.
+                        </div>
+                      )}
+                    />
                   </div>
                 </Col>
               </Row>
@@ -1114,64 +1778,62 @@ const DashBoard = () => {
                       />
                     </Col>
                     <Col lg="3" md="6" xs="12">
-                      <Button variant="secondary" onClick={handleActionClear}>
+                      <Button
+                        variant="contained"
+                        onClick={handleActionClear}
+                        sx={{
+                          backgroundColor: "#dc3545 !important",
+                          color: "#fff !important",
+                          "&:hover": {
+                            backgroundColor: "#b02a37 !important",
+                          },
+                        }}
+                      >
                         Clear
                       </Button>
                     </Col>
                   </Row>
-                  <div className="notice-table-wrapper table-responsive shadow-sm rounded border">
-                    <Table
-                      bordered
-                      hover
-                      className="table table-striped align-middle mb-0"
-                    >
-                      <thead className="table-dark text-center">
-                        <tr>
-                          <th style={{ width: "5%" }}>S.No</th>
-                          <th style={{ width: "15%" }}>Loan Number</th>
-                          <th style={{ width: "20%" }}>Customer Name</th>
-                          <th style={{ width: "25%" }}>Ornaments</th>
-                          <th style={{ width: "15%" }}>Loan Amount</th>
-                          <th style={{ width: "20%" }}>Action Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {handleActionSearch().length > 0 ? (
-                          handleActionSearch().map((action, index) => (
-                            <tr key={action.id} className="text-center">
-                              <td>{index + 1}</td>
-                              <td>{action.receipt_no}</td>
-
-                              <td className="text-capitalize">{action.name}</td>
-                              <td>
-                                {Array.isArray(action.jewel_product)
-                                  ? action.jewel_product
-                                      .map((j) => j.JewelName)
-                                      .join(", ")
-                                  : ""}
-                              </td>
-                              <td>{action.original_amount}</td>
-                              <td>
-                                <span className="badge bg-light text-dark">
-                                  {dayjs(action.action_date).format(
-                                    "DD-MM-YYYY"
-                                  )}
-                                </span>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td
-                              colSpan="5"
-                              className="text-center text-muted py-4"
-                            >
-                              No action alerts found at this time.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
+                  <div className="notice-table-wrapper shadow-sm rounded border p-3">
+                    <MaterialReactTable
+                      columns={actionColumns}
+                      data={handleActionSearch()}
+                      enablePagination={true}
+                      enableSorting={true}
+                      enableColumnFilters={false}
+                      muiTableHeadCellProps={{
+                        sx: {
+                          fontWeight: "bold",
+                          fontSize: "14px",
+                          textAlign: "center",
+                          backgroundColor: "#212529",
+                          color: "#fff",
+                        },
+                      }}
+                      muiTableBodyCellProps={{
+                        sx: {
+                          fontWeight: "bold",
+                          fontSize: "13px",
+                          textAlign: "center",
+                        },
+                      }}
+                      muiTableContainerProps={{
+                        sx: {
+                          borderRadius: "8px",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        },
+                      }}
+                      renderEmptyRowsFallback={() => (
+                        <div
+                          style={{
+                            textAlign: "center",
+                            padding: "20px",
+                            color: "#777",
+                          }}
+                        >
+                          No notice alerts found at this time.
+                        </div>
+                      )}
+                    />
                   </div>
                 </Col>
               </Row>
@@ -1179,7 +1841,7 @@ const DashBoard = () => {
                 <Col lg="12">
                   <h5 className="mb-3">📌 Customer History</h5>
                   <Row className="mb-3">
-                    <Col lg={3} className="mb-2">
+                    <Col lg={2} className="mb-2">
                       <Form.Control
                         type="text"
                         placeholder="Customer Number"
@@ -1195,7 +1857,7 @@ const DashBoard = () => {
                         }}
                       />
                     </Col>
-                    <Col lg={3} className="mb-2">
+                    <Col lg={2} className="mb-2">
                       <Form.Control
                         type="date"
                         value={fromDate}
@@ -1204,7 +1866,8 @@ const DashBoard = () => {
                         }}
                       />
                     </Col>
-                    <Col lg={3} className="mb-2">
+
+                    <Col lg={2} className="mb-2">
                       <Form.Control
                         type="date"
                         value={toDate}
@@ -1213,124 +1876,115 @@ const DashBoard = () => {
                         }}
                       />
                     </Col>
-                    <Col lg={3} className="mb-2">
+                    <Col
+                      lg={4}
+                      className="mb-2 d-flex align-items-center gap-2"
+                    >
                       <Button
-                        variant="primary"
+                        variant="contained"
                         onClick={() =>
                           selectedCustomerNo &&
                           fetchCustomerHistory(selectedCustomerNo)
                         }
+                        sx={{
+                          backgroundColor: "#041a3f !important",
+                          color: "#fff !important",
+                          "&:hover": {
+                            backgroundColor: "#3074e9ff !important",
+                          },
+                        }}
                       >
                         Search
                       </Button>
+
                       <Button
-                        variant="secondary"
-                        className="ms-2"
+                        variant="contained"
                         onClick={handleHistoryClear}
+                        sx={{
+                          backgroundColor: "#dc3545 !important",
+                          color: "#fff !important",
+                          "&:hover": { backgroundColor: "#b02a37 !important" },
+                        }}
                       >
                         Clear
                       </Button>
                     </Col>
-                  </Row>
-                  <div
-                    className="notice-table-wrapper table-responsive shadow-sm rounded border"
-                    style={{ maxHeight: "400px", overflowY: "auto" }}
+
+                    {/* <Col lg={2} className="mb-2">
+                    <Button
+                    variant="contained"
+                    onClick={() =>
+                          selectedCustomerNo &&
+                          fetchCustomerHistory(selectedCustomerNo)
+                        }
+                    sx={{
+                      backgroundColor: "#041a3f !important",
+                      color: "#fff !important",
+                      "&:hover": {
+                        backgroundColor: "#3074e9ff !important",
+                      },
+                    }}
                   >
-                    <Table
-                      bordered
-                      hover
-                      className="table table-striped align-middle mb-0"
-                      style={{ tableLayout: "fixed", width: "100%" }}
-                    >
-                      <thead className="table-dark text-center">
-                        <tr>
-                          <th style={{ width: "5%" }}>S.No</th>
-                          <th style={{ width: "15%" }}>Date</th>
-                          <th style={{ width: "15%" }}>Receipt No</th>
-                          <th style={{ width: "25%" }}>Old Value</th>
-                          <th style={{ width: "25%" }}>New Value</th>
-                          <th style={{ width: "15%" }}>Remarks</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {loadingHistory ? (
-                          <tr>
-                            <td colSpan="6" className="text-center">
-                              Loading...
-                            </td>
-                          </tr>
-                        ) : customerHistory.length > 0 ? (
-                          customerHistory.map((hist, index) => (
-                            <tr key={hist.id}>
-                              <td
-                                className="text-center"
-                                style={{ verticalAlign: "top" }}
-                              >
-                                {index + 1}
-                              </td>
-                              <td
-                                className="text-center"
-                                style={{ verticalAlign: "top" }}
-                              >
-                                {dayjs(hist.created_at).format(
-                                  "DD-MM-YYYY HH:mm"
-                                )}
-                              </td>
-                              <td
-                                className="text-center"
-                                style={{ verticalAlign: "top" }}
-                              >
-                                {hist.old_value?.receipt_no ||
-                                  hist.new_value?.receipt_no ||
-                                  "-"}
-                              </td>
-                              <td
-                                style={{
-                                  verticalAlign: "top",
-                                  wordBreak: "break-word",
-                                  maxHeight: "100px",
-                                  overflow: "auto",
-                                  padding: "8px",
-                                }}
-                              >
-                                {getValueDisplay(hist.old_value)}
-                              </td>
-                              <td
-                                style={{
-                                  verticalAlign: "top",
-                                  wordBreak: "break-word",
-                                  maxHeight: "100px",
-                                  overflow: "auto",
-                                  padding: "8px",
-                                }}
-                              >
-                                {getValueDisplay(hist.new_value)}
-                              </td>
-                              <td
-                                className="text-center"
-                                style={{
-                                  verticalAlign: "top",
-                                  wordBreak: "break-word",
-                                }}
-                              >
-                                {hist.remarks}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td
-                              colSpan="6"
-                              className="text-center text-muted py-4"
-                            >
-                              {selectedCustomerNo
-                                ? "No history found."
-                                : "Enter customer number to view history."}
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
+                    Search
+                  </Button>
+                  </Col>
+                    <Col lg={2} className="mb-2">
+                      <Button
+                        variant="contained"
+                        onClick={handleHistoryClear}
+                        sx={{
+                          backgroundColor: "#dc3545 !important",
+                          color: "#fff !important",
+                          "&:hover": {
+                            backgroundColor: "#b02a37 !important",
+                          },
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </Col> */}
+                  </Row>
+                  <div className="notice-table-wrapper shadow-sm rounded border p-3">
+                    <MaterialReactTable
+                      columns={historyColumns}
+                      data={customerHistory}
+                      enablePagination={true}
+                      enableSorting={true}
+                      enableColumnFilters={false}
+                      muiTableHeadCellProps={{
+                        sx: {
+                          fontWeight: "bold",
+                          fontSize: "14px",
+                          textAlign: "center",
+                          backgroundColor: "#212529",
+                          color: "#fff",
+                        },
+                      }}
+                      muiTableBodyCellProps={{
+                        sx: {
+                          fontWeight: "bold",
+                          fontSize: "13px",
+                          textAlign: "center",
+                        },
+                      }}
+                      muiTableContainerProps={{
+                        sx: {
+                          borderRadius: "8px",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        },
+                      }}
+                      renderEmptyRowsFallback={() => (
+                        <div
+                          style={{
+                            textAlign: "center",
+                            padding: "20px",
+                            color: "#777",
+                          }}
+                        >
+                          No notice alerts found at this time.
+                        </div>
+                      )}
+                    />
                   </div>
                 </Col>
               </Row>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Col, Container, Row, Alert } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
-import { ClickButton, ChooseButton } from "../../components/ClickButton";
+import { ClickButton, ChooseButton,
+  Delete} from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -555,7 +556,7 @@ const BankPledgeCreation = () => {
           </Col>
 
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
-            <div className="text-center">
+           <div style={{ textAlign: "right", paddingRight: "5px" }}>
               {isView ? (
                 <ClickButton
                   label={<>Back</>}
@@ -591,10 +592,10 @@ const BankPledgeCreation = () => {
                     ></ClickButton>
                   </span>
                   <span className="mx-2">
-                    <ClickButton
+                    <Delete
                       label={<>Cancel</>}
                       onClick={() => navigate("/console/pawn/bankpledge")}
-                    ></ClickButton>
+                    ></Delete>
                   </span>
                 </>
               )}

@@ -108,19 +108,21 @@ const User = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list"> Users</span>
+              <span class="nav-list"> User & Access</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             {isAdmin && ( // Show Edit option only if user is Admin
               <ClickButton
-                label={<>AddNew</>}
+                label={<>Add User</>}
                 onClick={() => navigate("/console/user/create")}
               />
             )}
           </Col>
 
-          <Col lg="3" md="12" xs="12" className="py-1">
+          <Col lg="3" md="12" xs="12"  className="py-2"
+          style={{ marginLeft: "-10px" }}
+>
             <TextInputForm
               placeholder={"Name, mobile number"}
               onChange={(e) => handleSearch(e.target.value)}

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Col, Container, Row, Alert } from "react-bootstrap";
 import { TextInputForm, Calender } from "../../components/Forms";
-import { ClickButton } from "../../components/ClickButton";
+import { ClickButton,Delete } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
+
 
 const ActionCreation = () => {
   const location = useLocation();
@@ -453,7 +454,7 @@ const ActionCreation = () => {
             </Col>
           )}
           <Col lg="12">
-            <div className="text-center mb-3">
+           <div style={{ textAlign: "right", paddingRight: "5px" }}>
               {type === "edit" ? (
                 <>
                   <ToastContainer
@@ -476,7 +477,7 @@ const ActionCreation = () => {
                     />
                   </span>
                   <span className="mx-2">
-                    <ClickButton
+                    <Delete
                       label={<>Cancel</>}
                       onClick={() => navigate("/console/master/action")}
                     />
@@ -504,7 +505,7 @@ const ActionCreation = () => {
                     />
                   </span>
                   <span className="px-2">
-                    <ClickButton
+                    <Delete
                       label={<>Cancel</>}
                       onClick={() => navigate("/console/master/action")}
                       disabled={loading}

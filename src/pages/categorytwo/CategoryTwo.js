@@ -65,7 +65,7 @@ const CategoryTwo = () => {
               onClick={() => navigate("/console/expense/category/create")}
             ></ClickButton>
           </Col>
-          <Col lg="3" md="5" xs="12" className="py-1">
+          <Col lg="3" md="5" xs="12" className="py-1" style={{ marginLeft: "-11px" }}>
             <TextInputForm
               placeholder={"Search Category Name"}
               prefix_icon={<FaMagnifyingGlass />}

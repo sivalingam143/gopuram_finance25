@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Row, Form } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
-import { ClickButton } from "../../components/ClickButton";
+import { ClickButton ,Delete} from "../../components/ClickButton";
 import { useNavigate, useLocation } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import { ToastContainer, toast } from "react-toastify";
@@ -119,17 +119,18 @@ const ExpenseCreation = () => {
         </Col>
         <Col
           lg="12"
-          className="py-3 text-center d-flex flex-row justify-content-center gap-3" // Added gap-3
+          className="py-3 text-center d-flex flex-row justify-content-end
+           gap-3" // Added gap-3
         >
           <div className="d-flex justify-content-center">
             <ClickButton
-              label={type === "edit" ? "update" : "Submit"}
+              label={type === "edit" ?" Update" : "Submit"}
               onClick={handleSubmit}
               disabled = {loading}
             />
           </div>
           <div className="d-flex justify-content-center">
-            <ClickButton
+            <Delete
               label="Cancel"
               onClick={() => navigate("/console/transaction")}
             />

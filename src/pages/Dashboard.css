@@ -1,0 +1,59 @@
+/* Dashboard.css */
+.counter-card {
+  animation: fadeInUp 0.8s ease;
+  transition: transform 0.3s;
+}
+
+.counter-card:hover {
+  transform: scale(1.05);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  background: #f7f7f7;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.marquee-text {
+  display: inline-block;
+  animation: marquee 15s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+.row-red {
+  background-color: #a1424a !important;
+  color:#f8d7da !important; /* light red */
+}
+
+.row-orange {
+  background-color: #fff3cd !important; /* light orange */
+}
+
+.row-yellow {
+  background-color: #fffbe6 !important; /* light yellow */
+}
+
+.row-yellowtest {
+  background-color: #e7f7d3 !important; /* light green */
+}

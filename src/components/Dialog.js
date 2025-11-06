@@ -10,7 +10,7 @@ const Dialog = ({ isVisible, onConfirm, onCancel, DialogTitle }) => {
           <p>{DialogTitle}</p>
           <ClickButton
             onClick={() => onConfirm(true)}
-            className="table-btn mx-2"
+            //className="table-btn mx-2"
             label="Yes"
           />
           <ClickButton

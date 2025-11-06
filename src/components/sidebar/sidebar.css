@@ -27,7 +27,7 @@ a {
   z-index: 999;
   position: fixed;
   margin-left: 0px;
-  background-color: #fff;
+background: linear-gradient(180deg, var(--gold-light), var(--gold-mid), var(--gold-dark)) !important;
   padding-top: 65px;
   top: 0;
 }
@@ -106,7 +106,7 @@ a {
 #sidebar-wrapper .list-group li > .nav-link:hover,
 #sidebar-wrapper .list-group li > .sub-menu:hover,
 #sidebar-wrapper .list-group li .active {
-  background-color: rgb(26 74 255);
+  background-color: #041a3f;
   color: rgb(255 255 255) !important;
   width: 100%;
 }

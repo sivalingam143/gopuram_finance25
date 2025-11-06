@@ -37,6 +37,22 @@ select {
   height: 150px;
   border-radius: 5px;
   position: relative;
+  animation: fadeInUp 0.8s ease;
+  transition: transform 0.3s;
+}
+.counter-card:hover {
+  transform: scale(1.05);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .counter-card svg {
@@ -193,7 +209,7 @@ input:focus {
   outline: 0px !important;
 }
 
-.delete {
+/* .delete {
   color: red !important;
   border-radius: 6px !important;
   font-weight: 800 !important;
@@ -203,7 +219,7 @@ input:focus {
   background: none !important;
   border-radius: 0px 8px 8px 0px !important;
   padding: 6.1px 12px !important;
-}
+} */
 
 .main-content {
   padding: 10px 28px !important;
@@ -212,7 +228,7 @@ input:focus {
 }
 
 .main {
-  background-color: #ffffff;
+  background-color: rgb(168 157 42 / 44%);
   border-radius: 10px;
   padding: 20px;
 }

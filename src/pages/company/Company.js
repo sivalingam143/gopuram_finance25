@@ -12,7 +12,7 @@ const Company = () => {
 
   const UserTablehead = [
     "No",
-    "CompanyName",
+    "Company Name",
     "Mobile Number",
     "Location",
     ...(isAdmin ? ["Action"] : []),

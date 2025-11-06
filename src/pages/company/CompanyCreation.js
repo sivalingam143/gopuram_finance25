@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Col, Container, Row, Alert, Modal } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
-import { ClickButton } from "../../components/ClickButton";
+import { ClickButton,Delete } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -394,10 +394,10 @@ const CompanyCreation = () => {
                     ></ClickButton>
                   </span>
                   <span className="mx-2">
-                    <ClickButton
+                    <Delete
                       label={<>Cancel</>}
                       onClick={() => navigate("/console/company")}
-                    ></ClickButton>
+                    ></Delete>
                   </span>
                 </>
               )}
