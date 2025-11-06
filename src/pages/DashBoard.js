@@ -18,6 +18,7 @@ import { RiDeviceRecoverLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import API_DOMAIN from "../config/config";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import "./tablecus.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoadingOverlay from "../components/LoadingOverlay";
@@ -53,7 +54,7 @@ const DashBoard = () => {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [expandedRow, setExpandedRow] = useState(null);
   const [jewelPrices, setJewelPrices] = useState({});
-
+  dayjs.extend(customParseFormat);
   const parsePeriod = (periodStr) => {
     const monthsMatch = periodStr.match(/(\d+)\s*month/);
     return {
@@ -1048,7 +1049,9 @@ const DashBoard = () => {
       Cell: ({ cell }) => (
         <Chip
           label={
-            cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-"
+            cell.getValue()
+              ? dayjs(cell.getValue(), "DD-MM-YYYY").format("DD-MM-YYYY")
+              : "-"
           }
           color="default"
           variant="outlined"
