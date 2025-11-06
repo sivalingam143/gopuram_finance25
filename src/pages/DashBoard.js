@@ -8,7 +8,9 @@ import {
   Stack,
   IconButton,
   Tooltip,
-  Typography,Card, CardContent
+  Typography,
+  Card,
+  CardContent,
 } from "@mui/material";
 import { MdOutlinePerson } from "react-icons/md";
 import { AiFillGolden } from "react-icons/ai";
@@ -555,10 +557,10 @@ const DashBoard = () => {
     if (months >= 12) return "row-red";
     if (months >= 9) return "row-orange";
     if (months >= 6) return "row-yellow";
-    if (months < 5) return "row-yellowtest";
+    // This is the green row
+    if (months < 6) return "row-yellowtest";
     return "";
   }
-
   function getMonthsDifference(startDate) {
     const now = dayjs();
     const start = dayjs(startDate);
@@ -995,7 +997,7 @@ const DashBoard = () => {
       id: "sno",
       header: "S.No",
       size: 30,
-       muiTableHeadCellProps: {
+      muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
       muiTableBodyCellProps: {
@@ -1008,21 +1010,30 @@ const DashBoard = () => {
     {
       accessorKey: "pawnjewelry_date",
       header: "Loan Date",
-       muiTableHeadCellProps: {
+      muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
       Cell: ({ cell }) =>
         cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-",
     },
-    { accessorKey: "receipt_no", header: "Loan Number", muiTableHeadCellProps: {
+    {
+      accessorKey: "receipt_no",
+      header: "Loan Number",
+      muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
-      }, },
-    { accessorKey: "name", header: "Customer Name", muiTableHeadCellProps: {
+      },
+    },
+    {
+      accessorKey: "name",
+      header: "Customer Name",
+      muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
-      }, },
+      },
+    },
     {
       accessorKey: "jewel_product",
-      header: "Ornaments", muiTableHeadCellProps: {
+      header: "Ornaments",
+      muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
       Cell: ({ cell }) => {
@@ -1039,7 +1050,7 @@ const DashBoard = () => {
     {
       accessorKey: "notice_date",
       header: "Notice Date",
-       muiTableHeadCellProps: {
+      muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
       Cell: ({ cell }) => (
@@ -1055,7 +1066,7 @@ const DashBoard = () => {
     {
       accessorKey: "notice_no",
       header: "Notice No",
-       muiTableHeadCellProps: {
+      muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
       Cell: ({ cell }) => {
@@ -1156,65 +1167,67 @@ const DashBoard = () => {
             </Col>
           </Row>
           <Row className="mt-3 justify-content-center">
-  {[
-    {
-      title: "Customer",
-      value: customerData.length,
-      color: "#009688",
-      icon: <MdOutlinePerson size={40} />,
-      link: "/console/master/customer",
-    },
-    {
-      title: "Jewelry Pawn",
-      value: jewelpawnData.length,
-      color: "#03A9F4",
-      icon: <AiFillGolden size={40} />,
-      link: "/console/jewel-pawn",
-    },
-    {
-      title: "Jewelry Recovery",
-      value: userecoveryData.length,
-      color: "#4CAF50",
-      icon: <RiDeviceRecoverLine size={40} />,
-      link: "/console/recovery",
-    },
-  ].map((stat, index) => (
-    <Col key={index} lg={3} md={4} sm={6} xs={12} className="mb-3">
-      <Link
-        to={stat.link}
-        style={{ textDecoration: "none" }}
-      >
-        <motion.div
-          whileHover={{ scale: 1.07, y: -5 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 180 }}
-        >
-          <Card
-            sx={{
-              borderRadius: 4,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-              background: `linear-gradient(135deg, ${stat.color} 30%, ${stat.color}CC 90%)`,
-              color: "#fff",
-              cursor: "pointer",
-              textAlign: "center",
-            }}
-          >
-            <CardContent>
-              <div style={{ fontSize: "2.5rem" }}>{stat.icon}</div>
-              <Typography variant="h4" sx={{ fontWeight: 700, mt: 1 }}>
-                {stat.value}
-              </Typography>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                {stat.title}
-              </Typography>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </Link>
-    </Col>
-  ))}
-</Row>
-
+            {[
+              {
+                title: "Customer",
+                value: customerData.length,
+                color: "#009688",
+                icon: <MdOutlinePerson size={40} />,
+                link: "/console/master/customer",
+              },
+              {
+                title: "Jewelry Pawn",
+                value: jewelpawnData.length,
+                color: "#03A9F4",
+                icon: <AiFillGolden size={40} />,
+                link: "/console/jewel-pawn",
+              },
+              {
+                title: "Jewelry Recovery",
+                value: userecoveryData.length,
+                color: "#4CAF50",
+                icon: <RiDeviceRecoverLine size={40} />,
+                link: "/console/recovery",
+              },
+            ].map((stat, index) => (
+              <Col key={index} lg={3} md={4} sm={6} xs={12} className="mb-3">
+                <Link to={stat.link} style={{ textDecoration: "none" }}>
+                  <motion.div
+                    whileHover={{ scale: 1.07, y: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 180 }}
+                  >
+                    <Card
+                      sx={{
+                        borderRadius: 4,
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                        background: `linear-gradient(135deg, ${stat.color} 30%, ${stat.color}CC 90%)`,
+                        color: "#fff",
+                        cursor: "pointer",
+                        textAlign: "center",
+                      }}
+                    >
+                      <CardContent>
+                        <div style={{ fontSize: "2.5rem" }}>{stat.icon}</div>
+                        <Typography
+                          variant="h4"
+                          sx={{ fontWeight: 700, mt: 1 }}
+                        >
+                          {stat.value}
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: 500 }}
+                        >
+                          {stat.title}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Link>
+              </Col>
+            ))}
+          </Row>
 
           {/* <Row>
             <Col lg="3" md="6" xs="12" className="py-3">
@@ -1318,12 +1331,11 @@ const DashBoard = () => {
                   }}
                   muiTableHeadCellProps={{
                     sx: {
-                      fontWeight: "900", // extra bold
-                      fontSize: "15px", // larger font
-                      color: "#212529", // dark text
+                      fontWeight: "1000", // extra bold
+                      fontSize: "17px", // larger font
                       textTransform: "uppercase", // professional look
-                      backgroundColor: "#f8f9fa", // subtle gray background
-                      borderBottom: "2px solid #dee2e6",
+                      backgroundColor: "#212529", // Dark background
+                      color: "#fff", // White tex
                       textAlign: "center",
                     },
                   }}
@@ -1354,7 +1366,7 @@ const DashBoard = () => {
                     }
 
                     return (
-                      <div style={{ padding: 12, background: "#f8f9fa" }}>
+                      <div style={{ padding: 18, background: "#f8f9fa" }}>
                         <h6 style={{ marginBottom: 8 }}>Bank Pledge Details</h6>
                         <table className="table table-sm">
                           <thead className="table-dark">
@@ -1733,15 +1745,14 @@ const DashBoard = () => {
                           fontWeight: "bold",
                           fontSize: "14px",
                           textAlign: "center",
-                          backgroundColor: "#212529",
-                          color: "#fff",
+                          backgroundColor: "#212529", // Dark background
+                          color: "#fff", // White text
                         },
                       }}
                       muiTableBodyCellProps={{
                         sx: {
                           fontWeight: "bold",
                           fontSize: "13px",
-
                         },
                       }}
                       muiTableContainerProps={{
