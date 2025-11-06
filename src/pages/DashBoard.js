@@ -18,6 +18,7 @@ import { RiDeviceRecoverLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import API_DOMAIN from "../config/config";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import "./tablecus.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoadingOverlay from "../components/LoadingOverlay";
@@ -53,7 +54,7 @@ const DashBoard = () => {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [expandedRow, setExpandedRow] = useState(null);
   const [jewelPrices, setJewelPrices] = useState({});
-
+  dayjs.extend(customParseFormat);
   const parsePeriod = (periodStr) => {
     const monthsMatch = periodStr.match(/(\d+)\s*month/);
     return {
@@ -428,6 +429,7 @@ const DashBoard = () => {
   //  search handler for Notice Alert Summary
   const handleNoticeSearch = () => {
     const notices = generateNoticeAlerts();
+    console.log(notices);
     if (noticeSearchTerm) {
       return notices.filter((notice) => {
         const matchesReceipt = notice.receipt_no
@@ -1001,7 +1003,7 @@ const DashBoard = () => {
         align: "left", // centers the header text horizontally
       },
       muiTableBodyCellProps: {
-        align: "left", // centers the header text horizontally
+        align: "left",
       },
       Cell: ({ cell }) => (
         <strong style={{ fontWeight: 600 }}>{cell.getValue()}</strong>
@@ -1014,7 +1016,7 @@ const DashBoard = () => {
         align: "left", // centers the header text horizontally
       },
       Cell: ({ cell }) =>
-        cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-",
+        cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-", // YYYY-MM-DD is ISO, so no change needed
     },
     {
       accessorKey: "receipt_no",
@@ -1036,16 +1038,7 @@ const DashBoard = () => {
       muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
-      Cell: ({ cell }) => {
-        try {
-          const jewels = Array.isArray(cell.getValue())
-            ? cell.getValue()
-            : JSON.parse(cell.getValue());
-          return jewels.map((j) => j.JewelName).join(", ");
-        } catch {
-          return "-";
-        }
-      },
+      Cell: ({ cell }) => cell.getValue() || "-",
     },
     {
       accessorKey: "notice_date",
@@ -1056,7 +1049,9 @@ const DashBoard = () => {
       Cell: ({ cell }) => (
         <Chip
           label={
-            cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-"
+            cell.getValue()
+              ? dayjs(cell.getValue(), "DD-MM-YYYY").format("DD-MM-YYYY")
+              : "-"
           }
           color="default"
           variant="outlined"
@@ -1075,7 +1070,6 @@ const DashBoard = () => {
         if (n === 1) bgColor = "#fbff12";
         else if (n === 2) bgColor = "#fc8319";
         else if (n === 3) bgColor = "#f20707";
-
         return (
           <Chip
             label={`Notice ${n}`}
