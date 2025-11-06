@@ -16,7 +16,6 @@ import { MdOutlineDelete } from "react-icons/md";
 
 const Group = () => {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -96,9 +95,6 @@ const Group = () => {
     fetchData();
   }, [searchText]);
 
-  const handleSearch = (value) => {
-    setSearchText(value);
-  };
 
   // 3. Define Material React Table Columns
   const columns = useMemo(
@@ -175,7 +171,7 @@ const Group = () => {
             ></ClickButton>
           </Col>
           {/* ... (Search Bar remains the same) ... */}
-          <Col
+          {/* <Col
             lg="3"
             md="5"
             xs="12"
@@ -190,7 +186,7 @@ const Group = () => {
             >
               {" "}
             </TextInputForm>
-          </Col>
+          </Col> */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
           {/* 5. Replace TableUI with MaterialReactTable */}

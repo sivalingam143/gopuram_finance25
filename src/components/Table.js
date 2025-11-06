@@ -334,37 +334,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-  const handleJewelGroupEditClick = (rowData) => {
-    navigate("/console/master/group/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handleJewelGroupDeleteClick = async (id) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/group.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_Group_id: id,
-        }),
-      });
-      const responseData = await response.json();
-      if (responseData.head.code === 200) {
-        navigate("/console/master/group");
-        window.location.reload();
-        //setLoading(false);
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(true);
-    }
-  };
   // const handleJewelcustomerViewClick = (rowData) => {
   // navigate("/console/master/customer/create", {
   // state: { type: "view", rowData: rowData },
@@ -1318,40 +1287,7 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-                {type === "jewelGroup" && (
-                  <>
-                    {" "}
-                    {/* Fragment shorthand */}
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{rowData.Group_type}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {/* <Dropdown.Item onClick={() => handleJewelGroupViewClick(rowData)}>View</Dropdown.Item> */}
-                          {isAdmin && ( // Show Edit option only if user is Admin
-                            <Dropdown.Item
-                              onClick={() => handleJewelGroupEditClick(rowData)}
-                            >
-                              Edit
-                            </Dropdown.Item>
-                          )}
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleJewelGroupDeleteClick(rowData.Group_id)
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
+              
                 {type === "bank" && (
                   <>
                     <td>{startIndex + rowIndex + 1}</td>
