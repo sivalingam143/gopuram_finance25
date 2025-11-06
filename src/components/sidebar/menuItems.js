@@ -1,13 +1,13 @@
-import { MdSpaceDashboard,} from "react-icons/md";
-import {FiUsers} from "react-icons/fi";
-import { BsBuildings,BsBarChartFill} from "react-icons/bs";
+import { MdSpaceDashboard } from "react-icons/md";
+import { FiUsers } from "react-icons/fi";
+import { BsBuildings, BsBarChartFill } from "react-icons/bs";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { PiUsersThreeBold } from "react-icons/pi";
 import { RiBankLine } from "react-icons/ri";
 import { TbArrowsShuffle } from "react-icons/tb";
 import { MdCategory } from "react-icons/md";
 import { GiSettingsKnobs } from "react-icons/gi";
-import { FaCogs, FaBoxes} from "react-icons/fa";
+import { FaCogs, FaBoxes } from "react-icons/fa";
 import { MdOutlineDashboard } from "react-icons/md";
 import { FaChartLine } from "react-icons/fa";
 import { RiFileList3Line } from "react-icons/ri";
@@ -42,17 +42,16 @@ const sidebarConfig = [
       {
         path: "/console/master/group",
         text: "Group",
-         icon: <MdCategory />
-        
+        icon: <MdCategory />,
       },
       {
         path: "/console/master/products",
-         icon: <FaBoxes />, 
+        icon: <FaBoxes />,
         text: "Products",
       },
       {
         path: "/console/master/action",
-         icon: <GiSettingsKnobs />,
+        icon: <GiSettingsKnobs />,
         text: "Action",
       },
       {
@@ -102,19 +101,18 @@ const sidebarConfig = [
   //     // },
   //   ],
   // },
-<<<<<<< HEAD
+
   {
     path: "/console/pawn/bankpledge",
     text: "Bank Pledge",
     icon: <RiBankLine />,
   },
-=======
+
   // {
   //   path: "/console/pawn/bankpledge",
   //   text: "Bank Pledge",
   //   icon: <AiFillGolden />,
   // },
->>>>>>> 95c2687de6881e3be2cea4d8747a182266a11dee
 
   // {
   //   text: "Interest | Closing",
@@ -148,17 +146,17 @@ const sidebarConfig = [
       {
         path: "/console/report/balancesheet",
         text: "Balancesheet DayBook",
-        icon: <MdOutlineDashboard />
+        icon: <MdOutlineDashboard />,
       },
       {
         path: "/console/advancereport/pawn",
         text: "Advance Report",
-         icon: <FaChartLine />,
+        icon: <FaChartLine />,
       },
       {
         path: "/console/report/bledge",
         text: "Bledge Report",
-         icon: <RiFileList3Line />,
+        icon: <RiFileList3Line />,
       },
       {
         path: "/console/report/dailyreport",
@@ -168,11 +166,10 @@ const sidebarConfig = [
       {
         path: "/console/report/government",
         text: "Government Report",
-         icon: <HiOutlineDocumentText />,
+        icon: <HiOutlineDocumentText />,
       },
     ],
   },
 ];
 
 export default sidebarConfig;
-

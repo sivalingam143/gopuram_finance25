@@ -28,21 +28,21 @@ button {
   margin-top: 20px;
 } */
 .choosefilebtn {
-   border: none !important;
+  border: none !important;
   width: 120px;
   height: 46px;
   color: #ffffff !important;
   border-radius: 6px !important;
   transition: 0.5s all;
   font-family: "regular" !important;
-   background: #041a3f !important;
+  background: #041a3f !important;
   margin-top: 20px;
   margin-left: 20px !important;
 }
 .choosefilebtn:hover {
-  background: #06285f !important;  /* slightly lighter hover shade */
+  background: #06285f !important; /* slightly lighter hover shade */
 }
- .previewbtn {
+.previewbtn {
   border: none !important;
   width: 120px;
   height: 46px;
@@ -50,13 +50,11 @@ button {
   border-radius: 6px !important;
   transition: 0.3s all;
   font-family: "regular" !important;
-  background:#0757df !important;
+  background: #0757df !important;
   margin-top: 20px;
   margin-left: 20px !important;
   cursor: pointer;
 }
-
-
 
 .add-new {
   background-color: #0757df;
@@ -88,21 +86,19 @@ button {
 } */
 
 .create-btn,
-.delete,.cancel
- {
+.delete,
+.cancel {
   width: 120px;
   height: 46px;
   color: #ffffff !important;
-  border-radius: 8px        !important;
+  border-radius: 8px !important;
   transition: 0.3s all;
   font-family: "regular" !important;
   font-weight: 500;
   padding: 1px;
   margin-top: 20px;
   border: none !important;
-  
 }
-<<<<<<< HEAD
 
 /* Submit (Blue) */
 .create-btn {
@@ -111,11 +107,11 @@ button {
 
 /* Cancel (Red) */
 .delete {
-  background: #FF0000 !important;
+  background: #ff0000 !important;
 }
 .cancel {
- background: #FF0000 !important;
- margin-left: 10px !important;
+  background: #ff0000 !important;
+  margin-left: 10px !important;
 }
 /* Hover effects */
 .create-btn:hover {
@@ -125,8 +121,7 @@ button {
 .delete:hover {
   background: #b02a37 !important;
 }
-=======
+
 .delete-icon {
   color: red !important;
 }
->>>>>>> 95c2687de6881e3be2cea4d8747a182266a11dee
