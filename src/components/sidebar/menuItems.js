@@ -55,6 +55,14 @@ const sidebarConfig = [
          icon: <GiSettingsKnobs />,
         text: "Action",
       },
+      {
+        path: "/console/master/bank",
+        text: "Bank",
+      },
+      {
+        path: "/console/master/bankpledgerdetails",
+        text: "Bank Pledger Details",
+      },
       // {
       //   path: "/console/master/customer",
 
@@ -71,6 +79,11 @@ const sidebarConfig = [
     path: "/console/master/customer",
     icon: <PiUsersThreeBold />,
     text: "Customer",
+  },
+  {
+    path: "/console/master/bankpledger",
+    text: "Bank Pledger",
+    icon: <FiUsers />,
   },
   // {
   //   path: "/console/pawn/jewelpawning",
@@ -89,11 +102,19 @@ const sidebarConfig = [
   //     // },
   //   ],
   // },
+<<<<<<< HEAD
   {
     path: "/console/pawn/bankpledge",
     text: "Bank Pledge",
     icon: <RiBankLine />,
   },
+=======
+  // {
+  //   path: "/console/pawn/bankpledge",
+  //   text: "Bank Pledge",
+  //   icon: <AiFillGolden />,
+  // },
+>>>>>>> 95c2687de6881e3be2cea4d8747a182266a11dee
 
   // {
   //   text: "Interest | Closing",

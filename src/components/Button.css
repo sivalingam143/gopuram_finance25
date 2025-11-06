@@ -102,6 +102,7 @@ button {
   border: none !important;
   
 }
+<<<<<<< HEAD
 
 /* Submit (Blue) */
 .create-btn {
@@ -124,3 +125,8 @@ button {
 .delete:hover {
   background: #b02a37 !important;
 }
+=======
+.delete-icon {
+  color: red !important;
+}
+>>>>>>> 95c2687de6881e3be2cea4d8747a182266a11dee
