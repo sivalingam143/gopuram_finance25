@@ -41,19 +41,38 @@
     transform: translateX(-100%);
   }
 }
-.row-red {
-  background-color: #a1424a !important;
-  color:#f8d7da !important; /* light red */
+/* --- Styles for Rows >= 12 Months (Red/Pink - Highest Urgency) --- */
+.row-red,
+.row-red td {
+    background-color: #c7777d !important; 
+    color: #721c24 !important; 
+    border-color: #cf7d85 !important; 
 }
 
-.row-orange {
-  background-color: #fff3cd !important; /* light orange */
+.row-orange,
+.row-orange td {
+
+    background-color: #fff3cd !important; 
+    color: #856404 !important;
+    border-color: #ffeeba !important;
 }
 
-.row-yellow {
-  background-color: #fffbe6 !important; /* light yellow */
+
+.row-yellow,
+.row-yellow td {
+    /* Very light yellow background */
+    background-color: #fffceb !important; 
+    /* Dark text color */
+    color: #664d03 !important;
+    border-color: #fff9e6 !important;
 }
 
-.row-yellowtest {
-  background-color: #e7f7d3 !important; /* light green */
+.row-blue,
+.row-blue td,
+.row-yellowtest, /* Keep original class name for compatibility with old JS logic */
+.row-yellowtest td {
+    background-color: #d4edda !important; 
+    /* Dark green text color */
+    color: #155724 !important;
+    border-color: #c3e6cb !important;
 }

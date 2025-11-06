@@ -558,10 +558,10 @@ const DashBoard = () => {
     if (months >= 12) return "row-red";
     if (months >= 9) return "row-orange";
     if (months >= 6) return "row-yellow";
-    if (months < 5) return "row-yellowtest";
+    // This is the green row
+    if (months < 6) return "row-yellowtest";
     return "";
   }
-
   function getMonthsDifference(startDate) {
     const now = dayjs();
     const start = dayjs(startDate);
@@ -999,7 +999,7 @@ const DashBoard = () => {
       header: "S.No",
       size: 30,
       muiTableHeadCellProps: {
-        align: "left",
+        align: "left", // centers the header text horizontally
       },
       muiTableBodyCellProps: {
         align: "left",
@@ -1012,7 +1012,7 @@ const DashBoard = () => {
       accessorKey: "pawnjewelry_date",
       header: "Loan Date",
       muiTableHeadCellProps: {
-        align: "left",
+        align: "left", // centers the header text horizontally
       },
       Cell: ({ cell }) =>
         cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-", // YYYY-MM-DD is ISO, so no change needed
@@ -1021,21 +1021,21 @@ const DashBoard = () => {
       accessorKey: "receipt_no",
       header: "Loan Number",
       muiTableHeadCellProps: {
-        align: "left",
+        align: "left", // centers the header text horizontally
       },
     },
     {
       accessorKey: "name",
       header: "Customer Name",
       muiTableHeadCellProps: {
-        align: "left",
+        align: "left", // centers the header text horizontally
       },
     },
     {
       accessorKey: "jewel_product",
       header: "Ornaments",
       muiTableHeadCellProps: {
-        align: "left",
+        align: "left", // centers the header text horizontally
       },
       Cell: ({ cell }) => cell.getValue() || "-",
     },
@@ -1059,7 +1059,7 @@ const DashBoard = () => {
       accessorKey: "notice_no",
       header: "Notice No",
       muiTableHeadCellProps: {
-        align: "left",
+        align: "left", // centers the header text horizontally
       },
       Cell: ({ cell }) => {
         const n = parseInt(cell.getValue());
@@ -1322,12 +1322,11 @@ const DashBoard = () => {
                   }}
                   muiTableHeadCellProps={{
                     sx: {
-                      fontWeight: "900", // extra bold
-                      fontSize: "15px", // larger font
-                      color: "#212529", // dark text
+                      fontWeight: "1000", // extra bold
+                      fontSize: "17px", // larger font
                       textTransform: "uppercase", // professional look
-                      backgroundColor: "#f8f9fa", // subtle gray background
-                      borderBottom: "2px solid #dee2e6",
+                      backgroundColor: "#212529", // Dark background
+                      color: "#fff", // White tex
                       textAlign: "center",
                     },
                   }}
@@ -1358,7 +1357,7 @@ const DashBoard = () => {
                     }
 
                     return (
-                      <div style={{ padding: 12, background: "#f8f9fa" }}>
+                      <div style={{ padding: 18, background: "#f8f9fa" }}>
                         <h6 style={{ marginBottom: 8 }}>Bank Pledge Details</h6>
                         <table className="table table-sm">
                           <thead className="table-dark">
@@ -1737,8 +1736,8 @@ const DashBoard = () => {
                           fontWeight: "bold",
                           fontSize: "14px",
                           textAlign: "center",
-                          backgroundColor: "#212529",
-                          color: "#fff",
+                          backgroundColor: "#212529", // Dark background
+                          color: "#fff", // White text
                         },
                       }}
                       muiTableBodyCellProps={{
