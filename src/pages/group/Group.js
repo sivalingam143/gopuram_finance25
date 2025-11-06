@@ -86,47 +86,74 @@ const Group = () => {
       {
         accessorFn: (originalRow) => originalRow.id,
         header: "No",
-        size: 50,
+       size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
       },
       {
         accessorKey: "Group_type",
         header: "Group",
-        size: 200,
+        size:50,
+       
       },
-      {
-        // Action Column Definition
-        accessorKey: "Action",
-        header: "Action",
-        size: 100,
-        enableColumnFilter: false,
-        enableColumnOrdering: false,
-        enableSorting: false,
-        Cell: ({ row }) => (
-          <Box sx={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-            {/* Edit Icon (isAdmin check removed for simplicity, re-add if needed) */}
-            <Tooltip title="Edit">
-              <IconButton
-                onClick={() => handleJewelGroupEditClick(row.original)}
-                sx={{ color: '#0d6efd' }} // Blue
-              >
-                <LiaEditSolid />
-              </IconButton>
-            </Tooltip>
+  {
+  accessorKey: "Action",
+  header: "Action",
+  size: 75,
+  enableColumnFilter: false,
+  enableColumnOrdering: false,
+  enableSorting: false,
 
-            {/* Delete Icon */}
-            <Tooltip title="Delete">
-              <IconButton
-                onClick={() => handleJewelGroupDeleteClick(row.original.Group_id)}
-                sx={{ color: '#dc3545' }} // Red
-              >
-                <MdOutlineDelete />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        ),
-      },
+  // Center header
+  muiTableHeadCellProps: {
+    align: 'center',
+    sx: { fontWeight: 'bold' }
+  },
+
+  // Critical: Center the entire cell content (both horizontally and vertically)
+  muiTableBodyCellProps: {
+    align: 'center',
+    sx: {
+      padding: '8px !important', // Reduce padding if needed
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  },
+
+  Cell: ({ row }) => (
+    <Box
+      sx={{
+        display: 'flex',
+        gap: '0.75rem',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      {/* Edit Icon */}
+      <Tooltip title="Edit" placement="top">
+        <IconButton
+          onClick={() => handleJewelGroupEditClick(row.original)}
+          size="small"
+          sx={{ color: '#0d6efd' }}
+        >
+          <LiaEditSolid />
+        </IconButton>
+      </Tooltip>
+
+      {/* Delete Icon */}
+      <Tooltip title="Delete" placement="top">
+        <IconButton
+          onClick={() => handleJewelGroupDeleteClick(row.original.Group_id)}
+          size="small"
+          sx={{ color: '#dc3545' }}
+        >
+          <MdOutlineDelete />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  ),
+},
     ],
     []
   );
@@ -183,6 +210,7 @@ const Group = () => {
                         borderRadius: "5px",
                         // Keep the existing style property for the table container
                         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        textAlign: "center",
                       }
                     }}
                     muiTableHeadCellProps={{
