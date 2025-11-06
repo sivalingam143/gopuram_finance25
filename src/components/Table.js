@@ -1060,6 +1060,13 @@ const TableUI = ({
                               </Dropdown.Item>
                               <Dropdown.Item
                                 onClick={() =>
+                                  customActions?.bankDetails?.(rowData)
+                                }
+                              >
+                                Bank Details
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() =>
                                   customActions?.recovery?.(rowData)
                                 }
                               >

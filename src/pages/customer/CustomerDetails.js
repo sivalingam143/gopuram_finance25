@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import PageNav from "../../components/PageNav";
 import { ClickButton } from "../../components/Buttons";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
-import { useNavigate } from "react-router-dom";
 import TableUI from "../../components/Table";
 import "./Customer.css";
 
@@ -28,6 +27,14 @@ const CustomerDetails = () => {
   const [loading, setLoading] = useState(false);
   const [customerDetailsData, setCustomerDetailsData] = useState(null);
   const [pawnData, setpawnData] = useState([]);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth() returns month from 0-11
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
   const fetchCustomerDetails = async () => {
     if (!rowData.customer_no) return;
@@ -61,6 +68,7 @@ const CustomerDetails = () => {
 
   const fetchDatapawn = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
         method: "POST",
         headers: {
@@ -73,7 +81,6 @@ const CustomerDetails = () => {
 
       const responseData = await response.json();
       console.log(responseData);
-      setLoading(false);
       if (responseData.head.code === 200) {
         let sortedData = responseData.body.pawnjewelry.map((user) => ({
           ...user,
@@ -85,8 +92,9 @@ const CustomerDetails = () => {
         throw new Error(responseData.head.msg);
       }
     } catch (error) {
-      setLoading(false);
       console.error("Error fetching data:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,6 +112,16 @@ const CustomerDetails = () => {
   const handleRePledgeClick = (pawnRow) => {
     navigate("/console/customer/loancreation", {
       state: { type: "repledge", rowData: pawnRow },
+    });
+  };
+
+  const handleBankDetailsClick = (pawnRow) => {
+    navigate("/console/customer/customerbankdetails", {
+      state: {
+        bankData: pawnRow.bank_pledger || [],
+        receiptNo: pawnRow.receipt_no,
+        customerNo: rowData.customer_no,
+      },
     });
   };
 
@@ -253,6 +271,7 @@ const CustomerDetails = () => {
                     interest: handleInterestClick,
                     recovery: handleRecoveryClick,
                     repledge: handleRePledgeClick,
+                    bankDetails: handleBankDetailsClick,
                   }}
                 />
               </Col>

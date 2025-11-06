@@ -67,6 +67,7 @@ import BankDetails from "../pages/bank/BankDetails";
 import BankPledgerDetails from "../pages/bankpldgerdetails/BankPledgerDetails";
 import BankPledger from "../pages/bankpledger/BankPledger";
 import BankPledgerViewDetails from "../pages/bankpledger/BankPledgerViewDetails";
+import CustomerBankDetails from "../pages/customer/CustomerBankDetails";
 
 const routes = [
   { path: "/console/dashboard", element: <DashBoard /> },
@@ -167,6 +168,10 @@ const routes = [
   { path: "/console/customer/interest", element: <InterestPayment /> },
   { path: "/console/customer/jewelrecovery", element: <RecoveryPayment /> },
   { path: "/console/customer/loancreation", element: <LoanCreation /> },
+  {
+    path: "/console/customer/customerbankdetails",
+    element: <CustomerBankDetails />,
+  },
 ];
 
 export default routes;
