@@ -200,7 +200,7 @@ const CustomerDetails = () => {
             </Col>
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100">
-                <h5 className="mb-3">Summary Details</h5>
+                <h5 className="mb-3">கடன் விவரங்கள்</h5>
                 <ul className="list-unstyled">
                   <li className="mb-2 d-flex justify-content-between">
                     <strong>Total Original Amount:</strong>
