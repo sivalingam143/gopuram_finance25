@@ -8,7 +8,9 @@ import {
   Stack,
   IconButton,
   Tooltip,
-  Typography,Card, CardContent
+  Typography,
+  Card,
+  CardContent,
 } from "@mui/material";
 import { MdOutlinePerson } from "react-icons/md";
 import { AiFillGolden } from "react-icons/ai";
@@ -426,6 +428,7 @@ const DashBoard = () => {
   //  search handler for Notice Alert Summary
   const handleNoticeSearch = () => {
     const notices = generateNoticeAlerts();
+    console.log(notices);
     if (noticeSearchTerm) {
       return notices.filter((notice) => {
         const matchesReceipt = notice.receipt_no
@@ -995,11 +998,11 @@ const DashBoard = () => {
       id: "sno",
       header: "S.No",
       size: 30,
-       muiTableHeadCellProps: {
-        align: "left", // centers the header text horizontally
+      muiTableHeadCellProps: {
+        align: "left",
       },
       muiTableBodyCellProps: {
-        align: "left", // centers the header text horizontally
+        align: "left",
       },
       Cell: ({ cell }) => (
         <strong style={{ fontWeight: 600 }}>{cell.getValue()}</strong>
@@ -1008,38 +1011,38 @@ const DashBoard = () => {
     {
       accessorKey: "pawnjewelry_date",
       header: "Loan Date",
-       muiTableHeadCellProps: {
-        align: "left", // centers the header text horizontally
+      muiTableHeadCellProps: {
+        align: "left",
       },
       Cell: ({ cell }) =>
-        cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-",
+        cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-", // YYYY-MM-DD is ISO, so no change needed
     },
-    { accessorKey: "receipt_no", header: "Loan Number", muiTableHeadCellProps: {
-        align: "left", // centers the header text horizontally
-      }, },
-    { accessorKey: "name", header: "Customer Name", muiTableHeadCellProps: {
-        align: "left", // centers the header text horizontally
-      }, },
+    {
+      accessorKey: "receipt_no",
+      header: "Loan Number",
+      muiTableHeadCellProps: {
+        align: "left",
+      },
+    },
+    {
+      accessorKey: "name",
+      header: "Customer Name",
+      muiTableHeadCellProps: {
+        align: "left",
+      },
+    },
     {
       accessorKey: "jewel_product",
-      header: "Ornaments", muiTableHeadCellProps: {
-        align: "left", // centers the header text horizontally
+      header: "Ornaments",
+      muiTableHeadCellProps: {
+        align: "left",
       },
-      Cell: ({ cell }) => {
-        try {
-          const jewels = Array.isArray(cell.getValue())
-            ? cell.getValue()
-            : JSON.parse(cell.getValue());
-          return jewels.map((j) => j.JewelName).join(", ");
-        } catch {
-          return "-";
-        }
-      },
+      Cell: ({ cell }) => cell.getValue() || "-",
     },
     {
       accessorKey: "notice_date",
       header: "Notice Date",
-       muiTableHeadCellProps: {
+      muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
       Cell: ({ cell }) => (
@@ -1055,8 +1058,8 @@ const DashBoard = () => {
     {
       accessorKey: "notice_no",
       header: "Notice No",
-       muiTableHeadCellProps: {
-        align: "left", // centers the header text horizontally
+      muiTableHeadCellProps: {
+        align: "left",
       },
       Cell: ({ cell }) => {
         const n = parseInt(cell.getValue());
@@ -1064,7 +1067,6 @@ const DashBoard = () => {
         if (n === 1) bgColor = "#fbff12";
         else if (n === 2) bgColor = "#fc8319";
         else if (n === 3) bgColor = "#f20707";
-
         return (
           <Chip
             label={`Notice ${n}`}
@@ -1156,65 +1158,67 @@ const DashBoard = () => {
             </Col>
           </Row>
           <Row className="mt-3 justify-content-center">
-  {[
-    {
-      title: "Customer",
-      value: customerData.length,
-      color: "#009688",
-      icon: <MdOutlinePerson size={40} />,
-      link: "/console/master/customer",
-    },
-    {
-      title: "Jewelry Pawn",
-      value: jewelpawnData.length,
-      color: "#03A9F4",
-      icon: <AiFillGolden size={40} />,
-      link: "/console/jewel-pawn",
-    },
-    {
-      title: "Jewelry Recovery",
-      value: userecoveryData.length,
-      color: "#4CAF50",
-      icon: <RiDeviceRecoverLine size={40} />,
-      link: "/console/recovery",
-    },
-  ].map((stat, index) => (
-    <Col key={index} lg={3} md={4} sm={6} xs={12} className="mb-3">
-      <Link
-        to={stat.link}
-        style={{ textDecoration: "none" }}
-      >
-        <motion.div
-          whileHover={{ scale: 1.07, y: -5 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 180 }}
-        >
-          <Card
-            sx={{
-              borderRadius: 4,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-              background: `linear-gradient(135deg, ${stat.color} 30%, ${stat.color}CC 90%)`,
-              color: "#fff",
-              cursor: "pointer",
-              textAlign: "center",
-            }}
-          >
-            <CardContent>
-              <div style={{ fontSize: "2.5rem" }}>{stat.icon}</div>
-              <Typography variant="h4" sx={{ fontWeight: 700, mt: 1 }}>
-                {stat.value}
-              </Typography>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                {stat.title}
-              </Typography>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </Link>
-    </Col>
-  ))}
-</Row>
-
+            {[
+              {
+                title: "Customer",
+                value: customerData.length,
+                color: "#009688",
+                icon: <MdOutlinePerson size={40} />,
+                link: "/console/master/customer",
+              },
+              {
+                title: "Jewelry Pawn",
+                value: jewelpawnData.length,
+                color: "#03A9F4",
+                icon: <AiFillGolden size={40} />,
+                link: "/console/jewel-pawn",
+              },
+              {
+                title: "Jewelry Recovery",
+                value: userecoveryData.length,
+                color: "#4CAF50",
+                icon: <RiDeviceRecoverLine size={40} />,
+                link: "/console/recovery",
+              },
+            ].map((stat, index) => (
+              <Col key={index} lg={3} md={4} sm={6} xs={12} className="mb-3">
+                <Link to={stat.link} style={{ textDecoration: "none" }}>
+                  <motion.div
+                    whileHover={{ scale: 1.07, y: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 180 }}
+                  >
+                    <Card
+                      sx={{
+                        borderRadius: 4,
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                        background: `linear-gradient(135deg, ${stat.color} 30%, ${stat.color}CC 90%)`,
+                        color: "#fff",
+                        cursor: "pointer",
+                        textAlign: "center",
+                      }}
+                    >
+                      <CardContent>
+                        <div style={{ fontSize: "2.5rem" }}>{stat.icon}</div>
+                        <Typography
+                          variant="h4"
+                          sx={{ fontWeight: 700, mt: 1 }}
+                        >
+                          {stat.value}
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: 500 }}
+                        >
+                          {stat.title}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Link>
+              </Col>
+            ))}
+          </Row>
 
           {/* <Row>
             <Col lg="3" md="6" xs="12" className="py-3">
@@ -1741,7 +1745,6 @@ const DashBoard = () => {
                         sx: {
                           fontWeight: "bold",
                           fontSize: "13px",
-
                         },
                       }}
                       muiTableContainerProps={{
