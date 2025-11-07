@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Col, Container, Row, Alert, Modal } from "react-bootstrap";
 import { TextInputForm, DropDownUI } from "../../components/Forms";
-import { ClickButton } from "../../components/ClickButton";
+import { ClickButton,Delete } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -227,7 +227,7 @@ const BankDetailsCreation = () => {
             )}
           </Col>
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
-            <div className="text-center">
+            <div style={{ textAlign: "right", paddingRight: "5px" }}>
               {type === "view" ? (
                 <ClickButton
                   label={<>back</>}
@@ -285,10 +285,10 @@ const BankDetailsCreation = () => {
                         ></ClickButton>
                       </span>
                       <span className="mx-2">
-                        <ClickButton
+                        <Delete
                           label={<>Cancel</>}
                           onClick={() => navigate("/console/master/bank")}
-                        ></ClickButton>
+                        ></Delete>
                       </span>
                     </>
                   )}

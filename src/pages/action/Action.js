@@ -1,23 +1,68 @@
-import React, { useState, useEffect } from "react";
+
+
+import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import TableUI from "../../components/Table";
 import { TextInputForm } from "../../components/Forms";
-import { useMediaQuery } from "react-responsive";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
-import MobileView from "../../components/MobileView";
 import API_DOMAIN from "../../config/config";
+import { useMediaQuery } from "react-responsive";
+import LoadingOverlay from "../../components/LoadingOverlay";
 
-const UserTablehead = ["S.No", "Customer No", "Customer Name", "Action"];
+// 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
+import { MaterialReactTable } from "material-react-table";
+import { Box, Tooltip, IconButton } from "@mui/material";
+import { LiaEditSolid } from "react-icons/lia";
+import { MdOutlineDelete } from "react-icons/md";
 
 const Action = () => {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+  const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState("");
 
+  // 1. Handlers for Edit and Delete Actions
+  const handleActionEditClick = (rowData) => {
+    console.log("Edit Group3344443:", rowData);
+    console.log("Edit Group:", rowData);
+    navigate("/console/master/action/create", {
+      state: {
+        type: "edit",
+
+        rowData: rowData,
+      },
+    });
+  };
+const handleActionDeleteClick = async (actionId) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/action.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_action_id: actionId,
+        }),
+      });
+      const responseData = await response.json();
+      console.log(responseData);
+      if (responseData.head.code === 200) {
+        navigate("/console/master/action");
+        window.location.reload();
+        setLoading(false);
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
+  // 2. Data Fetching Logic (Unchanged)
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -43,62 +88,143 @@ const Action = () => {
       console.error("Error fetching data:", error.message);
     }
   };
-
   useEffect(() => {
     fetchData();
   }, [searchText]);
 
-  const handleSearch = (value) => {
-    setSearchText(value);
-  };
 
+  // 3. Define Material React Table Columns
+  const columns = useMemo(
+    () => [
+      {
+        accessorFn: (originalRow) => originalRow.id,
+        header: "S.No",
+        size: 50,
+        enableColumnFilter: false,
+        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+      },
+      {
+        accessorKey: "receipt_no",
+        header: "Customer No",
+        size: 50,
+      },
+       {
+        accessorKey: "name",
+        header: "Customer Name",
+        size: 50,
+      },
+      {
+        id: "action",
+        header: "Action",
+        size: 100,
+        enableColumnFilter: false,
+        enableColumnOrdering: false,
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <Box
+            sx={{
+              justifyContent: "center",
+              gap: "2 rem",
+            }}
+          >
+            {/* Edit Icon */}
+            <Tooltip title="Edit">
+              <IconButton
+                onClick={() => handleActionEditClick(row.original)}
+                sx={{ color: "#0d6efd", padding: 0 }}
+              >
+                <LiaEditSolid />
+              </IconButton>
+            </Tooltip>
+
+            {/* Delete Icon */}
+            <Tooltip title="Delete">
+              <IconButton
+                onClick={() =>
+                  handleActionDeleteClick(row.original.action_id)
+                }
+                sx={{ color: "#dc3545", padding: 0 }}
+              >
+                <MdOutlineDelete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+    ],
+    []
+  );
+
+  // 4. Update JSX to render MaterialReactTable
   return (
     <div>
       <Container fluid>
         <Row>
+          {/* ... (Navigation and Add Group button remain the same) ... */}
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span className="nav-list">Action</span>
+              <span class="nav-list">Action</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-            <span className="px-1">
-              <ClickButton
-                label={<>Add Action</>}
-                onClick={() => navigate("/console/master/action/create")}
-              ></ClickButton>
-            </span>
+            <ClickButton
+              label={<>Add Action</>}
+              onClick={() => navigate("/console/master/action/create")}
+            ></ClickButton>
           </Col>
-          <Col lg="3" md="12" xs="12" className="py-1"style={{ marginLeft: "-10px" }}>
+          {/* ... (Search Bar remains the same) ... */}
+          {/* <Col
+            lg="3"
+            md="5"
+            xs="12"
+            className="py-1"
+            style={{ marginLeft: "-10px" }}
+          >
             <TextInputForm
-              placeholder={"Search"}
-              onChange={(e) => handleSearch(e.target.value)}
+              placeholder={"Search Group"}
               prefix_icon={<FaMagnifyingGlass />}
-            />
-          </Col>
+              onChange={(e) => handleSearch(e.target.value)}
+              labelname={"Search"}
+            >
+              {" "}
+            </TextInputForm>
+          </Col> */}
+          <Col lg={9} md={12} xs={12} className="py-2"></Col>
+
+          {/* 5. Replace TableUI with MaterialReactTable */}
           {loading ? (
-            <div>Loading...</div>
+            <LoadingOverlay isLoading={loading} />
           ) : (
-            <Col lg="12" md="12" xs="12" className="px-0">
-              <div className="py-1">
-                {isMobile &&
-                  userData.map((action, index) => (
-                    <MobileView
-                      key={index}
-                      sno={action.id}
-                      name={action.action_id}
-                      subname={action.name}
-                    />
-                  ))}
-                <TableUI
-                  headers={UserTablehead}
-                  body={userData}
-                  type="action"
-                  style={{ borderRadius: "5px" }}
-                />
-              </div>
-            </Col>
+            <>
+              <Col lg="12" md="12" xs="12" className="px-0">
+                <div className="py-1">
+                  <MaterialReactTable
+                    columns={columns}
+                    data={userData}
+                    enableColumnActions={false}
+                    enableColumnFilters={true} // Enable filters for searchability
+                    enablePagination={true}
+                    enableSorting={true}
+                    initialState={{ density: "compact" }}
+                    muiTablePaperProps={{
+                      sx: {
+                        borderRadius: "5px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        //textAlign: "center",
+                      },
+                    }}
+                    muiTableHeadCellProps={{
+                      sx: {
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa", // Light gray header background
+                      },
+                    }}
+                  />
+                </div>
+              </Col>
+            </>
           )}
+          <Col lg="4"></Col>
         </Row>
       </Container>
     </div>
@@ -106,3 +232,4 @@ const Action = () => {
 };
 
 export default Action;
+

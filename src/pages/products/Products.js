@@ -1,36 +1,63 @@
-import React, { useState, useEffect } from "react";
-import { Container, Col, Row, Modal } from "react-bootstrap";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import TableUI from "../../components/Table"; // Assume this is a table component to display the data
-import { TextInputForm } from "../../components/Forms"; // Assume this is a custom input component
-import { useMediaQuery } from "react-responsive";
-import { ClickButton } from "../../components/ClickButton"; // Assume this is a button component
-import MobileView from "../../components/MobileView"; // Assume this is for mobile display
-import { useLocation } from "react-router-dom"; // For route location
-import API_DOMAIN from "../../config/config"; // Your API domain
-import { useTranslation } from "react-i18next";
+import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import { Container, Col, Row } from "react-bootstrap";
+import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
+import API_DOMAIN from "../../config/config";
+import LoadingOverlay from "../../components/LoadingOverlay";
+
+// 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
+import { MaterialReactTable } from "material-react-table";
+import { Box, Tooltip, IconButton } from "@mui/material";
+import { LiaEditSolid } from "react-icons/lia";
+import { MdOutlineDelete } from "react-icons/md";
 
 const Products = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const location = useLocation();
-  const { type, rowData } = location.state || {};
-  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+  const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [productModal, setProductModal] = useState(false);
-  const closeModal = () => setProductModal(false);
-  const showModal = () => setProductModal(true);
-  const [searchText, setSearchText] = useState("");
 
-  const UserTablehead = [
-    "No",
-    "Product Name",
-    "பொருட்களின் பெயர் தமிழ்",
-    "Action",
-  ];
+  // 1. Handlers for Edit and Delete Actions
+  const handleProductEditClick = (rowData) => {
+    console.log("Edit Group3344443:", rowData);
+    console.log("Edit Group:", rowData);
+    navigate("/console/master/Products/create", {
+      state: {
+        type: "edit",
 
+        rowData: rowData,
+      },
+    });
+  };
+  const handleProductDeleteClick = async (product_id) => {
+    setLoading(true);
+    console.log("Deleting Product ID:", product_id); // Debug
+    try {
+      const response = await fetch(`${API_DOMAIN}/product.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_product_id: product_id,
+        }),
+      });
+      const responseData = await response.json();
+      console.log(responseData);
+      if (responseData.head.code === 200) {
+        navigate("/console/master/products");
+        window.location.reload();
+        setLoading(false);
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+  // 2. Data Fetching Logic (Unchanged)
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchData(); // Fetch data after debouncing
@@ -38,6 +65,7 @@ const Products = () => {
 
     return () => clearTimeout(delayDebounceFn); // Cleanup timeout
   }, [searchText]);
+
   // Function to fetch data from the API
   const fetchData = async () => {
     setLoading(true);
@@ -75,53 +103,141 @@ const Products = () => {
     fetchData();
   }, [searchText]);
 
-  const handleSearch = (value) => {
-    setSearchText(value);
-  };
+  // 3. Define Material React Table Columns
+  const columns = useMemo(
+    () => [
+      {
+        accessorFn: (originalRow) => originalRow.id,
+        header: "S.No",
+        size: 50,
+        enableColumnFilter: false,
+        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+      },
+      {
+        accessorKey: "product_eng",
+        header: "Product Name",
+        size: 50,
+      },
+      {
+        accessorKey: "product_tam",
+        header: "பொருட்களின் பெயர் தமிழ்",
+        size: 50,
+      },
+      {
+        id: "action",
+        header: "Action",
+        size: 100,
+        enableColumnFilter: false,
+        enableColumnOrdering: false,
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <Box
+            sx={{
+              justifyContent: "center",
+              gap: "2 rem",
+            }}
+          >
+            {/* Edit Icon */}
+            <Tooltip title="Edit">
+              <IconButton
+                onClick={() => handleProductEditClick(row.original)}
+                sx={{ color: "#0d6efd", padding: 0 }}
+              >
+                <LiaEditSolid />
+              </IconButton>
+            </Tooltip>
 
+            {/* Delete Icon */}
+            <Tooltip title="Delete">
+              <IconButton
+                onClick={() =>
+                  handleProductDeleteClick(row.original.product_id)
+                }
+                sx={{ color: "#dc3545", padding: 0 }}
+              >
+                <MdOutlineDelete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+    ],
+    []
+  );
+
+  // 4. Update JSX to render MaterialReactTable
   return (
     <div>
       <Container fluid>
         <Row>
+          {/* ... (Navigation and Add Group button remain the same) ... */}
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span className="nav-list">Product</span>
+              <span class="nav-list">Products</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Product</>}
-              onClick={() => navigate("/console/master/Products/create")}
-            />
+              label={<>Add Products</>}
+              onClick={() => navigate("/console/master/products/create")}
+            ></ClickButton>
           </Col>
-          <Col lg="3" md="12" xs="12" className="py-1" style={{ marginLeft: "-10px" }}>
+          {/* ... (Search Bar remains the same) ... */}
+          {/* <Col
+            lg="3"
+            md="5"
+            xs="12"
+            className="py-1"
+            style={{ marginLeft: "-10px" }}
+          >
             <TextInputForm
-              placeholder={"Search Product"}
+              placeholder={"Search Group"}
               prefix_icon={<FaMagnifyingGlass />}
               onChange={(e) => handleSearch(e.target.value)}
               labelname={"Search"}
-            />
-          </Col>
-          <Col lg="12" md="12" xs="12" className="px-0">
-            <div className="py-1">
-              {isMobile &&
-                userData.map((user, index) => (
-                  <MobileView
-                    key={index}
-                    sno={user.id}
-                    name={user.product_eng}
-                    subname={user.product_tam}
+            >
+              {" "}
+            </TextInputForm>
+          </Col> */}
+          <Col lg={9} md={12} xs={12} className="py-2"></Col>
+
+          {/* 5. Replace TableUI with MaterialReactTable */}
+          {loading ? (
+            <LoadingOverlay isLoading={loading} />
+          ) : (
+            <>
+              <Col lg="12" md="12" xs="12" className="px-0">
+                <div className="py-1">
+                  {/* Note: MobileView rendering is typically replaced by MRT's built-in responsiveness */}
+
+                  <MaterialReactTable
+                    columns={columns}
+                    data={userData}
+                    enableColumnActions={false}
+                    enableColumnFilters={true} // Enable filters for searchability
+                    enablePagination={true}
+                    enableSorting={true}
+                    initialState={{ density: "compact" }}
+                    muiTablePaperProps={{
+                      sx: {
+                        borderRadius: "5px",
+                        // Keep the existing style property for the table container
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        //textAlign: "center",
+                      },
+                    }}
+                    muiTableHeadCellProps={{
+                      sx: {
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa", // Light gray header background
+                      },
+                    }}
                   />
-                ))}
-              <TableUI
-                headers={UserTablehead}
-                body={userData.length > 0 ? userData : []} // Ensure userData is not undefined
-                type="product"
-                pageview="yes"
-                style={{ borderRadius: "5px" }}
-              />
-            </div>
-          </Col>
+                </div>
+              </Col>
+            </>
+          )}
+          <Col lg="4"></Col>
         </Row>
       </Container>
     </div>
@@ -129,3 +245,9 @@ const Products = () => {
 };
 
 export default Products;
+
+
+
+
+
+

@@ -1,16 +1,15 @@
 import { MdSpaceDashboard } from "react-icons/md";
 import { FiUsers } from "react-icons/fi";
-import { BsBuildings, BsBarChartFill } from "react-icons/bs";
+import { BsBuildings, BsBarChartFill,BsBank } from "react-icons/bs";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { PiUsersThreeBold } from "react-icons/pi";
-import { RiBankLine } from "react-icons/ri";
 import { TbArrowsShuffle } from "react-icons/tb";
 import { MdCategory } from "react-icons/md";
 import { GiSettingsKnobs } from "react-icons/gi";
-import { FaCogs, FaBoxes } from "react-icons/fa";
+import { FaCogs, FaBoxes,FaHandshake } from "react-icons/fa";
 import { MdOutlineDashboard } from "react-icons/md";
 import { FaChartLine } from "react-icons/fa";
-import { RiFileList3Line } from "react-icons/ri";
+import { RiFileList3Line,RiBankFill  } from "react-icons/ri";
 import { AiOutlineCalendar } from "react-icons/ai";
 import { HiOutlineDocumentText } from "react-icons/hi";
 
@@ -57,10 +56,12 @@ const sidebarConfig = [
       {
         path: "/console/master/bank",
         text: "Bank",
+        icon: <RiBankFill />,
       },
       {
         path: "/console/master/bankpledgerdetails",
-        text: "Bank Pledger Details",
+        text: "Bank Pledger",
+        icon:<FaHandshake/>,
       },
       // {
       //   path: "/console/master/customer",

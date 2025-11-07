@@ -114,7 +114,7 @@ const User = () => {
     () => [
       {
         accessorFn: (originalRow) => originalRow.id,
-        header: "No",
+        header: "S.No",
         size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering

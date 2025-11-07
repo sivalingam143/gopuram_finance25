@@ -121,11 +121,8 @@ const TableUI = ({
     }
   };
  
-  const handleCompanyEditClick = (rowData) => {
-    navigate("/console/company/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
+
+
   const handleJewelPawningEditClick = (rowData) => {
     navigate("/console/customer/loancreation", {
       state: { type: "edit", rowData: rowData },
@@ -500,71 +497,8 @@ const TableUI = ({
       setLoading(false);
     }
   };
-  const handleProductEditClick = (rowData) => {
-    navigate("/console/master/products/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handleProductDeleteClick = async (product_id) => {
-    setLoading(true);
-    console.log("Deleting Product ID:", product_id); // Debug
-    try {
-      const response = await fetch(`${API_DOMAIN}/product.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_product_id: product_id,
-        }),
-      });
-      const responseData = await response.json();
-      console.log(responseData);
-      if (responseData.head.code === 200) {
-        navigate("/console/master/products");
-        window.location.reload();
-        setLoading(false);
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
-  const handleActionEditClick = (rowData) => {
-    navigate("/console/master/action/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handleActionDeleteClick = async (action_id) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/action.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_action_id: action_id,
-        }),
-      });
-      const responseData = await response.json();
-      console.log(responseData);
-      if (responseData.head.code === 200) {
-        navigate("/console/master/action");
-        window.location.reload();
-        setLoading(false);
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
+ 
+  
   const handleStreetEditClick = (rowData) => {
     navigate("/console/master/Street/create", {
       state: { type: "edit", rowData: rowData },
@@ -627,36 +561,7 @@ const TableUI = ({
       setLoading(false);
     }
   };
-  const handleBankEditClick = (rowData) => {
-    navigate("/console/master/bank/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handleBankDeleteClick = async (bank_id) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/bank_details.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_bank_id: bank_id,
-        }),
-      });
-      const responseData = await response.json();
-      if (responseData.head.code === 200) {
-        navigate("/console/master/bank");
-        window.location.reload();
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
+  
   const handleBankPledgerDetailsEditClick = (rowData) => {
     navigate("/console/master/bankpledgerdetails/create", {
       state: { type: "edit", rowData: rowData },
@@ -773,34 +678,6 @@ const TableUI = ({
             currentItems.map((rowData, rowIndex) => (
               <tr key={rowIndex}>
                 
-                {type === "company" && (
-                  <>
-                    {" "}
-                    {/* Fragment shorthand */}
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{rowData.company_name}</td>
-                    <td>{rowData.mobile_number}</td>
-                    <td>{rowData.place}</td>
-                    {isAdmin && ( // Show Edit option only if user is Admin
-                      <td>
-                        <Dropdown>
-                          <Dropdown.Toggle>
-                            <Button className="action">
-                              <BiDotsVerticalRounded />
-                            </Button>
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu>
-                            <Dropdown.Item
-                              onClick={() => handleCompanyEditClick(rowData)}
-                            >
-                              Edit
-                            </Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </td>
-                    )}
-                  </>
-                )}
                 {type === "interest" && (
                   <>
                     <td>{startIndex + rowIndex + 1}</td>
@@ -1224,39 +1101,6 @@ const TableUI = ({
                   </>
                 )}
               
-                {type === "bank" && (
-                  <>
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{rowData.bank_name}</td>
-                    <td>{rowData.account_limit}</td>
-                    <td>{rowData.pledge_count_limit}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {isAdmin && (
-                            <Dropdown.Item
-                              onClick={() => handleBankEditClick(rowData)}
-                            >
-                              Edit
-                            </Dropdown.Item>
-                          )}
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleBankDeleteClick(rowData.bank_id)
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
                 {type === "jewelCategory" && (
                   <>
                     {" "}
@@ -1354,66 +1198,8 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-                {type === "product" && (
-                  <>
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{rowData.product_eng}</td>
-                    <td>{rowData.product_tam}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item
-                            onClick={() => handleProductEditClick(rowData)}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleProductDeleteClick(rowData.product_id)
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
-                {type === "action" && (
-                  <>
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{rowData.receipt_no}</td>
-                    <td>{rowData.name}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item
-                            onClick={() => handleActionEditClick(rowData)}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleActionDeleteClick(rowData.action_id)
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
+              
+              
                 {type === "expenseTable" && (
                   <>
                     <td>{startIndex + rowIndex + 1}</td>

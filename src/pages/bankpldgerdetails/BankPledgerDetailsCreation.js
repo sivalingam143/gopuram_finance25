@@ -9,7 +9,7 @@ import {
   Button,
 } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
-import { ClickButton } from "../../components/ClickButton";
+import { ClickButton,Delete } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
 import Select from "react-select";
 import { useLocation } from "react-router-dom";
@@ -344,7 +344,7 @@ const BankPledgerDetailsCreation = () => {
           </Col>
 
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
-            <div className="text-center">
+           <div style={{ textAlign: "right", paddingRight: "5px" }}>
               <>
                 {type === "edit" ? (
                   <>
@@ -399,12 +399,12 @@ const BankPledgerDetailsCreation = () => {
                       ></ClickButton>
                     </span>
                     <span className="mx-2">
-                      <ClickButton
+                      <Delete
                         label={<>Cancel</>}
                         onClick={() =>
                           navigate("/console/master/bankpledgerdetails")
                         }
-                      ></ClickButton>
+                      ></Delete>
                     </span>
                   </>
                 )}
