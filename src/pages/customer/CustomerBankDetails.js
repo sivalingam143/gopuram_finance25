@@ -1,15 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Col, Container, Row, Table, Card, Button } from "react-bootstrap";
 import PageNav from "../../components/PageNav";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ClickButton } from "../../components/Buttons";
 import { BiArrowBack } from "react-icons/bi";
+import API_DOMAIN from "../../config/config";
 
 const CustomerBankDetails = () => {
   const location = useLocation();
   const { state } = location;
   const navigate = useNavigate();
   const { bankData = [], receiptNo = "", customerNo = "" } = state || {};
+
+  const [pawnInterestTotal, setPawnInterestTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -23,6 +27,49 @@ const CustomerBankDetails = () => {
   const formatCurrency = (amount) => {
     return amount ? `₹${parseFloat(amount).toLocaleString("en-IN")}` : "₹0";
   };
+
+  // Fetch total pawnjewelry interest
+  const fetchPawnInterestTotal = async () => {
+    if (!receiptNo) return;
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          receipt_no: receiptNo,
+        }),
+      });
+      const responseData = await response.json();
+      console.log(responseData);
+      if (responseData.head.code === 200) {
+        setPawnInterestTotal(responseData.body.total_interest || 0);
+      } else {
+        console.error(
+          "Error fetching pawn interest total:",
+          responseData.head.msg
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching pawn interest total:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPawnInterestTotal();
+  }, [receiptNo]);
+
+  // Compute total bank interest client-side
+  const totalBankInterest = bankData.reduce((sum, bank) => {
+    return sum + parseFloat(bank.interest_amount || 0);
+  }, 0);
+
+  // Compute profit
+  const profit = pawnInterestTotal - totalBankInterest;
 
   if (bankData.length === 0) {
     return (
@@ -172,6 +219,57 @@ const CustomerBankDetails = () => {
           </Card>
         </Col>
       </Row>
+
+      {/* New Bottom Container for Totals */}
+      <Row className="mt-4">
+        <Col lg={12}>
+          <Card className="shadow-sm border-0 professional-card">
+            <Card.Header className="bg-primary text-white">
+              <h5 className="mb-0 fw-bold">
+                Interest Summary for Receipt No: {receiptNo}
+              </h5>
+            </Card.Header>
+            <Card.Body className="p-4">
+              <Row className="g-3 text-center">
+                <Col md={4}>
+                  <div className="p-3 bg-light rounded">
+                    <h6 className="text-muted mb-2">Total Bank Interest</h6>
+                    <h4 className="text-info fw-bold">
+                      {formatCurrency(totalBankInterest)}
+                    </h4>
+                  </div>
+                </Col>
+                <Col md={4}>
+                  <div className="p-3 bg-light rounded">
+                    <h6 className="text-muted mb-2">
+                      Total Pawnjewelry Interest
+                    </h6>
+                    <h4 className="text-success fw-bold">
+                      {formatCurrency(pawnInterestTotal)}
+                    </h4>
+                  </div>
+                </Col>
+                <Col md={4}>
+                  <div className="p-3 bg-light rounded">
+                    <h6 className="text-muted mb-2">Profit</h6>
+                    <h4
+                      className={`fw-bold ${
+                        profit >= 0 ? "text-success" : "text-danger"
+                      }`}
+                    >
+                      {formatCurrency(profit)}
+                    </h4>
+                  </div>
+                </Col>
+              </Row>
+              {loading && (
+                <div className="text-center mt-3">Loading totals...</div>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
       <Row className="mt-4">
         <Col lg={12} className="text-center">
           <ClickButton
