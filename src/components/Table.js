@@ -120,36 +120,7 @@ const TableUI = ({
       setLoading(false);
     }
   };
-  const handleEditClick = (rowData) => {
-    navigate("/console/user/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handleDeleteClick = async (user_id) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/users.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_user_id: user_id,
-        }),
-      });
-      const responseData = await response.json();
-      if (responseData.head.code === 200) {
-        navigate("/console/user");
-        window.location.reload();
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
+ 
   const handleCompanyEditClick = (rowData) => {
     navigate("/console/company/create", {
       state: { type: "edit", rowData: rowData },
@@ -801,42 +772,7 @@ const TableUI = ({
           ) : (
             currentItems.map((rowData, rowIndex) => (
               <tr key={rowIndex}>
-                {type === "USER" && ( // Checking if type is "USER"
-                  <>
-                    {" "}
-                    {/* Fragment shorthand */}
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{rowData.Name}</td>
-                    <td>{rowData.RoleSelection}</td>
-                    <td>{rowData.Mobile_Number}</td>
-                    {/* <td>{rowData.User_Name}</td>
-                  <td>{rowData.Password}</td> */}
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {/* <Dropdown.Item onClick={() => handleViewClick(rowData)}>View</Dropdown.Item> */}
-                          {isAdmin && ( // Show Edit option only if user is Admin
-                            <Dropdown.Item
-                              onClick={() => handleEditClick(rowData)}
-                            >
-                              Edit
-                            </Dropdown.Item>
-                          )}
-                          <Dropdown.Item
-                            onClick={() => handleDeleteClick(rowData.user_id)}
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
+                
                 {type === "company" && (
                   <>
                     {" "}

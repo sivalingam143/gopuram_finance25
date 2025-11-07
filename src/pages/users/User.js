@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
-import { TextInputForm } from "../../components/Forms";
-import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
-import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
@@ -29,7 +26,6 @@ const User = () => {
     navigate("/console/user/create", {
       state: {
         type: "edit",
-
         rowData: rowData,
       },
     });
@@ -109,44 +105,11 @@ const User = () => {
     };
     fetchData();
   }, [searchText, formData]);
-  // const fetchData = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await fetch(`${API_DOMAIN}/users.php`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         search_text: searchText,
-  //       }),
-  //     });
-  //     const responseData = await response.json();
-
-  //     if (responseData.head.code === 200) {
-  //       setUserData(
-  //         Array.isArray(responseData.body.group)
-  //           ? responseData.body.group
-  //           : [responseData.body.group]
-  //       );
-  //       setLoading(false);
-  //     } else {
-  //       throw new Error(responseData.head.msg);
-  //     }
-  //   } catch (error) {
-  //     setLoading(false);
-  //     console.error("Error fetching data:", error.message);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, [searchText]);
+  
 
 
   // 3. Define Material React Table Columns
- 
- 
+
   const columns = useMemo(
     () => [
       {
@@ -200,7 +163,7 @@ const User = () => {
             <Tooltip title="Delete">
               <IconButton
                 onClick={() =>
-                  handleDeleteClick(row.original.Group_id)
+                  handleDeleteClick(row.original.user_id)
                 }
                 sx={{ color: "#dc3545", padding: 0 }}
               >
@@ -219,10 +182,9 @@ const User = () => {
     <div>
       <Container fluid>
         <Row>
-          {/* ... (Navigation and Add Group button remain the same) ... */}
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">User$Access</span>
+              <span class="nav-list">User & Access</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
