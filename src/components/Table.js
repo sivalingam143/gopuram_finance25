@@ -302,6 +302,23 @@ const TableUI = ({
       setLoading(false);
     }
   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   const handleJewelCategoryEditClick = (rowData) => {
     navigate("/console/master/category/create", {
       state: { type: "edit", rowData: rowData },
@@ -362,37 +379,7 @@ const TableUI = ({
       setLoading(false);
     }
   };
-  const handlecategoryTwoEditClick = (rowData) => {
-    navigate("/console/expense/category/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handlecategoryTwoDeleteClick = async (id) => {
-    console.log("Deleting category two:", id);
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/category_two.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_category_id: id,
-        }),
-      });
-      const responseData = await response.json();
-      console.log(responseData);
-      if (responseData.head.code === 200) {
-        navigate("/console/expense");
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
+  
   const handleexpenseTwoEditClick = (rowData) => {
     navigate("/console/expense/create", {
       state: { type: "edit", rowData: rowData },
@@ -1167,35 +1154,7 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-                {type === "categoryTwo" && (
-                  <>
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{rowData.category_name}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item
-                            onClick={() => handlecategoryTwoEditClick(rowData)}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() =>
-                              handlecategoryTwoDeleteClick(rowData.category_id)
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
+             
                 {type === "expenseTwo" && (
                   <>
                     <td>{startIndex + rowIndex + 1}</td>

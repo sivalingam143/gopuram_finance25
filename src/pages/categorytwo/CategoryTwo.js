@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
-import { TextInputForm } from "../../components/Forms";
-import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
-import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
@@ -59,7 +56,7 @@ const CategoryTwo =() =>{
  useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${API_DOMAIN}/category_two.php`, {
+        const response = await fetch(`${API_DOMAIN}/expense_two.php`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

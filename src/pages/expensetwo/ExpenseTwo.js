@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
-import { TextInputForm } from "../../components/Forms";
-import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
-import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
-import dayjs from "dayjs";
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
@@ -15,7 +11,7 @@ import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
-const ExpenseTwo=()=>{
+const CategoryTwo =() =>{
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
@@ -27,8 +23,7 @@ const ExpenseTwo=()=>{
       state: { type: "edit", rowData: rowData },
     });
   };
-
- const handleexpenseTwoDeleteClick = async (id) => {
+  const handleexpenseTwoDeleteClick = async (id) => {
     console.log("Deleting bank pledge ID:", id);
     setLoading(true);
     try {
@@ -97,10 +92,9 @@ const ExpenseTwo=()=>{
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
       },
       {
-        accessorKey: "date",
+        accessorKey: "expense_date",
         header: "Expense Date",
         size: 50,
-        Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
       },
       {
         id: "action",
@@ -119,7 +113,8 @@ const ExpenseTwo=()=>{
             {/* Edit Icon */}
             <Tooltip title="Edit">
               <IconButton
-                onClick={() => handleexpenseTwoEditClick(row.original)}
+                onClick={() => handleexpenseTwoEditClick
+                  (row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
               >
                 <LiaEditSolid />
@@ -129,7 +124,9 @@ const ExpenseTwo=()=>{
             {/* Delete Icon */}
             <Tooltip title="Delete">
               <IconButton
-                onClick={() => handleexpenseTwoDeleteClick(row.original.expense_id)}
+                onClick={() =>
+                  handleexpenseTwoDeleteClick
+                  (row.original.expense_id)}
                 sx={{ color: "#dc3545", padding: 0 }}
               >
                 <MdOutlineDelete />
@@ -149,12 +146,16 @@ const ExpenseTwo=()=>{
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Expense</span>
+              <span class="nav-list">Expense
+
+              </span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<> Add Expense </>}
+              label={<>
+              Add Expense
+              </>}
               onClick={() => navigate("/console/expense/create")}
             ></ClickButton>
           </Col>
@@ -218,9 +219,5 @@ const ExpenseTwo=()=>{
   );
 };
 
-export default ExpenseTwo;
-
-
-
-
+export default CategoryTwo;
 
