@@ -22,7 +22,7 @@ const ExpenseReport = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_DOMAIN}/expense_two.php`, {
+      const response = await fetch(`${API_DOMAIN}/expense_two_category.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ get_categories: true }),
@@ -41,7 +41,7 @@ const ExpenseReport = () => {
   const fetchReport = async (filterParams = {}) => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/expense_two.php`, {
+      const response = await fetch(`${API_DOMAIN}/expense_two_report.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ report: true, ...filterParams }),

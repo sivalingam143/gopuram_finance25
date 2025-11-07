@@ -4,21 +4,21 @@ import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import LoadingOverlay from "../../components/LoadingOverlay";
-
+import dayjs from "dayjs";
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
-const CategoryTwo =() =>{
+const CategoryTwo = () => {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // 1. Handlers for Edit and Delete Actions
- const handleexpenseTwoEditClick = (rowData) => {
+  const handleexpenseTwoEditClick = (rowData) => {
     navigate("/console/expense/create", {
       state: { type: "edit", rowData: rowData },
     });
@@ -50,7 +50,7 @@ const CategoryTwo =() =>{
   };
 
   // 2. Data Fetching Logic (Unchanged)
- useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(`${API_DOMAIN}/expense_two.php`, {
@@ -79,8 +79,6 @@ const CategoryTwo =() =>{
     fetchData();
   }, [searchText]);
 
-
-
   // 3. Define Material React Table Columns
   const columns = useMemo(
     () => [
@@ -94,6 +92,7 @@ const CategoryTwo =() =>{
       {
         accessorKey: "expense_date",
         header: "Expense Date",
+        Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
         size: 50,
       },
       {
@@ -113,8 +112,7 @@ const CategoryTwo =() =>{
             {/* Edit Icon */}
             <Tooltip title="Edit">
               <IconButton
-                onClick={() => handleexpenseTwoEditClick
-                  (row.original)}
+                onClick={() => handleexpenseTwoEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
               >
                 <LiaEditSolid />
@@ -125,8 +123,8 @@ const CategoryTwo =() =>{
             <Tooltip title="Delete">
               <IconButton
                 onClick={() =>
-                  handleexpenseTwoDeleteClick
-                  (row.original.expense_id)}
+                  handleexpenseTwoDeleteClick(row.original.expense_id)
+                }
                 sx={{ color: "#dc3545", padding: 0 }}
               >
                 <MdOutlineDelete />
@@ -146,16 +144,12 @@ const CategoryTwo =() =>{
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Expense
-
-              </span>
+              <span class="nav-list">Expense</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>
-              Add Expense
-              </>}
+              label={<>Add Expense</>}
               onClick={() => navigate("/console/expense/create")}
             ></ClickButton>
           </Col>
@@ -189,7 +183,7 @@ const CategoryTwo =() =>{
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                    enableColumnFilters={true} 
+                    enableColumnFilters={true}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}
@@ -220,4 +214,3 @@ const CategoryTwo =() =>{
 };
 
 export default CategoryTwo;
-
