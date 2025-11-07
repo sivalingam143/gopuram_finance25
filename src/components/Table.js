@@ -302,48 +302,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-  // const handleJewelcustomerViewClick = (rowData) => {
-  // navigate("/console/master/customer/create", {
-  // state: { type: "view", rowData: rowData },
-  // });
-  // };
-  const handleJewelcustomerViewClick = (rowData) => {
-    navigate("/console/master/customerdetails", {
-      state: { type: "view", rowData: rowData },
-    });
-  };
-  const handleJewelcustomerEditClick = (rowData) => {
-    navigate("/console/master/customer/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handleJewelcustomerDeleteClick = async (id) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/customer.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_customer_id: id,
-          login_id: user.id,
-          user_name: user.user_name,
-        }),
-      });
-      const responseData = await response.json();
-      if (responseData.head.code === 200) {
-        navigate("/console/master/customer");
-        // window.location.reload();
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
   const handleJewelCategoryEditClick = (rowData) => {
     navigate("/console/master/category/create", {
       state: { type: "edit", rowData: rowData },
@@ -1109,67 +1067,7 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-                {type === "customer" && (
-                  <>
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>
-                      {rowData.proof && rowData.proof.length > 0 ? (
-                        <img
-                          src={rowData.proof[0]}
-                          alt="Proof"
-                          className="customer-listing-img"
-                        />
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td>{rowData.customer_no}</td>
-                    <td>{rowData.name}</td>
-                    <td>{rowData.mobile_number}</td>
-                    <td>{rowData.customer_details}</td>
-                    <td>{rowData.place}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {/* <Dropdown.Item
-                            onClick={() => handleJewelcustomerViewClick(rowData)}
-                          >
-                            View
-                          </Dropdown.Item> */}
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleJewelcustomerViewClick(rowData)
-                            }
-                          >
-                            Customer Details
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleJewelcustomerEditClick(rowData)
-                            }
-                          >
-                            Edit
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleJewelcustomerDeleteClick(
-                                rowData.customer_id
-                              )
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
-              
+               
               
                 {type === "expenseTable" && (
                   <>
