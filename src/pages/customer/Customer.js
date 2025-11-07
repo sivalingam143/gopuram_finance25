@@ -1,36 +1,90 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import TableUI from "../../components/Table";
 import { TextInputForm } from "../../components/Forms";
-import { ClickButton } from "../../components/ClickButton";
+import { FaMagnifyingGlass } from "react-icons/fa6";
+import { ClickButton, Delete } from "../../components/ClickButton";
+import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import { useMediaQuery } from "react-responsive";
-// import { useNavigate } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
-import { BorderAll } from "@mui/icons-material";
+
+// 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
+import { MaterialReactTable } from "material-react-table";
+import {
+  Box,
+  Tooltip,
+  IconButton,
+  Dialog,
+  DialogContent,
+  Button,
+} from "@mui/material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { LiaEditSolid } from "react-icons/lia";
+import { MdOutlineDelete } from "react-icons/md";
 
 const Customer = () => {
   const navigate = useNavigate();
-  const CustomerTablehead = [
-    "No",
-    "customer img",
-    "customer No",
-    "Customer Name",
-    "Mobile No.",
-    "Address",
-    "Place",
-    "Action",
-  ];
-
-  const [customerData, setcustomerData] = useState([]);
-  // eslint-disable-next-line no-unused-vars
-  const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [customerData, setcustomerData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+
+  // Handler functions for the preview modal
+  const handlePreviewOpen = (imageUrl) => {
+    setPreviewImage(imageUrl);
+    setPreviewOpen(true);
+  };
+
+  const handlePreviewClose = () => {
+    setPreviewOpen(false);
+    setPreviewImage("");
+  };
+
+  // 1. Handlers for View  Edit and Delete Actions
+
+  const handleJewelcustomerViewClick = (rowData) => {
+    navigate("/console/master/customerdetails", {
+      state: { type: "view", rowData: rowData },
+    });
+  }; 
+  const handleJewelcustomerEditClick = (rowData) => {
+    navigate("/console/master/customer/create", {
+      state: { type: "edit", rowData: rowData },
+    });
+  };
+  const handleJewelcustomerDeleteClick = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/customer.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_customer_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
+        }),
+      });
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        navigate("/console/master/customer");
+        // window.location.reload();
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+  // 2. Data Fetching Logic (Unchanged)
   const fetchDatajewelpawncustomer = async () => {
     setLoading(true);
     try {
@@ -62,12 +116,9 @@ const Customer = () => {
     fetchDatajewelpawncustomer();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchText]);
-  const handleSearch = (value) => {
-    setSearchText(value);
-  };
 
+  ///for pdf and excel download
   const handleDownloadPDF = () => {
-    // Create jsPDF instance in landscape mode (A4)
     const doc = new jsPDF({
       orientation: "landscape", // landscape mode
       unit: "mm",
@@ -171,59 +222,237 @@ const Customer = () => {
     XLSX.utils.book_append_sheet(wb, ws, "Customers");
     XLSX.writeFile(wb, "Customer_List.xlsx");
   };
+  // 3. Define Material React Table Columns
+  const columns = useMemo(
+    () => [
+      {
+        accessorFn: (originalRow) => originalRow.id,
+        header: "S.No",
+        size: 50,
+        enableColumnFilter: false,
+        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+      },
 
+      {
+        accessorKey: "proof",
+        header: "Customer Image",
+        size:30,
+        Cell: ({ cell }) => {
+          const proofArray = cell.getValue();
+          const imageUrl =
+            proofArray && proofArray.length > 0 ? proofArray[0] : null;
+
+          return (
+            <Box
+              sx={{
+                alignItems: "center",
+                height: "100%",
+                width: "100%",
+              }}
+            >
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt="Customer Proof"
+                  className="customer-listing-img"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handlePreviewOpen(imageUrl)}
+                />
+              ) : (
+                <span>-</span>
+              )}
+            </Box>
+          );
+        },
+      },
+      {
+        accessorKey: "customer_no",
+        header: "Customer No",
+        size: 70,
+      },
+      {
+        accessorKey: "name",
+        header: "Customer Name",
+        size: 70,
+      },
+      {
+        accessorKey: "mobile_number",
+        header: "Mobile No.",
+        size: 70,
+      },
+      {
+        accessorKey: "customer_details",
+        header: "Address",
+        size: 70,
+      },
+      {
+        accessorKey: "place",
+        header: " Place",
+        size: 70,
+      },
+      {
+        id: "action",
+        header: "Action",
+        size: 100,
+        enableColumnFilter: false,
+        enableColumnOrdering: false,
+        enableSorting: false,
+        
+        Cell: ({ row }) => (
+          <Box
+            sx={{
+          justifyContent: "center",
+          gap: "4rem",
+            }}
+          >
+             {/* View Icon */}
+            <Tooltip title="Edit">
+              <IconButton
+                onClick={() => handleJewelcustomerViewClick(row.original)}
+                sx={{ padding: 0 }}
+              >
+                <VisibilityIcon/>
+              </IconButton>
+                 </Tooltip>
+            {/* Edit Icon */}
+            <Tooltip title="Edit">
+              <IconButton
+                onClick={() => handleJewelcustomerEditClick(row.original)}
+                sx={{ color: "#0d6efd", padding: 0 }}
+              >
+                <LiaEditSolid />
+              </IconButton>
+            </Tooltip>
+
+            {/* Delete Icon */}
+            <Tooltip title="Delete">
+              <IconButton
+                onClick={() =>
+                  handleJewelcustomerDeleteClick(row.original.customer_id)
+                }
+                sx={{ color: "#dc3545", padding: 0 }}
+              >
+                <MdOutlineDelete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+    ],
+    []
+  );
+
+  // 4. Update JSX to render MaterialReactTable
   return (
     <div>
       <Container fluid>
         <Row>
-          <Col lg="6" md="6" xs="12">
+          <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
               <span class="nav-list">Customer</span>
             </div>
           </Col>
-          <Col lg="6" md="6" xs="12" className="align-self-center text-end">
-            <span className="mx-2">
-              <ClickButton
-                label={<>Add New</>}
-                onClick={() => navigate("/console/master/customer/create")}
-              />
-            </span>
-            {/* <span className="mx-2">
-              <ClickButton label={<> PDF</>} onClick={handleDownloadPDF} />
-            </span>
-            <span className="mx-2">
-              <ClickButton label={<> Excel</>} onClick={handleDownloadExcel} />
-            </span> */}
+          <Col lg="5" md="6" xs="6" className="align-self-center text-end">
+            <ClickButton
+              label={<>Add Customer </>}
+              onClick={() => navigate("/console/master/customer/create")}
+            ></ClickButton>
           </Col>
-
-          <Col lg="3" md="5" xs="12" className="py-1">
+          {/* ... (Search Bar remains the same) ... */}
+          {/* <Col
+            lg="3"
+            md="5"
+            xs="12"
+            className="py-1"
+            style={{ marginLeft: "-10px" }}
+          >
             <TextInputForm
-              placeholder={"Name, mobile number"}
-              onChange={(e) => handleSearch(e.target.value)}
+              placeholder={"Search Group"}
               prefix_icon={<FaMagnifyingGlass />}
+              onChange={(e) => handleSearch(e.target.value)}
+              labelname={"Search"}
             >
               {" "}
             </TextInputForm>
-          </Col>
+          </Col> */}
+          <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
+          {/* 5. Replace TableUI with MaterialReactTable */}
           {loading ? (
             <LoadingOverlay isLoading={loading} />
           ) : (
             <>
               <Col lg="12" md="12" xs="12" className="px-0">
                 <div className="py-1">
-                  <TableUI
-                    headers={CustomerTablehead}
-                    body={customerData}
-                    type="customer"
-                    pageview={"yes"}
+                  <MaterialReactTable
+                    columns={columns}
+                    data={customerData}
+                    enableColumnActions={false}
+                    enableColumnFilters={true} 
+                    enablePagination={true}
+                    enableSorting={true}
+                    initialState={{ density: "compact" }}
+                    muiTablePaperProps={{
+                      sx: {
+                        borderRadius: "5px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        //textAlign: "center",
+                      },
+                    }}
+                    muiTableHeadCellProps={{
+                      sx: {
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa", // Light gray header background
+                      },
+                    }}
                   />
                 </div>
               </Col>
             </>
           )}
+          <Col lg="4"></Col>
         </Row>
       </Container>
+      <Dialog
+        open={previewOpen}
+        onClose={handlePreviewClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent sx={{ padding: 0 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              p: 2,
+            }}
+          >
+            {/* The full-size image */}
+            <img
+              src={previewImage}
+              alt="Customer Proof Preview"
+              style={{
+                maxWidth: " 80%",
+                maxHeight: "80vh",
+                objectFit: "contain",
+              }}
+            />
+
+            {/* Close Button */}
+            <Delete
+              label="Close"
+              onClick={handlePreviewClose}
+              style={{ marginTop: "16px" }}
+            />
+          </Box>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
