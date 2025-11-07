@@ -56,7 +56,7 @@ const CategoryTwo =() =>{
  useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${API_DOMAIN}/expense_two.php`, {
+        const response = await fetch(`${API_DOMAIN}/category_two.php`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
