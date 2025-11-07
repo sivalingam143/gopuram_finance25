@@ -1306,6 +1306,7 @@ const DashBoard = () => {
                 <MaterialReactTable
                   columns={columns}
                   data={filteredData}
+                  initialState={{ density: "compact" }}
                   enableExpanding
                   enableExpandAll={false} // hides top-left expand-all button
                   displayColumnDefOptions={{
@@ -1321,6 +1322,9 @@ const DashBoard = () => {
                       fontWeight: "bold", // Bold all body text
                       fontSize: "14px",
                       color: "#000",
+                      borderBottom: "1px solid #e0e0e0",
+                      paddingTop: "4px", // e.g., 4px
+                      paddingBottom: "4px", // e.g., 4px
                     },
                   }}
                   muiTableHeadCellProps={{

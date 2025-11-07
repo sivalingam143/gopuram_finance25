@@ -1,62 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import TableUI from "../../components/Table";
 import { TextInputForm } from "../../components/Forms";
-import { DropDownUI } from "../../components/Forms";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
-import MobileView from "../../components/MobileView";
-import Spinner from "react-bootstrap/Spinner";
-import Button from "react-bootstrap/Button";
-import Offcanvas from "react-bootstrap/Offcanvas";
-import { IoMdCloseCircle } from "react-icons/io";
-import { IoFilter } from "react-icons/io5";
 import API_DOMAIN from "../../config/config";
+import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
 
-const UserTablehead = ["No", "Name", "Share", "Mobile Number", "Action"];
-
-const DropListe = [
-  {
-    value: "Admin",
-    label: "Admin",
-  },
-  {
-    value: "Super admin",
-    label: "Super admin",
-  },
-  {
-    value: "Employee",
-    label: "Employee",
-  },
-];
+// 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
+import { MaterialReactTable } from "material-react-table";
+import { Box, Tooltip, IconButton } from "@mui/material";
+import { LiaEditSolid } from "react-icons/lia";
+import { MdOutlineDelete } from "react-icons/md";
 
 const User = () => {
   const navigate = useNavigate();
+  const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     RoleSelection: "",
     Username: "",
   });
-  console.log(formData);
 
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const handleLoad = () => {
-    setFormData({
-      RoleSelection: "",
-      Username: "",
+  // 1. Handlers for Edit and Delete Actions
+  const handleEditClick = (rowData) => {
+    navigate("/console/user/create", {
+      state: {
+        type: "edit",
+
+        rowData: rowData,
+      },
     });
   };
-  const [searchText, setSearchText] = useState("");
+  const handleDeleteClick = async (userId) => {
+    console.log("Delete Group ID:", userId);
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/users.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+         delete_user_id: userId,
+        }),
+      });
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        navigate("/console/user");
+        window.location.reload();
+        //setLoading(false);
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(true);
+    }
+  };
 
   const user = JSON.parse(localStorage.getItem("user")) || {};
-  const isAdmin = user.role === "Admin";
+ const isAdmin = user.role === "Admin";
 
-  useEffect(() => {
+  // 2. Data Fetching Logic (Unchanged)
+     useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -99,141 +109,189 @@ const User = () => {
     };
     fetchData();
   }, [searchText, formData]);
-  const handleSearch = (value) => {
-    setSearchText(value);
-  };
+  // const fetchData = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(`${API_DOMAIN}/users.php`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         search_text: searchText,
+  //       }),
+  //     });
+  //     const responseData = await response.json();
+
+  //     if (responseData.head.code === 200) {
+  //       setUserData(
+  //         Array.isArray(responseData.body.group)
+  //           ? responseData.body.group
+  //           : [responseData.body.group]
+  //       );
+  //       setLoading(false);
+  //     } else {
+  //       throw new Error(responseData.head.msg);
+  //     }
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error("Error fetching data:", error.message);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [searchText]);
+
+
+  // 3. Define Material React Table Columns
+ 
+ 
+  const columns = useMemo(
+    () => [
+      {
+        accessorFn: (originalRow) => originalRow.id,
+        header: "No",
+        size: 50,
+        enableColumnFilter: false,
+        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+      },
+      {
+        accessorKey: "Name",
+        header: "Name",
+        size: 50,
+      },
+      {
+        accessorKey: "RoleSelection",
+        header: "Share",
+        size: 50,
+      },
+      {
+        accessorKey: "Mobile_Number",
+        header: "Mobile Number",
+        size: 50,
+      },
+      
+      {
+        id: "action",
+        header: "Action",
+        size: 100,
+        enableColumnFilter: false,
+        enableColumnOrdering: false,
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <Box
+            sx={{
+              justifyContent: "center",
+              gap: "2 rem",
+            }}
+          >
+            {/* Edit Icon */}
+            <Tooltip title="Edit">
+              <IconButton
+                onClick={() => handleEditClick(row.original)}
+                sx={{ color: "#0d6efd", padding: 0 }}
+              >
+                <LiaEditSolid />
+              </IconButton>
+            </Tooltip>
+
+            {/* Delete Icon */}
+            <Tooltip title="Delete">
+              <IconButton
+                onClick={() =>
+                  handleDeleteClick(row.original.Group_id)
+                }
+                sx={{ color: "#dc3545", padding: 0 }}
+              >
+                <MdOutlineDelete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+    ],
+    []
+  );
+
+  // 4. Update JSX to render MaterialReactTable
   return (
     <div>
       <Container fluid>
         <Row>
+          {/* ... (Navigation and Add Group button remain the same) ... */}
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list"> User & Access</span>
+              <span class="nav-list">User$Access</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-            {isAdmin && ( // Show Edit option only if user is Admin
-              <ClickButton
-                label={<>Add User</>}
-                onClick={() => navigate("/console/user/create")}
-              />
-            )}
+           {isAdmin &&(
+            <ClickButton
+              label={<>Add User</>}
+              onClick={() => navigate("/console/user/create")}
+            >
+              
+            </ClickButton>
+             )}
+            
           </Col>
-
-          <Col lg="3" md="12" xs="12"  className="py-2"
-          style={{ marginLeft: "-10px" }}
->
+          {/* ... (Search Bar remains the same) ... */}
+          {/* <Col
+            lg="3"
+            md="5"
+            xs="12"
+            className="py-1"
+            style={{ marginLeft: "-10px" }}
+          >
             <TextInputForm
-              placeholder={"Name, mobile number"}
-              onChange={(e) => handleSearch(e.target.value)}
+              placeholder={"Search Group"}
               prefix_icon={<FaMagnifyingGlass />}
+              onChange={(e) => handleSearch(e.target.value)}
+              labelname={"Search"}
             >
               {" "}
             </TextInputForm>
-          </Col>
-          {/* <Col lg={6} md={6} xs={12} className="py-2 text-end md-mt-1">
-            <span>
-              <Button onClick={handleShow} className="filter my-2">
-                <span className="me-2">
-                  <IoFilter />
-                </span>
-                Filter
-              </Button>
-
-              <Button onClick={handleLoad} className="filter mx-2">
-                <span className="me-2">
-                  <IoFilter />
-                </span>
-                Undo Filter
-              </Button>
-            </span>
-            <Offcanvas
-              show={show}
-              onHide={handleClose}
-              placement="end"
-              backdrop={true}
-            >
-              <Offcanvas.Header closeButton>
-                <Offcanvas.Title>Title of Our</Offcanvas.Title>
-              </Offcanvas.Header>
-              <Offcanvas.Body>
-                <Button onClick={handleLoad} className="filter mx-2">
-                  <span className="me-2">
-                    <IoFilter />
-                  </span>
-                  Undo Filter
-                </Button>
-                <div className="text-end">
-                  <Button onClick={handleClose}>
-                    <IoMdCloseCircle className="close-btn" />
-                  </Button>
-                </div>
-                <div className="mt-3">
-                  <Row>
-                    <Col lg="12" md="12" xs="12" className="py-3">
-                      <DropDownUI
-                        optionlist={DropListe}
-                        placeholder="Stock selection"
-                        labelname="Stock selection"
-                        name="RoleSelection"
-                        value={formData.RoleSelection}
-                        onChange={(updatedFormData) =>
-                          setFormData({
-                            ...formData,
-                            RoleSelection: updatedFormData.RoleSelection,
-                          })
-                        }
-                      />
-                    </Col>
-                    <Col lg="12" md="12" xs="12" className="py-3">
-                      <DropDownUI
-                        optionlist={userData.map((user) => ({
-                          value: user.Name,
-                          label: user.Name,
-                        }))}
-                        labelname={"Username"}
-                        placeholder="Username"
-                        name="Username"
-                        value={formData.Username}
-                        onChange={(updatedFormData) =>
-                          setFormData({
-                            ...formData,
-                            Username: updatedFormData.Username,
-                          })
-                        }
-                      />
-                    </Col>
-                  </Row>
-                </div>
-              </Offcanvas.Body>
-            </Offcanvas>
           </Col> */}
-          <Col lg={3} md={12} xs={12} className="py-2"></Col>
+          <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
+          {/* 5. Replace TableUI with MaterialReactTable */}
           {loading ? (
             <LoadingOverlay isLoading={loading} />
           ) : (
             <>
               <Col lg="12" md="12" xs="12" className="px-0">
                 <div className="py-1">
-                  {loading ? (
-                    <center>
-                      <Spinner animation="border" variant="dark" />{" "}
-                    </center>
-                  ) : (
-                    <TableUI
-                      headers={UserTablehead}
-                      body={userData}
-                      type="USER"
-                      pageview={"yes"}
-                      style={{ borderRadius: "5px" }}
-                    />
-                  )}
+                  {/* Note: MobileView rendering is typically replaced by MRT's built-in responsiveness */}
+
+                  <MaterialReactTable
+                    columns={columns}
+                    data={userData}
+                    enableColumnActions={false}
+                    enableColumnFilters={true} // Enable filters for searchability
+                    enablePagination={true}
+                    enableSorting={true}
+                    initialState={{ density: "compact" }}
+                    muiTablePaperProps={{
+                      sx: {
+                        borderRadius: "5px",
+                        // Keep the existing style property for the table container
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        //textAlign: "center",
+                      },
+                    }}
+                    muiTableHeadCellProps={{
+                      sx: {
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa", // Light gray header background
+                      },
+                    }}
+                  />
                 </div>
               </Col>
             </>
           )}
-          <Col lg={12} md={12} xs={12}></Col>
+          <Col lg="4"></Col>
         </Row>
       </Container>
     </div>

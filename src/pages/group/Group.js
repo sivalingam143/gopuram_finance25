@@ -14,31 +14,50 @@ import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
-// Note: Pagnation and TableUI are no longer needed
-// Note: MobileView is not strictly needed as MRT handles responsiveness
-
 const Group = () => {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
-  // UserTablehead array is no longer strictly needed for MRT
 
-  // 1. Placeholder Handlers (Replace with your actual logic)
+  // 1. Handlers for Edit and Delete Actions
   const handleJewelGroupEditClick = (rowData) => {
-      console.log("Edit Group3344443:", rowData);
+    console.log("Edit Group3344443:", rowData);
     console.log("Edit Group:", rowData);
-    navigate("/console/master/group/create", { state: { 
-            type: "edit", 
-           
-            rowData: rowData 
-        } });
-  };
+    navigate("/console/master/group/create", {
+      state: {
+        type: "edit",
 
-  const handleJewelGroupDeleteClick = (groupId) => {
+        rowData: rowData,
+      },
+    });
+  };
+  const handleJewelGroupDeleteClick = async (groupId) => {
     console.log("Delete Group ID:", groupId);
-    // Your delete confirmation and API call logic goes here
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/group.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_Group_id: groupId,
+        }),
+      });
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        navigate("/console/master/group");
+        window.location.reload();
+        //setLoading(false);
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(true);
+    }
   };
 
   // 2. Data Fetching Logic (Unchanged)
@@ -71,14 +90,11 @@ const Group = () => {
       console.error("Error fetching data:", error.message);
     }
   };
-  
+
   useEffect(() => {
     fetchData();
   }, [searchText]);
-  
-  const handleSearch = (value) => {
-    setSearchText(value);
-  };
+
 
   // 3. Define Material React Table Columns
   const columns = useMemo(
@@ -86,74 +102,53 @@ const Group = () => {
       {
         accessorFn: (originalRow) => originalRow.id,
         header: "No",
-       size: 50,
+        size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
       },
       {
         accessorKey: "Group_type",
         header: "Group",
-        size:50,
-       
+        size: 50,
       },
-  {
-  accessorKey: "Action",
-  header: "Action",
-  size: 75,
-  enableColumnFilter: false,
-  enableColumnOrdering: false,
-  enableSorting: false,
+      {
+        id: "action",
+        header: "Action",
+        size: 100,
+        enableColumnFilter: false,
+        enableColumnOrdering: false,
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <Box
+            sx={{
+              justifyContent: "center",
+              gap: "2 rem",
+            }}
+          >
+            {/* Edit Icon */}
+            <Tooltip title="Edit">
+              <IconButton
+                onClick={() => handleJewelGroupEditClick(row.original)}
+                sx={{ color: "#0d6efd", padding: 0 }}
+              >
+                <LiaEditSolid />
+              </IconButton>
+            </Tooltip>
 
-  // Center header
-  muiTableHeadCellProps: {
-    align: 'center',
-    sx: { fontWeight: 'bold' }
-  },
-
-  // Critical: Center the entire cell content (both horizontally and vertically)
-  muiTableBodyCellProps: {
-    align: 'center',
-    sx: {
-      padding: '8px !important', // Reduce padding if needed
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-  },
-
-  Cell: ({ row }) => (
-    <Box
-      sx={{
-        display: 'flex',
-        gap: '0.75rem',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      {/* Edit Icon */}
-      <Tooltip title="Edit" placement="top">
-        <IconButton
-          onClick={() => handleJewelGroupEditClick(row.original)}
-          size="small"
-          sx={{ color: '#0d6efd' }}
-        >
-          <LiaEditSolid />
-        </IconButton>
-      </Tooltip>
-
-      {/* Delete Icon */}
-      <Tooltip title="Delete" placement="top">
-        <IconButton
-          onClick={() => handleJewelGroupDeleteClick(row.original.Group_id)}
-          size="small"
-          sx={{ color: '#dc3545' }}
-        >
-          <MdOutlineDelete />
-        </IconButton>
-      </Tooltip>
-    </Box>
-  ),
-},
+            {/* Delete Icon */}
+            <Tooltip title="Delete">
+              <IconButton
+                onClick={() =>
+                  handleJewelGroupDeleteClick(row.original.Group_id)
+                }
+                sx={{ color: "#dc3545", padding: 0 }}
+              >
+                <MdOutlineDelete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
     ],
     []
   );
@@ -176,7 +171,13 @@ const Group = () => {
             ></ClickButton>
           </Col>
           {/* ... (Search Bar remains the same) ... */}
-          <Col lg="3" md="5" xs="12" className="py-1" style={{ marginLeft: "-10px" }}>
+          {/* <Col
+            lg="3"
+            md="5"
+            xs="12"
+            className="py-1"
+            style={{ marginLeft: "-10px" }}
+          >
             <TextInputForm
               placeholder={"Search Group"}
               prefix_icon={<FaMagnifyingGlass />}
@@ -185,9 +186,9 @@ const Group = () => {
             >
               {" "}
             </TextInputForm>
-          </Col>
+          </Col> */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
-          
+
           {/* 5. Replace TableUI with MaterialReactTable */}
           {loading ? (
             <LoadingOverlay isLoading={loading} />
@@ -196,7 +197,7 @@ const Group = () => {
               <Col lg="12" md="12" xs="12" className="px-0">
                 <div className="py-1">
                   {/* Note: MobileView rendering is typically replaced by MRT's built-in responsiveness */}
-                  
+
                   <MaterialReactTable
                     columns={columns}
                     data={userData}
@@ -204,20 +205,20 @@ const Group = () => {
                     enableColumnFilters={true} // Enable filters for searchability
                     enablePagination={true}
                     enableSorting={true}
-                    initialState={{ density: 'compact' }}
+                    initialState={{ density: "compact" }}
                     muiTablePaperProps={{
                       sx: {
                         borderRadius: "5px",
                         // Keep the existing style property for the table container
                         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                        textAlign: "center",
-                      }
+                        //textAlign: "center",
+                      },
                     }}
                     muiTableHeadCellProps={{
                       sx: {
-                        fontWeight: 'bold',
-                        backgroundColor: '#f8f9fa', // Light gray header background
-                      }
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa", // Light gray header background
+                      },
                     }}
                   />
                 </div>
