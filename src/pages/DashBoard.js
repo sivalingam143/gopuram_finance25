@@ -24,7 +24,6 @@ import LoadingOverlay from "../components/LoadingOverlay";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import SmsIcon from "@mui/icons-material/Sms";
 import { motion } from "framer-motion";
-
 const DashBoard = () => {
   const [userecoveryData, setUserrecoveryData] = useState([]);
   const [jewelpawnData, setUserjewlpawnData] = useState([]);
@@ -60,44 +59,35 @@ const DashBoard = () => {
       months: monthsMatch ? parseInt(monthsMatch[1]) : 0,
     };
   };
-
   // Aggregate interest data by receipt_no
   const aggregateInterestData = (interestData) => {
     const aggregated = interestData.reduce((acc, item) => {
       const receiptNo = item.receipt_no;
-
       if (!acc[receiptNo]) {
         acc[receiptNo] = {
           total_interest_income: 0,
           total_paid_months: 0,
         };
       }
-
       acc[receiptNo].total_interest_income += parseFloat(
         item.interest_income || 0
       );
-
       const { months } = parsePeriod(item.interest_payment_periods);
       acc[receiptNo].total_paid_months += months;
-
       return acc;
     }, {});
-
     Object.keys(aggregated).forEach((receiptNo) => {
       aggregated[receiptNo].interest_payment_periods =
         aggregated[receiptNo].total_paid_months +
         " month" +
         (aggregated[receiptNo].total_paid_months !== 1 ? "s" : "");
     });
-
     return aggregated;
   };
-
   const getValueDisplay = (val) => {
     if (!val || (Array.isArray(val) && val.length === 0)) {
       return <span className="text-muted">N/A</span>;
     }
-
     // Blacklist of fields to skip
     const skipFields = [
       "id",
@@ -112,7 +102,6 @@ const DashBoard = () => {
       "updated_by_id",
       "deleted_by_id",
     ];
-
     const formatJewelProduct = (jewelStr) => {
       if (!jewelStr) return "No items";
       try {
@@ -135,7 +124,6 @@ const DashBoard = () => {
         return "Invalid format";
       }
     };
-
     const formatField = (key, value) => {
       if (value === null || value === undefined || value === "") return null;
       switch (key) {
@@ -167,7 +155,6 @@ const DashBoard = () => {
           return value;
       }
     };
-
     return (
       <div
         style={{
@@ -191,7 +178,6 @@ const DashBoard = () => {
       </div>
     );
   };
-
   const fetchCustomerHistory = async (customerNo) => {
     if (!customerNo) {
       setCustomerHistory([]);
@@ -223,7 +209,6 @@ const DashBoard = () => {
       setLoadingHistory(false);
     }
   };
-
   const fetchDatajewelpawncustomer = async () => {
     setLoadingCustomer(true);
     try {
@@ -244,7 +229,6 @@ const DashBoard = () => {
       setLoadingCustomer(false);
     }
   };
-
   const fetchDatarecovery = async () => {
     setLoadingRecovery(true);
     try {
@@ -269,7 +253,6 @@ const DashBoard = () => {
       setLoadingRecovery(false);
     }
   };
-
   const fetchDatajewelpawn = async () => {
     setLoadingPawn(true);
     try {
@@ -297,7 +280,6 @@ const DashBoard = () => {
       setLoadingPawn(false);
     }
   };
-
   const fetchinterestData = async () => {
     setLoadingInterest(true);
     try {
@@ -307,7 +289,6 @@ const DashBoard = () => {
         body: JSON.stringify({ search_text: "" }),
       });
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         setInterestData(responseData.body.interest);
         setLoadingInterest(false);
@@ -319,7 +300,6 @@ const DashBoard = () => {
       console.error("Error fetching data:", error.message);
     }
   };
-
   const fetchActionData = async () => {
     setLoadingAction(true);
     try {
@@ -344,7 +324,6 @@ const DashBoard = () => {
       setLoadingAction(false);
     }
   };
-
   const fetchBankPledgeData = async () => {
     setLoadingBank(true);
     try {
@@ -365,7 +344,6 @@ const DashBoard = () => {
       setLoadingBank(false);
     }
   };
-
   const fetchJewelPrices = async () => {
     try {
       const response = await fetch(`${API_DOMAIN}/company.php`, {
@@ -389,7 +367,6 @@ const DashBoard = () => {
       console.error("Error fetching jewel prices:", e);
     }
   };
-
   const handleSearch = () => {
     let filtered = userData;
     if (searchTerm || placeSearchTerm) {
@@ -425,8 +402,7 @@ const DashBoard = () => {
     }
     setFilteredData(filtered);
   };
-
-  //  search handler for Notice Alert Summary
+  // search handler for Notice Alert Summary
   const handleNoticeSearch = () => {
     const notices = generateNoticeAlerts();
     console.log(notices);
@@ -450,8 +426,7 @@ const DashBoard = () => {
     }
     return notices;
   };
-
-  //  search handler for Action Alert Summary
+  // search handler for Action Alert Summary
   const handleActionSearch = () => {
     if (actionSearchTerm) {
       return actionData.filter((action) => {
@@ -473,32 +448,26 @@ const DashBoard = () => {
     }
     return actionData;
   };
-
   const handleClear = () => {
     setSearchTerm("");
     setPlaceSearchTerm("");
     setFilteredData(userData);
   };
-
   const handleNoticeClear = () => {
     setNoticeSearchTerm("");
   };
-
   const handleActionClear = () => {
     setActionSearchTerm("");
   };
-
   const handleHistoryClear = () => {
     setSelectedCustomerNo("");
     setFromDate(dayjs().startOf("month").format("YYYY-MM-DD"));
     setToDate(dayjs().format("YYYY-MM-DD"));
     setCustomerHistory([]);
   };
-
   useEffect(() => {
     handleSearch();
   }, [searchTerm, placeSearchTerm, userData]);
-
   useEffect(() => {
     fetchDatajewelpawn();
     fetchDatarecovery();
@@ -508,14 +477,12 @@ const DashBoard = () => {
     fetchBankPledgeData();
     fetchJewelPrices();
   }, []);
-
   useEffect(() => {
     if (jewelpawnData.length > 0 && interestData.length > 0) {
       const merged = jewelpawnData.map((pawn) => {
         const interestMatch = interestData.find(
           (int) => int.receipt_no === pawn.receipt_no
         );
-
         return {
           ...pawn,
           interest_payment_periods:
@@ -525,13 +492,10 @@ const DashBoard = () => {
             : 0,
         };
       });
-
       setFilteredData(merged);
     }
   }, [jewelpawnData, interestData]);
-
   const aggregatedInterestData = aggregateInterestData(interestData);
-
   const isPageLoading =
     loadingPawn ||
     loadingRecovery ||
@@ -539,7 +503,6 @@ const DashBoard = () => {
     loadingInterest ||
     loadingAction ||
     loadingBank;
-
   function getTamilAlertMessage(name, receiptNo, date, months) {
     if (months >= 12) {
       return `அபிநயா அடகு கடை
@@ -554,7 +517,6 @@ const DashBoard = () => {
       return "";
     }
   }
-
   function getRowClass(months) {
     if (months >= 12) return "row-red";
     if (months >= 9) return "row-orange";
@@ -568,16 +530,13 @@ const DashBoard = () => {
     const start = dayjs(startDate);
     return now.diff(start, "month");
   }
-
   function generateWhatsAppURL(number, message) {
     return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
   }
-
   const getEligibleNotices = (pawnDate) => {
     const now = dayjs();
     const baseDate = dayjs(pawnDate);
     const notices = [];
-
     if (now.diff(baseDate.add(1, "year").add(1, "week"), "day") >= 0) {
       notices.push({
         noticeNo: 1,
@@ -596,16 +555,12 @@ const DashBoard = () => {
         date: baseDate.add(1, "year").add(6, "month").format("DD-MM-YYYY"),
       });
     }
-
     return notices;
   };
-
   const generateNoticeAlerts = () => {
     let notices = [];
-
     userData.forEach((item) => {
       const eligibleNotices = getEligibleNotices(item.pawnjewelry_date);
-
       eligibleNotices.forEach((notice) => {
         notices.push({
           receipt_no: item.receipt_no,
@@ -620,14 +575,11 @@ const DashBoard = () => {
         });
       });
     });
-
     return notices;
   };
-
   const toggleRow = (id) => {
     setExpandedRow(expandedRow === id ? null : id);
   };
-
   const displayValue = (
     value,
     isDate = false,
@@ -648,26 +600,21 @@ const DashBoard = () => {
     }
     return value || "-";
   };
-
   useEffect(() => {
     if (selectedCustomerNo) {
       fetchCustomerHistory(selectedCustomerNo);
     }
   }, [fromDate, toDate]);
-
   const caratEntries = Object.entries(jewelPrices)
     .filter(([key]) => key.endsWith("_carat_price"))
     .sort(([a], [b]) => parseInt(b.split("_")[0]) - parseInt(a.split("_")[0]));
-
   const marqueeText = caratEntries
     .map(([key, value]) => {
       const carat = key.split("_")[0];
       return `${carat} karat Rate = ₹${(value || 0).toLocaleString("en-IN")}`;
     })
     .join(", ");
-
   // Define columns for MaterialReactTable
-
   const columns = [
     {
       accessorKey: "pawnjewelry_date",
@@ -745,24 +692,19 @@ const DashBoard = () => {
         const jewelList = Array.isArray(row.original.jewel_product)
           ? row.original.jewel_product
           : JSON.parse(row.original.jewel_product || "[]");
-
         const totalNetWeight = jewelList.reduce(
           (sum, jewel) => sum + parseFloat(jewel.net || 0),
           0
         );
-
         const originalAmount = parseFloat(row.original.original_amount || 0);
-
         // Prevent division by zero
         if (!totalNetWeight || totalNetWeight === 0) {
           return "Infinity";
         }
-
         const value = originalAmount / totalNetWeight;
         return `₹${Math.round(value).toLocaleString("en-IN")}`;
       },
     },
-
     {
       accessorKey: "interest_payment_period",
       header: "Interest Outstanding",
@@ -772,7 +714,6 @@ const DashBoard = () => {
       Cell: ({ row }) => {
         const period = row.original.interest_payment_period || 0;
         const amount = row.original.interest_payment_amount || 0;
-
         return (
           <div
             style={{
@@ -791,14 +732,12 @@ const DashBoard = () => {
         );
       },
     },
-
     {
       accessorKey: "interest_paid",
       header: "Interest Paid (₹)",
       Cell: ({ row }) => {
         const months = row.original.interest_payment_periods || "N/A";
         const total = parseFloat(row.original.total_interest_income || 0);
-
         return (
           <div
             style={{
@@ -815,7 +754,6 @@ const DashBoard = () => {
         );
       },
     },
-
     {
       accessorKey: "total_appraisal",
       header: "Total Appraisal (₹)",
@@ -849,7 +787,6 @@ const DashBoard = () => {
         );
       },
     },
-
     {
       accessorKey: "overdue_months",
       header: "Interest Overdue (Months)",
@@ -876,21 +813,26 @@ const DashBoard = () => {
       },
       Cell: ({ row }) => {
         const item = row.original;
-        const alertContent = item.alertContent;
-        const isInactive = item.status !== "நகை மீட்கபட்டது"; // inactive condition
-
-        if (!isInactive) {
+        const months = getMonthsDifference(item.pawnjewelry_date);
+        const alertContent = getTamilAlertMessage(
+          item.name,
+          item.receipt_no,
+          item.pawnjewelry_date,
+          months
+        );
+        const isRecovered = item.status === "நகை மீட்கபட்டது";
+        if (isRecovered || !alertContent) {
           return <span style={{ color: "#999" }}>-</span>;
         }
-
         return (
           <Stack direction="row" spacing={1} justifyContent="center">
             <Tooltip title="Send WhatsApp">
               <IconButton
                 onClick={() => {
-                  const url = `https://wa.me/${
-                    item.mobile_number
-                  }?text=${encodeURIComponent(alertContent)}`;
+                  const url = generateWhatsAppURL(
+                    item.mobile_number,
+                    alertContent
+                  );
                   window.open(url, "_blank");
                 }}
                 sx={{
@@ -903,23 +845,24 @@ const DashBoard = () => {
                 <WhatsAppIcon fontSize="medium" />
               </IconButton>
             </Tooltip>
-
             <Tooltip title="Send SMS">
-              <IconButton
-                onClick={() =>
-                  (window.location.href = `sms:${
-                    item.mobile_number
-                  }?body=${encodeURIComponent(alertContent)}`)
-                }
-                sx={{
-                  backgroundColor: "#2b5585ff",
-                  color: "#3080e9ff",
-                  "&:hover": { backgroundColor: "#389ee2ff" },
-                }}
-                size="medium"
+              <a
+                href={`sms:${item.mobile_number}?body=${encodeURIComponent(
+                  alertContent
+                )}`}
+                style={{ textDecoration: "none" }}
               >
-                <SmsIcon fontSize="medium" />
-              </IconButton>
+                <IconButton
+                  sx={{
+                    backgroundColor: "#2b5585ff",
+                    color: "#3080e9ff",
+                    "&:hover": { backgroundColor: "#389ee2ff" },
+                  }}
+                  size="medium"
+                >
+                  <SmsIcon fontSize="medium" />
+                </IconButton>
+              </a>
             </Tooltip>
           </Stack>
         );
@@ -1091,7 +1034,6 @@ const DashBoard = () => {
     },
     { accessorKey: "remarks", header: "Remarks" },
   ];
-
   return (
     <>
       <LoadingOverlay isLoading={isPageLoading} />
@@ -1105,7 +1047,6 @@ const DashBoard = () => {
               </button>
             </Col>
           </Row>
-
           <Row className="mb-4 justify-content-center">
             <Col lg={12} md={12} xs={12} className="text-center">
               <div className="marquee-container">
@@ -1166,7 +1107,6 @@ const DashBoard = () => {
               </Col>
             ))}
           </Row>
-
           {/* <Row>
             <Col lg="3" md="6" xs="12" className="py-3">
               <div className="counter-card cyan">
@@ -1202,7 +1142,6 @@ const DashBoard = () => {
               </div>
             </Col>
           </Row> */}
-
           <Row className="mt-4">
             <Col lg="12">
               <h5 className="mb-3"> 📌 Jewelry Pawn Details</h5>
@@ -1242,9 +1181,9 @@ const DashBoard = () => {
               <div
                 className="balance-table-wrapper"
                 // style={{
-                //   overflowX: "auto",
-                //   whiteSpace: "nowrap",
-                //   maxWidth: "100%",
+                // overflowX: "auto",
+                // whiteSpace: "nowrap",
+                // maxWidth: "100%",
                 // }}
               >
                 <MaterialReactTable
@@ -1294,7 +1233,6 @@ const DashBoard = () => {
                         bp.customer_no === item.customer_no &&
                         bp.receipt_no === item.receipt_no
                     );
-
                     if (!matchingBank) {
                       return (
                         <div
@@ -1312,7 +1250,6 @@ const DashBoard = () => {
                         </div>
                       );
                     }
-
                     return (
                       <div style={{ padding: 18 }}>
                         <h6 style={{ marginBottom: 8 }}>Bank Pledge Details</h6>
@@ -1404,7 +1341,6 @@ const DashBoard = () => {
                           : typeof item.jewel_product === "string"
                           ? JSON.parse(item.jewel_product)
                           : [];
-
                         const totalWeight = jewelList.reduce(
                           (sum, jewel) => sum + parseFloat(jewel.weight || 0),
                           0
@@ -1416,7 +1352,6 @@ const DashBoard = () => {
                         const pledgedItems = jewelList
                           .map((jewel) => jewel.JewelName)
                           .join(", ");
-
                         const months = getMonthsDifference(
                           item.pawnjewelry_date
                         );
@@ -1427,7 +1362,6 @@ const DashBoard = () => {
                           item.pawnjewelry_date,
                           months
                         );
-
                         return (
                           <>
                             <tr key={item.id} className={getRowClass(months)}>
@@ -1825,7 +1759,6 @@ const DashBoard = () => {
                         }}
                       />
                     </Col>
-
                     <Col lg={2} className="mb-2">
                       <Form.Control
                         type="date"
@@ -1855,7 +1788,6 @@ const DashBoard = () => {
                       >
                         Search
                       </Button>
-
                       <Button
                         variant="contained"
                         onClick={handleHistoryClear}
@@ -1868,7 +1800,6 @@ const DashBoard = () => {
                         Clear
                       </Button>
                     </Col>
-
                     {/* <Col lg={2} className="mb-2">
                     <Button
                     variant="contained"
@@ -1954,5 +1885,4 @@ const DashBoard = () => {
     </>
   );
 };
-
 export default DashBoard;
