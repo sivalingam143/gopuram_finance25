@@ -183,14 +183,13 @@ const CategoryTwo = () => {
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                    enableColumnFilters={true}
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}
                     muiTablePaperProps={{
                       sx: {
                         borderRadius: "5px",
-                        // Keep the existing style property for the table container
                         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                         //textAlign: "center",
                       },
@@ -198,7 +197,7 @@ const CategoryTwo = () => {
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa", // Light gray header background
+                        backgroundColor: "#f8f9fa", 
                       },
                     }}
                   />

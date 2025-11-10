@@ -202,7 +202,7 @@ const Group = () => {
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                    enableColumnFilters={true} // Enable filters for searchability
+                   enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}

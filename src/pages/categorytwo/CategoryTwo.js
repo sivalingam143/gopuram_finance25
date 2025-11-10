@@ -11,7 +11,7 @@ import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
-const CategoryTwo =() =>{
+const CategoryTwo = () => {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
@@ -24,7 +24,7 @@ const CategoryTwo =() =>{
     });
   };
 
- const handlecategoryTwoDeleteClick = async (id) => {
+  const handlecategoryTwoDeleteClick = async (id) => {
     console.log("Deleting category two:", id);
     setLoading(true);
     try {
@@ -53,7 +53,7 @@ const CategoryTwo =() =>{
   };
 
   // 2. Data Fetching Logic (Unchanged)
- useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(`${API_DOMAIN}/category_two.php`, {
@@ -81,8 +81,6 @@ const CategoryTwo =() =>{
 
     fetchData();
   }, [searchText]);
-
-
 
   // 3. Define Material React Table Columns
   const columns = useMemo(
@@ -116,7 +114,7 @@ const CategoryTwo =() =>{
             {/* Edit Icon */}
             <Tooltip title="Edit">
               <IconButton
-                onClick={() => handlecategoryTwoEditClick (row.original)}
+                onClick={() => handlecategoryTwoEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
               >
                 <LiaEditSolid />
@@ -127,7 +125,8 @@ const CategoryTwo =() =>{
             <Tooltip title="Delete">
               <IconButton
                 onClick={() =>
-                  handlecategoryTwoDeleteClick(row.original.category_id)}
+                  handlecategoryTwoDeleteClick(row.original.category_id)
+                }
                 sx={{ color: "#dc3545", padding: 0 }}
               >
                 <MdOutlineDelete />
@@ -186,14 +185,13 @@ const CategoryTwo =() =>{
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                    enableColumnFilters={true} 
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}
                     muiTablePaperProps={{
                       sx: {
                         borderRadius: "5px",
-                        // Keep the existing style property for the table container
                         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                         //textAlign: "center",
                       },
@@ -201,7 +199,7 @@ const CategoryTwo =() =>{
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa", // Light gray header background
+                        backgroundColor: "#f8f9fa", 
                       },
                     }}
                   />
@@ -217,4 +215,3 @@ const CategoryTwo =() =>{
 };
 
 export default CategoryTwo;
-

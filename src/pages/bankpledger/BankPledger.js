@@ -1,20 +1,33 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
-import TableUI from "../../components/Table";
 import { TextInputForm } from "../../components/Forms";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
-import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
+
+// 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
+import { MaterialReactTable } from "material-react-table";
+import { Box, Tooltip, IconButton } from "@mui/material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 const BankPledger = () => {
   const navigate = useNavigate();
-  const [loanSearchText, setLoanSearchText] = useState("");
+   const [loanSearchText, setLoanSearchText] = useState("");
   const [allGroupedData, setAllGroupedData] = useState([]);
   const [groupedData, setGroupedData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const summaryHeaders = ["S.No", "Pawn Loan No", "Action"];
+
+  // 1. Handlers for view Actions
+  const handleViewDetails = (records, loanNo) => {
+    navigate("/console/master/bankpledger/viewdetails", {
+      state: { records, loanNo },
+    });
+  };
+
+  // 2. Data Fetching Logic (Unchanged)
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -41,7 +54,8 @@ const BankPledger = () => {
       console.error("Error fetching data:", error.message);
     }
   };
-  const updateGroupedData = (data) => {
+
+const updateGroupedData = (data) => {
     let filtered = data;
     if (loanSearchText) {
       filtered = data.filter((group) =>
@@ -60,61 +74,130 @@ const BankPledger = () => {
   }, [loanSearchText]);
   const handleLoanSearch = (value) => {
     setLoanSearchText(value);
-  };
-  const handleViewDetails = (records, loanNo) => {
-    navigate("/console/master/bankpledger/viewdetails", {
-      state: { records, loanNo },
-    });
-  };
-  const customActions = {
-    viewDetails: handleViewDetails,
-  };
+  }
+
+  // 3. Define Material React Table Columns
+  const columns = useMemo(
+    () => [
+      {
+        accessorFn: (originalRow) => originalRow.id,
+        header: "S.No",
+        size: 50,
+        enableColumnFilter: false,
+        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+      },
+      {
+        accessorKey: "pawn_loan_no",
+        header: "Pawn Loan No.",
+        size: 50,
+      },
+      {
+        id: "action",
+        header: "Action",
+        size: 100,
+        enableColumnFilter: false,
+        enableColumnOrdering: false,
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <Box
+            sx={{
+              justifyContent: "center",
+              gap: "2 rem",
+            }}
+          >
+            {/*  View Icon */}
+           <Tooltip title="Customer Details">
+              <IconButton
+                onClick={() => handleViewDetails(row.original)}
+                sx={{ padding: 0 }}
+              >
+                <VisibilityIcon/>
+              </IconButton>
+                 </Tooltip>
+            
+          </Box>
+        ),
+      },
+    ],
+    []
+  );
+
+  // 4. Update JSX to render MaterialReactTable
   return (
     <div>
-      <LoadingOverlay isLoading={loading} />
       <Container fluid>
         <Row>
+         
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span className="nav-list">Bank Pledger</span>
+              <span class="nav-list">Bank Pledger</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>AddNew</>}
-              onClick={() => navigate("/console/master/bankpledger/create")}
-            />
+              label={<>Add Bank Pledger</>}
+              onClick={() => navigate("/console/master/group/create")}
+            ></ClickButton>
           </Col>
-          <Col lg="3" md="5" xs="12" className="py-1">
+          {/* ... (Search Bar remains the same) ... */}
+          {/* <Col
+            lg="3"
+            md="5"
+            xs="12"
+            className="py-1"
+            style={{ marginLeft: "-10px" }}
+          >
             <TextInputForm
-              placeholder={"Search by Pawn Loan No"}
+              placeholder={"Search Group"}
               prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleLoanSearch(e.target.value)}
-              labelname={"Search Loan"}
-              value={loanSearchText}
-            />
-          </Col>
-          <Col lg={9} md={12} xs={12} className="py-2" />
-          <Col lg="12" md="12" xs="12" className="px-0">
-            <div className="py-1">
-              {groupedData.length === 0 ? (
-                <p>No loan records found.</p>
-              ) : (
-                <TableUI
-                  headers={summaryHeaders}
-                  body={groupedData}
-                  type="bankPledgerSummary"
-                  style={{ borderRadius: "5px" }}
-                  pageview="no"
-                  customActions={customActions}
-                />
-              )}
-            </div>
-          </Col>
-          <Col lg="4" />
+              onChange={(e) => handleSearch(e.target.value)}
+              labelname={"Search"}
+            >
+              {" "}
+            </TextInputForm>
+          </Col> */}
+          <Col lg={9} md={12} xs={12} className="py-2"></Col>
+
+          {/* 5. Replace TableUI with MaterialReactTable */}
+          {loading ? (
+            <LoadingOverlay isLoading={loading} />
+          ) : (
+            <>
+              <Col lg="12" md="12" xs="12" className="px-0">
+                <div className="py-1">
+                  {/* Note: MobileView rendering is typically replaced by MRT's built-in responsiveness */}
+
+                  <MaterialReactTable
+                    columns={columns}
+                    data={groupedData}
+                    enableColumnActions={false}
+                   enableColumnFilters={false}
+                    enablePagination={true}
+                    enableSorting={true}
+                    initialState={{ density: "compact" }}
+                    muiTablePaperProps={{
+                      sx: {
+                        borderRadius: "5px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        //textAlign: "center",
+                      },
+                    }}
+                    muiTableHeadCellProps={{
+                      sx: {
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa", // Light gray header background
+                      },
+                    }}
+                  />
+                </div>
+              </Col>
+            </>
+          )}
+          <Col lg="4"></Col>
         </Row>
       </Container>
     </div>
   );
 };
+
 export default BankPledger;

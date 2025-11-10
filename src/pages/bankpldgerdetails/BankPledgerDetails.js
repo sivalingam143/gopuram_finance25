@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
@@ -63,7 +60,7 @@ const BankPledgerDetails = () => {
   };
 
   // 2. Data Fetching Logic (Unchanged)
-   const fetchData = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/bank_pledger_details.php`, {
@@ -96,7 +93,6 @@ const BankPledgerDetails = () => {
     fetchData();
   }, [searchText]);
 
-
   // 3. Define Material React Table Columns
   const columns = useMemo(
     () => [
@@ -112,7 +108,7 @@ const BankPledgerDetails = () => {
         header: "Pleger Name",
         size: 50,
       },
-       {
+      {
         accessorKey: "mobile_no",
         header: "Mobile No",
         size: 50,
@@ -145,7 +141,9 @@ const BankPledgerDetails = () => {
             <Tooltip title="Delete">
               <IconButton
                 onClick={() =>
-                  handleBankPledgerDetailsDeleteClick(row.original.bank_pledger_details_id)
+                  handleBankPledgerDetailsDeleteClick(
+                    row.original.bank_pledger_details_id
+                  )
                 }
                 sx={{ color: "#dc3545", padding: 0 }}
               >
@@ -171,9 +169,10 @@ const BankPledgerDetails = () => {
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Bank Pledger
-              </>}
-              onClick={() => navigate("/console/master/bankpledgerdetails/create")}
+              label={<>Add Bank Pledger</>}
+              onClick={() =>
+                navigate("/console/master/bankpledgerdetails/create")
+              }
             ></ClickButton>
           </Col>
           {/* ... (Search Bar remains the same) ... */}
@@ -205,7 +204,7 @@ const BankPledgerDetails = () => {
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                    enableColumnFilters={true} 
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}
@@ -219,7 +218,7 @@ const BankPledgerDetails = () => {
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa", // Light gray header background
+                        backgroundColor: "#f8f9fa",
                       },
                     }}
                   />
@@ -235,4 +234,3 @@ const BankPledgerDetails = () => {
 };
 
 export default BankPledgerDetails;
-

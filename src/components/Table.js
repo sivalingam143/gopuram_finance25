@@ -360,37 +360,7 @@ const TableUI = ({
       setLoading(false);
     }
   };
-  
-  const handleexpenseTwoEditClick = (rowData) => {
-    navigate("/console/expense/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handleexpenseTwoDeleteClick = async (id) => {
-    console.log("Deleting bank pledge ID:", id);
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/expense_two.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_expense_id: id,
-        }),
-      });
-      const responseData = await response.json();
-      if (responseData.head.code === 200) {
-        navigate("/console/expense");
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
+
   const handleJewelRecoveryEditClick = (rowData) => {
     navigate("/console/customer/jewelrecovery", {
       state: { type: "edit", rowData: rowData },
@@ -457,38 +427,7 @@ const TableUI = ({
       setLoading(false);
     }
   };
-  const handleExpenseEditClick = (rowData) => {
-    navigate("/console/transaction/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handleExpenseDeleteClick = async (expense_id) => {
-    setLoading(true);
-    console.log("Deleting expense ID:", expense_id); // Debug
-    try {
-      const response = await fetch(`${API_DOMAIN}/expense.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ action: "delete", expense_id }),
-      });
-      const responseData = await response.json();
-      console.log(responseData);
-      if (responseData.head.code === 200) {
-        navigate("/console/transaction");
-        window.location.reload();
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
   
- 
   const handleBankPledgerEditClick = (rowData) => {
     navigate("/console/master/bankpledger/create", {
       state: { type: "edit", rowData: rowData },
@@ -1049,42 +988,7 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-               
               
-                {type === "expenseTable" && (
-                  <>
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{rowData.date}</td>
-                    <td>{rowData.expense_name}</td>
-                    <td>{rowData.expense_type}</td>
-                    <td>{rowData.amount}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {isAdmin && ( // Show Edit option only if user is Admin
-                            <Dropdown.Item
-                              onClick={() => handleExpenseEditClick(rowData)}
-                            >
-                              Edit
-                            </Dropdown.Item>
-                          )}
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleExpenseDeleteClick(rowData.expense_id)
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
                 {type === "street" && (
                   <>
                     <td>{startIndex + rowIndex + 1}</td>
@@ -1150,35 +1054,6 @@ const TableUI = ({
                   </>
                 )}
              
-                {type === "expenseTwo" && (
-                  <>
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{formatDate(rowData.expense_date)}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item
-                            onClick={() => handleexpenseTwoEditClick(rowData)}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleexpenseTwoDeleteClick(rowData.expense_id)
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
                 {type === "bankPledger" && (
                   <>
                     <td>{startIndex + rowIndex + 1}</td>
@@ -1288,33 +1163,7 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-                {type === "bankPledgerSummary" && (
-                  <>
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{rowData.loan_no}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item
-                            onClick={() =>
-                              customActions?.viewDetails?.(
-                                rowData.records,
-                                rowData.loan_no
-                              )
-                            }
-                          >
-                            View Details
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
+                
               </tr>
             ))
           )}

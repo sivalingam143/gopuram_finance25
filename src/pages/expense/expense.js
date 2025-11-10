@@ -205,7 +205,7 @@ const Transaction=()=>{
                     columns={columns}
                     data={expenseData}
                     enableColumnActions={false}
-                    enableColumnFilters={true} 
+                     enableColumnFilters={false} 
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}

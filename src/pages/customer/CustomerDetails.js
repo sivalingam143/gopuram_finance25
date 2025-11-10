@@ -428,7 +428,7 @@ const CustomerDetails = () => {
       },
       {
         header: "Existing Pledge Value",
-        accessorKey: "original_amount",
+        accessorKey: "original_amount_copy",
         Cell: ({ cell }) =>
           ` ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
         size: 240,
