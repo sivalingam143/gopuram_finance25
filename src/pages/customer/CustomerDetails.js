@@ -1,29 +1,148 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import PageNav from "../../components/PageNav";
 import { ClickButton } from "../../components/Buttons";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
-import { useNavigate } from "react-router-dom";
-import TableUI from "../../components/Table";
 import "./Customer.css";
+import { MaterialReactTable } from "material-react-table";
+import { Chip, IconButton, Menu, MenuItem } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import dayjs from "dayjs";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import InterestStatementPDF from "../../pdf/InterestStatementPDF";
 
-const UserTablehead = [
-  "S.No",
-  "Loan Date",
-  "Loan No",
-  "Principal Amount",
-  "Interest Rate",
-  "Total Weight",
-  "Pledge Items",
-  "Existing Pledge Value",
-  "Pending Interest",
-  "Total Pledge Value",
-  "Jewel Pawn Value",
-  "Jewelry recovery period",
-  "Status",
-  "Action",
-];
+// ✅ MUI Action Menu Component
+// In src/pages/customer/CustomerDetails.js
+// Remember to update the props in the ActionMenu signature as well!
+// const ActionMenu = ({ row, navigate, onInterest, onRecovery, onRePledge, onDownloadPawnAgreement, isAdmin, handleJewelPawningEditClick, handleJewelPawningDeleteClick }) => {
+// Note: You'll need to pass isAdmin, handleJewelPawningEditClick, and handleJewelPawningDeleteClick from the parent CustomerDetails component to the ActionMenu component, and from the pawnColumns Cell property.
+
+const ActionMenu = ({ 
+    row, 
+    navigate, 
+    onInterest, 
+    onRecovery, 
+    onRePledge, 
+    onDownloadPawnAgreement,
+    // Assuming these are passed as props from the parent:
+    isAdmin, 
+    handleJewelPawningEditClick, 
+    handleJewelPawningDeleteClick 
+}) => {
+  
+  // 1. HOOKS MUST BE FIRST
+  const [anchorEl, setAnchorEl] = React.useState(null); 
+  const open = Boolean(anchorEl);
+
+  // 2. CRITICAL SAFETY CHECK
+  if (!row) {
+      return null;
+  }
+
+  const handleOpen = (e) => setAnchorEl(e.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  // 3. Conditional rendering checks based on your old logic
+  // "நகை மீட்கபட்டது" (Item Recovered) - Prevents Interest/Repledge options
+  const isRecovered = row.status === "நகை மீட்கபட்டது"; 
+  
+  // "நகை மீட்கபடவில்லை" (Item Not Recovered) - Prevents Re-pledge option
+  const isNotRecovered = row.status === "நகை மீட்கபடவில்லை"; 
+
+  return (
+    <>
+      <IconButton size="small" onClick={handleOpen}>
+        <MoreVertIcon fontSize="small" />
+      </IconButton>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        slotProps={{ paper: { sx: { zIndex: 1100 } } }}
+      >
+
+        {/* 1. Interest Payment (Conditional: NOT recovered) 
+            Maps to: {rowData?.status !== "நகை மீட்கபட்டது" && (...) onClick={() => customActions?.interest?.(rowData)} */}
+        {!isRecovered && (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              onInterest(row); // Use onInterest handler
+            }}
+          >
+            Interest Payment
+          </MenuItem>
+        )}
+
+        {/* 2. Download Statement PDF (Unconditional) 
+            Maps to: <Dropdown.Item onClick={() => handleDownloadStatement(rowData)} */}
+        <MenuItem
+            onClick={() => {
+              handleClose();
+              onDownloadPawnAgreement(row);
+            }}
+        >
+            Download Statement PDF
+        </MenuItem>
+
+        {/* 3. Recovery (Unconditional in your old code)
+            Maps to: <Dropdown.Item onClick={() => customActions?.recovery?.(rowData)} */}
+        <MenuItem
+            onClick={() => {
+              handleClose();
+              onRecovery(row); // Use onRecovery handler
+            }}
+        >
+            Recovery
+        </MenuItem>
+
+        {/* 4. Re-pledge (Conditional: NOT "நகை மீட்கபடவில்லை") 
+            Maps to: {rowData?.status !== "நகை மீட்கபடவில்லை" && (...) onClick={() => customActions?.repledge?.(rowData)} */}
+        {!isNotRecovered && (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              onRePledge(row); // Use onRePledge handler
+            }}
+          >
+            Re-pledge
+          </MenuItem>
+        )}
+        
+        {/* 5. Edit (Conditional: isAdmin) 
+            Maps to: {isAdmin && (...) onClick={() => handleJewelPawningEditClick(rowData)} */}
+        {isAdmin && handleJewelPawningEditClick && (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              handleJewelPawningEditClick(row);
+            }}
+          >
+            Edit
+          </MenuItem>
+        )}
+
+        {/* 6. Delete (Unconditional in old code)
+            Maps to: <Dropdown.Item onClick={() => handleJewelPawningDeleteClick(rowData.pawnjewelry_id)} */}
+        {handleJewelPawningDeleteClick && (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              handleJewelPawningDeleteClick(row.pawnjewelry_id); // Assuming pawnjewelry_id is on the row object
+            }}
+          >
+            Delete
+          </MenuItem>
+        )}
+        
+      </Menu>
+    </>
+  );
+};
 
 const CustomerDetails = () => {
   const location = useLocation();
@@ -31,9 +150,13 @@ const CustomerDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [companyRates, setCompanyRates] = useState({});
-  console.log("companyRates:", companyRates);
   const [customerDetailsData, setCustomerDetailsData] = useState(null);
   const [pawnData, setpawnData] = useState([]);
+  const [tempData, setTempData] = useState(null);
+    const [pendingDownload, setPendingDownload] = useState(null);
+    const [downloadUrl, setDownloadUrl] = useState(null);
+    const user = JSON.parse(localStorage.getItem("user")) || {};
+  const isAdmin = user.role === "Admin";
 
   const fetchCustomerDetails = async () => {
     if (!rowData.customer_no) return;
@@ -41,22 +164,15 @@ const CustomerDetails = () => {
       setLoading(true);
       const response = await fetch(`${API_DOMAIN}/customer_details.php`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customer_no: rowData.customer_no,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_no: rowData.customer_no }),
       });
 
       const responseData = await response.json();
       if (responseData.head.code === 200) {
         setCustomerDetailsData(responseData.body);
       } else {
-        console.error(
-          "Error fetching customer details:",
-          responseData.head.msg
-        );
+        console.error("Error fetching customer details:", responseData.head.msg);
       }
     } catch (error) {
       console.error("Error fetching customer details:", error.message);
@@ -64,38 +180,6 @@ const CustomerDetails = () => {
       setLoading(false);
     }
   };
-
-  // const fetchDatapawn = async () => {
-  //   try {
-  //     const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         customer_no: rowData.customer_no,
-  //       }),
-  //     });
-
-  //     const responseData = await response.json();
-  //     console.log(responseData);
-  //     setLoading(false);
-  //     if (responseData.head.code === 200) {
-  //       let sortedData = responseData.body.pawnjewelry.map((user) => ({
-  //         ...user,
-  //         jewel_product: JSON.parse(user.jewel_product || "[]"),
-  //       }));
-
-  //       setpawnData(sortedData);
-  //     } else {
-  //       throw new Error(responseData.head.msg);
-  //     }
-  //   } catch (error) {
-  //     setLoading(false);
-  //     console.error("Error fetching data:", error.message);
-  //   }
-  // };
-  // Add this before fetchDatapawn()
 
   useEffect(() => {
     const fetchCompany = async () => {
@@ -126,14 +210,16 @@ const CustomerDetails = () => {
     fetchCompany();
   }, []);
 
-const getRate = useCallback(
+  const getRate = useCallback(
     (carrat) => {
       if (!carrat) return 0;
       const caratNum = carrat.split(" ")[0];
       const key = `${caratNum}_carat_price`;
       return parseFloat(companyRates[key]) || 0;
     },
-    [companyRates])
+    [companyRates]
+  );
+
   const fetchDatapawn = async () => {
     try {
       const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
@@ -145,14 +231,13 @@ const getRate = useCallback(
       });
 
       const responseData = await response.json();
-      console.log(responseData, "📦 Raw Pawn Data");
       setLoading(false);
 
       if (responseData.head.code === 200) {
         let sortedData = responseData.body.pawnjewelry.map((user) => {
           const jewelProduct = Array.isArray(user.jewel_product)
-            ? user.jewel_product // already array ✅
-            : JSON.parse(user.jewel_product || "[]"); // fallback if string
+            ? user.jewel_product
+            : JSON.parse(user.jewel_product || "[]");
 
           const totalValue = jewelProduct.reduce((sum, row) => {
             const net =
@@ -170,10 +255,6 @@ const getRate = useCallback(
         });
 
         setpawnData(sortedData);
-        console.log(
-          "✅ Processed Pawn Data with Jewel Pawn Value:",
-          sortedData
-        );
       } else {
         throw new Error(responseData.head.msg);
       }
@@ -183,16 +264,12 @@ const getRate = useCallback(
     }
   };
 
-
-  // New handlers for dropdown clicks
   const handleInterestClick = (pawnRow) => {
     navigate("/console/customer/interest", { state: { rowData: pawnRow } });
   };
 
   const handleRecoveryClick = (pawnRow) => {
-    navigate("/console/customer/jewelrecovery", {
-      state: { rowData: pawnRow },
-    });
+    navigate("/console/customer/jewelrecovery", { state: { rowData: pawnRow } });
   };
 
   const handleRePledgeClick = (pawnRow) => {
@@ -200,29 +277,222 @@ const getRate = useCallback(
       state: { type: "repledge", rowData: pawnRow },
     });
   };
-  // ✅ Run these only after companyRates are loaded
+
+  const handleJewelPawningEditClick = (rowData) => {
+    navigate("/console/customer/loancreation", {
+      state: { type: "edit", rowData: rowData },
+    });
+  };
+   const handleJewelPawningDeleteClick = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_pawnjewelry_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
+        }),
+      });
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        navigate("/console/master/customer");
+        window.location.reload();
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (rowData && Object.keys(companyRates).length > 0) {
       fetchCustomerDetails();
       fetchDatapawn();
     }
   }, [rowData, companyRates]);
+  // Inside CustomerDetails component:
 
-  // useEffect(() => {
-  //   if (rowData) {
-  //     fetchCustomerDetails();
-  //     fetchDatapawn();
-  //   }
-  // }, [rowData]);
+
+// Inside CustomerDetails component:
+
+// 1. The Async Handler to fetch data and trigger PDF generation
+const handleDownloadStatement = useCallback(async (pawnRow) => {
+    setLoading(true);
+    try {
+        const response = await fetch(
+            `${API_DOMAIN}/getintereststatementreport.php`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    receipt_no: pawnRow.receipt_no,
+                }),
+            }
+        );
+        const responseData = await response.json();
+        if (responseData.head.code === 200) {
+            setTempData({
+                statement: responseData.body,
+                customer: pawnRow,
+            });
+            // This line triggers the PDFDownloadLink to start generating the PDF
+            setPendingDownload(pawnRow.receipt_no); 
+        } else {
+            console.error("Error fetching statement:", responseData.head.msg);
+        }
+    } catch (error) {
+        console.error("Error fetching statement:", error.message);
+    } finally {
+        setLoading(false);
+    }
+}, [setLoading]); // Make sure to include all necessary dependencies
+
+// 2. The useEffect to trigger the final browser download
+useEffect(() => {
+    if (downloadUrl && pendingDownload) {
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = `${pendingDownload}_statement.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(downloadUrl);
+        setDownloadUrl(null);
+        setPendingDownload(null);
+        setTempData(null);
+    }
+}, [downloadUrl, pendingDownload]);
+
+  // ✅ MUI Menu-based Action column
+  const pawnColumns = useMemo(
+    () => [
+      {
+        header: "S.No",
+        id: "sno",
+        Cell: ({ row }) => row.index + 1,
+        size: 50,
+      },
+      {
+        header: "Loan Date",
+        accessorKey: "pawnjewelry_date",
+        Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
+        size: 100,
+      },
+      {
+        header: "Loan No",
+        accessorKey: "receipt_no",
+        size: 100,
+      },
+      {
+        header: "Principal Amount",
+        accessorKey: "original_amount",
+        Cell: ({ cell }) =>
+          `₹ ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
+        size: 140,
+      },
+      {
+        header: "Interest Rate",
+        accessorKey: "interest_rate",
+        Cell: ({ cell }) => `${cell.getValue()}%`,
+        size: 100,
+      },
+      {
+        header: "Total Weight",
+        id: "total_weight",
+        accessorFn: (row) =>
+          row.jewel_product
+            .reduce((sum, item) => sum + parseFloat(item.weight || 0), 0)
+            .toFixed(2),
+        Cell: ({ cell }) => `${cell.getValue()} g`,
+        size: 100,
+      },
+      {
+        header: "Pledge Items",
+        id: "pledge_items",
+        accessorFn: (row) =>
+          row.jewel_product.map((p) => p.JewelName?.trim()).join(", "),
+        size: 200,
+      },
+      {
+        header: "Pending Interest",
+        accessorKey: "interest_payment_amount",
+        Cell: ({ cell }) =>
+          `₹ ${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
+        size: 140,
+      },
+      {
+        header: "Total Pledge Value",
+        id: "total_pledge_value",
+        accessorFn: (row) => {
+          const principal = parseFloat(row.original_amount || 0);
+          const interest = parseFloat(row.interest_payment_amount || 0);
+          return (principal + interest).toFixed(2);
+        },
+        Cell: ({ cell }) =>
+          `₹ ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
+        size: 160,
+      },
+      {
+        header: "Jewel Pawn Value",
+        accessorKey: "jewel_pawn_value",
+        Cell: ({ cell }) =>
+          `₹ ${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
+        size: 140,
+      },
+      {
+        header: "Status",
+        accessorKey: "status",
+        Cell: ({ cell }) => (
+          <Chip
+            label={cell.getValue()}
+            color={cell.getValue() === "மீட்கப்பட்டது" ? "success" : "warning"}
+            sx={{ fontWeight: "bold" }}
+          />
+        ),
+        size: 120,
+      },
+   // Inside CustomerDetails component, within the pawnColumns useMemo:
+
+{
+    header: "Action",
+    id: "action",
+    // ...
+    Cell: ({ row }) => (
+        <ActionMenu 
+            row={row.original} 
+            navigate={navigate} 
+            onInterest={handleInterestClick} // your handleInterestClick
+            onRecovery={handleRecoveryClick} // your handleRecoveryClick
+            onRePledge={handleRePledgeClick} // your handleRePledgeClick
+            onDownloadPawnAgreement={handleDownloadStatement} // your handleDownloadStatement
+            isAdmin={isAdmin} 
+            handleJewelPawningEditClick={handleJewelPawningEditClick}
+            handleJewelPawningDeleteClick={handleJewelPawningDeleteClick}
+        />
+    ),
+},
+    ],
+    [navigate]
+  );
 
   return (
     <div>
       <Container>
         <Row className="regular">
           <Col lg="12" md="12" xs="12" className="py-3">
-            <PageNav pagetitle={"Customer Details"}></PageNav>
+            <PageNav pagetitle={"Customer Details"} />
           </Col>
-          <Row className="mb-4">
+
+         <Row className="mb-4">
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                 <h5 className="mb-3 text-center">Customer Image</h5>
@@ -340,27 +610,22 @@ const getRate = useCallback(
               </span>
             </Col>
           </Row>
-          {/* Jewel Pawning Listing for this Customer */}
           {pawnData.length > 0 && (
             <Row className="mb-4">
               <Col lg={12}>
-                <TableUI
-                  headers={UserTablehead}
-                  body={pawnData}
-                  type="jewelPawning"
-                  pageview="no"
-                  // Pass handlers for custom actions
-                  customActions={{
-                    interest: handleInterestClick,
-                    recovery: handleRecoveryClick,
-                    repledge: handleRePledgeClick,
+                <MaterialReactTable
+                  columns={pawnColumns}
+                  data={pawnData}
+                  enableColumnActions={false}
+                  enableColumnFilters={false}
+                  muiTableBodyCellProps={{
+                    sx: { fontSize: "13px", overflow: "visible" },
                   }}
                 />
               </Col>
             </Row>
           )}
-
-          {/* Bank Details Container */}
+                    {/* Bank Details Container */}
           <Row className="mb-4">
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100">
@@ -402,7 +667,6 @@ const getRate = useCallback(
               </div>
             </Col>
           </Row>
-
           <Col lg="12">
             <div className="text-center mb-3">
               <ClickButton
@@ -411,6 +675,22 @@ const getRate = useCallback(
               />
             </div>
           </Col>
+          {pendingDownload && tempData && (
+    <PDFDownloadLink
+        document={<InterestStatementPDF data={tempData} />}
+        fileName={`${pendingDownload}_statement.pdf`}
+    >
+        {({ blob, url, loading: pdfLoading, error }) => {
+            if (!pdfLoading && url && !error) {
+                // If PDF is generated, set the URL which triggers the useEffect for download
+                setDownloadUrl(url); 
+            }
+            // This component must be rendered, but we hide its output
+            return <div style={{ display: "none" }} />;
+        }}
+    </PDFDownloadLink>
+)}
+          
         </Row>
       </Container>
     </div>
