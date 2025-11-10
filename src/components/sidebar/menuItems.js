@@ -103,11 +103,11 @@ const sidebarConfig = [
   //   ],
   // },
 
-  {
-    path: "/console/pawn/bankpledge",
-    text: "Bank Pledge",
-    //icon: <RiBankLine />,
-  },
+  // {
+  //   path: "/console/pawn/bankpledge",
+  //   text: "Bank Pledge",
+  //   //icon: <RiBankLine />,
+  // },
 
   // {
   //   path: "/console/pawn/bankpledge",
