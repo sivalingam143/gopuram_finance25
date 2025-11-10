@@ -408,7 +408,7 @@ const CustomerDetails = () => {
         accessorKey: "original_amount",
         Cell: ({ cell }) =>
           ` ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
-        size:80,
+        size: 80,
       },
       {
         header: "Interest Rate",
@@ -433,12 +433,16 @@ const CustomerDetails = () => {
           ` ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
         size: 240,
       },
+
       {
         header: "Pledge Items",
         id: "pledge_items",
         accessorFn: (row) =>
-          row.jewel_product.map((p) => p.JewelName?.trim()).join(", "),
+          row.jewel_product
+            .map((p) => `${p.JewelName?.trim() || "N/A"} - ${p.count || 0}`)
+            .join(", "),
         size: 200,
+        muiTableHeadCellProps: { sx: { textAlign: "center" } },
       },
       {
         header: "Pending Interest",
@@ -649,7 +653,11 @@ const CustomerDetails = () => {
                   enableColumnActions={false}
                   enableColumnFilters={false}
                   muiTableBodyCellProps={{
-                    sx: { fontSize: "13px", overflow: "visible",alignItems:"center" },
+                    sx: {
+                      fontSize: "13px",
+                      overflow: "visible",
+                      alignItems: "center",
+                    },
                   }}
                 />
               </Col>
