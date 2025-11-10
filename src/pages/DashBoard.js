@@ -682,6 +682,7 @@ const DashBoard = () => {
     {
       accessorKey: "original_amount",
       header: "Principal Amount (₹)",
+        size: 200,
       Cell: ({ cell }) =>
         `₹${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
     },
@@ -739,6 +740,7 @@ const DashBoard = () => {
     {
       accessorKey: "jewel_value",
       header: "Jewelry Value (Pawned)",
+        size: 300,
       Cell: ({ row }) => {
         const jewelList = Array.isArray(row.original.jewel_product)
           ? row.original.jewel_product
@@ -863,6 +865,7 @@ const DashBoard = () => {
     {
       accessorKey: "overdue_months",
       header: "Interest Overdue (Months)",
+        size: 300,
       muiTableHeadCellProps: {
         align: "center", // centers the header text horizontally
       },
@@ -1331,7 +1334,7 @@ const DashBoard = () => {
                     sx: {
                       fontWeight: "1000", // extra bold
                       fontSize: "17px", // larger font
-                      textTransform: "uppercase", // professional look
+                   
                       backgroundColor: "#212529", // Dark background
                       color: "#fff", // White tex
                       textAlign: "center",

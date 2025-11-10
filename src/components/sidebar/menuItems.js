@@ -60,7 +60,7 @@ const sidebarConfig = [
       },
       {
         path: "/console/master/bankpledgerdetails",
-        text: "Bank Pledger Detaails",
+        text: "Bank Pledger Details",
         icon:<FaHandshake/>,
       },
       // {
