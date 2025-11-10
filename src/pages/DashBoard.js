@@ -1113,65 +1113,59 @@ const DashBoard = () => {
               </div>
             </Col>
           </Row>
-         <Row className="mt-3 justify-content-center">
-    {[
-        {
-            title: "Customer",
-            value: customerData.length,
-            color: "#009688",
-            icon: <MdOutlinePerson size={40} />,
-        },
-        {
-            title: "Jewelry Pawn",
-            value: jewelpawnData.length,
-            color: "#03A9F4",
-            icon: <AiFillGolden size={40} />,
-        },
-        {
-            title: "Jewelry Recovery",
-            value: userecoveryData.length,
-            color: "#4CAF50",
-            icon: <RiDeviceRecoverLine size={40} />,
-        },
-    ].map((stat, index) => (
-        <Col key={index} lg={3} md={4} sm={6} xs={12} className="mb-3">
-            {/* ❌ Removed <Link to={stat.link} style={{ textDecoration: "none" }}> */}
-            <motion.div
-                whileHover={{ scale: 1.07, y: -5 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 180 }}
-            >
-                <Card
-                    sx={{
-                        borderRadius: 4,
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        background: `linear-gradient(135deg, ${stat.color} 30%, ${stat.color}CC 90%)`,
-                        color: "#fff",
-                        cursor: "pointer",
-                        textAlign: "center",
-                    }}
+          <Row className="mt-3 justify-content-center">
+            {[
+              {
+                title: "Customer",
+                value: customerData.length,
+                color: "#009688",
+                icon: <MdOutlinePerson size={40} />,
+              },
+              {
+                title: "Jewelry Pawn",
+                value: jewelpawnData.length,
+                color: "#03A9F4",
+                icon: <AiFillGolden size={40} />,
+              },
+              {
+                title: "Jewelry Recovery",
+                value: userecoveryData.length,
+                color: "#4CAF50",
+                icon: <RiDeviceRecoverLine size={40} />,
+              },
+            ].map((stat, index) => (
+              <Col key={index} lg={3} md={4} sm={6} xs={12} className="mb-3">
+                {/* ❌ Removed <Link to={stat.link} style={{ textDecoration: "none" }}> */}
+                <motion.div
+                  whileHover={{ scale: 1.07, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 180 }}
                 >
+                  <Card
+                    sx={{
+                      borderRadius: 4,
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      background: `linear-gradient(135deg, ${stat.color} 30%, ${stat.color}CC 90%)`,
+                      color: "#fff",
+                      cursor: "pointer",
+                      textAlign: "center",
+                    }}
+                  >
                     <CardContent>
-                        <div style={{ fontSize: "2.5rem" }}>{stat.icon}</div>
-                        <Typography
-                            variant="h4"
-                            sx={{ fontWeight: 700, mt: 1 }}
-                        >
-                            {stat.value}
-                        </Typography>
-                        <Typography
-                            variant="subtitle1"
-                            sx={{ fontWeight: 500 }}
-                        >
-                            {stat.title}
-                        </Typography>
+                      <div style={{ fontSize: "2.5rem" }}>{stat.icon}</div>
+                      <Typography variant="h4" sx={{ fontWeight: 700, mt: 1 }}>
+                        {stat.value}
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        {stat.title}
+                      </Typography>
                     </CardContent>
-                </Card>
-            </motion.div>
-            {/* ❌ Removed closing </Link> */}
-        </Col>
-    ))}
-</Row>
+                  </Card>
+                </motion.div>
+                {/* ❌ Removed closing </Link> */}
+              </Col>
+            ))}
+          </Row>
 
           {/* <Row>
             <Col lg="3" md="6" xs="12" className="py-3">
