@@ -1187,6 +1187,7 @@ const DashBoard = () => {
                 <MaterialReactTable
                   columns={columns}
                   data={filteredData}
+                  enableColumnFilters={false}
                   initialState={{ density: "compact" }}
                   enableExpanding
                   enableExpandAll={false} // hides top-left expand-all button
