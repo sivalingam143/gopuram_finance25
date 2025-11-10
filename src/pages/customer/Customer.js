@@ -237,6 +237,15 @@ const Customer = () => {
         accessorKey: "proof",
         header: "Customer Image",
         size:30,
+       muiTableBodyCellProps: {
+        sx: {
+            textAlign: "center", // Horizontal center
+            
+            justifyContent: "center", // Horizontal center (for flex container)
+            alignItems: "center", // Vertical center (for flex container)
+            height: "100%",      // Take full height for vertical centering
+        },
+    },
         Cell: ({ cell }) => {
           const proofArray = cell.getValue();
           const imageUrl =
@@ -256,7 +265,7 @@ const Customer = () => {
                   alt="Customer Proof"
                   className="customer-listing-img"
                   style={{
-                    width: "40px",
+                    width: "50px",
                     height: "40px",
                     borderRadius: "4px",
                     cursor: "pointer",
@@ -303,6 +312,7 @@ const Customer = () => {
         enableColumnOrdering: false,
         enableSorting: false,
         
+
         Cell: ({ row }) => (
           <Box
             sx={{
@@ -311,7 +321,7 @@ const Customer = () => {
             }}
           >
              {/* View Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title="Customer Details">
               <IconButton
                 onClick={() => handleJewelcustomerViewClick(row.original)}
                 sx={{ padding: 0 }}

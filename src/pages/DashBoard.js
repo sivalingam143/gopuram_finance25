@@ -15,7 +15,6 @@ import {
 import { MdOutlinePerson } from "react-icons/md";
 import { AiFillGolden } from "react-icons/ai";
 import { RiDeviceRecoverLine } from "react-icons/ri";
-import { Link } from "react-router-dom";
 import API_DOMAIN from "../config/config";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -213,7 +212,7 @@ const DashBoard = () => {
       const responseData = await response.json();
       if (responseData.head.code === 200) {
         setCustomerHistory(responseData.body.history || []);
-        console.log("setCustomer",setCustomerHistory);
+        console.log("setCustomer", setCustomerHistory);
       } else {
         throw new Error(responseData.head.msg);
       }
@@ -1059,22 +1058,27 @@ const DashBoard = () => {
       header: "Date",
       Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY HH:mm"),
     },
-{
-    // Use accessorFn to dynamically find receipt_no in either old_value or new_value
-    accessorFn: (row) => {
-      // 1. Check if old_value is an object and contains receipt_no
-      if (row.old_value && typeof row.old_value === 'object' && row.old_value.receipt_no) {
-        return row.old_value.receipt_no;
-      }
-      // 2. Check if new_value is an object and contains receipt_no
-      if (row.new_value && typeof row.new_value === 'object' && row.new_value.receipt_no) {
-        return row.new_value.receipt_no;
-      }
-      return 'N/A'; // Default value if not found
+    {
+      accessorFn: (row) => {
+        if (
+          row.old_value &&
+          typeof row.old_value === "object" &&
+          row.old_value.receipt_no
+        ) {
+          return row.old_value.receipt_no;
+        }
+        if (
+          row.new_value &&
+          typeof row.new_value === "object" &&
+          row.new_value.receipt_no
+        ) {
+          return row.new_value.receipt_no;
+        }
+        return "N/A";
+      },
+      id: "receipt_no_combined",
+      header: "Receipt No",
     },
-    id: "receipt_no_combined", // Give it a unique ID since we use accessorFn
-    header: "Receipt No",
-  },
     {
       accessorKey: "old_value",
       header: "Old Value",
@@ -1109,68 +1113,65 @@ const DashBoard = () => {
               </div>
             </Col>
           </Row>
-          <Row className="mt-3 justify-content-center">
-            {[
-              {
-                title: "Customer",
-                value: customerData.length,
-                color: "#009688",
-                icon: <MdOutlinePerson size={40} />,
-                link: "/console/master/customer",
-              },
-              {
-                title: "Jewelry Pawn",
-                value: jewelpawnData.length,
-                color: "#03A9F4",
-                icon: <AiFillGolden size={40} />,
-                link: "/console/jewel-pawn",
-              },
-              {
-                title: "Jewelry Recovery",
-                value: userecoveryData.length,
-                color: "#4CAF50",
-                icon: <RiDeviceRecoverLine size={40} />,
-                link: "/console/recovery",
-              },
-            ].map((stat, index) => (
-              <Col key={index} lg={3} md={4} sm={6} xs={12} className="mb-3">
-                <Link to={stat.link} style={{ textDecoration: "none" }}>
-                  <motion.div
-                    whileHover={{ scale: 1.07, y: -5 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 180 }}
-                  >
-                    <Card
-                      sx={{
+         <Row className="mt-3 justify-content-center">
+    {[
+        {
+            title: "Customer",
+            value: customerData.length,
+            color: "#009688",
+            icon: <MdOutlinePerson size={40} />,
+        },
+        {
+            title: "Jewelry Pawn",
+            value: jewelpawnData.length,
+            color: "#03A9F4",
+            icon: <AiFillGolden size={40} />,
+        },
+        {
+            title: "Jewelry Recovery",
+            value: userecoveryData.length,
+            color: "#4CAF50",
+            icon: <RiDeviceRecoverLine size={40} />,
+        },
+    ].map((stat, index) => (
+        <Col key={index} lg={3} md={4} sm={6} xs={12} className="mb-3">
+            {/* ❌ Removed <Link to={stat.link} style={{ textDecoration: "none" }}> */}
+            <motion.div
+                whileHover={{ scale: 1.07, y: -5 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 180 }}
+            >
+                <Card
+                    sx={{
                         borderRadius: 4,
                         boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
                         background: `linear-gradient(135deg, ${stat.color} 30%, ${stat.color}CC 90%)`,
                         color: "#fff",
                         cursor: "pointer",
                         textAlign: "center",
-                      }}
-                    >
-                      <CardContent>
+                    }}
+                >
+                    <CardContent>
                         <div style={{ fontSize: "2.5rem" }}>{stat.icon}</div>
                         <Typography
-                          variant="h4"
-                          sx={{ fontWeight: 700, mt: 1 }}
+                            variant="h4"
+                            sx={{ fontWeight: 700, mt: 1 }}
                         >
-                          {stat.value}
+                            {stat.value}
                         </Typography>
                         <Typography
-                          variant="subtitle1"
-                          sx={{ fontWeight: 500 }}
+                            variant="subtitle1"
+                            sx={{ fontWeight: 500 }}
                         >
-                          {stat.title}
+                            {stat.title}
                         </Typography>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Link>
-              </Col>
-            ))}
-          </Row>
+                    </CardContent>
+                </Card>
+            </motion.div>
+            {/* ❌ Removed closing </Link> */}
+        </Col>
+    ))}
+</Row>
 
           {/* <Row>
             <Col lg="3" md="6" xs="12" className="py-3">
@@ -1268,10 +1269,10 @@ const DashBoard = () => {
                   })}
                   muiTableHeadRowProps={{
                     sx: {
-                        backgroundColor: '#000000', 
-                         color: "#fff", 
-                         textAlign: "center",
-                      }
+                      backgroundColor: "#000000",
+                      color: "#fff",
+                      textAlign: "center",
+                    },
                   }}
                   muiTableBodyCellProps={{
                     sx: {

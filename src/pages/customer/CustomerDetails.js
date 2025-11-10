@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import PageNav from "../../components/PageNav";
 import { ClickButton } from "../../components/Buttons";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
+import { useNavigate } from "react-router-dom";
 import TableUI from "../../components/Table";
 import "./Customer.css";
 
@@ -15,6 +16,10 @@ const UserTablehead = [
   "Interest Rate",
   "Total Weight",
   "Pledge Items",
+  "Existing Pledge Value",
+  "Pending Interest",
+  "Total Pledge Value",
+  "Jewel Pawn Value",
   "Jewelry recovery period",
   "Status",
   "Action",
@@ -25,16 +30,10 @@ const CustomerDetails = () => {
   const { rowData } = location.state || {};
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [companyRates, setCompanyRates] = useState({});
+  console.log("companyRates:", companyRates);
   const [customerDetailsData, setCustomerDetailsData] = useState(null);
   const [pawnData, setpawnData] = useState([]);
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth() returns month from 0-11
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
 
   const fetchCustomerDetails = async () => {
     if (!rowData.customer_no) return;
@@ -66,37 +65,124 @@ const CustomerDetails = () => {
     }
   };
 
+  // const fetchDatapawn = async () => {
+  //   try {
+  //     const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         customer_no: rowData.customer_no,
+  //       }),
+  //     });
+
+  //     const responseData = await response.json();
+  //     console.log(responseData);
+  //     setLoading(false);
+  //     if (responseData.head.code === 200) {
+  //       let sortedData = responseData.body.pawnjewelry.map((user) => ({
+  //         ...user,
+  //         jewel_product: JSON.parse(user.jewel_product || "[]"),
+  //       }));
+
+  //       setpawnData(sortedData);
+  //     } else {
+  //       throw new Error(responseData.head.msg);
+  //     }
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error("Error fetching data:", error.message);
+  //   }
+  // };
+  // Add this before fetchDatapawn()
+
+  useEffect(() => {
+    const fetchCompany = async () => {
+      try {
+        const response = await fetch(`${API_DOMAIN}/company.php`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ search_text: "" }),
+        });
+        const responseData = await response.json();
+        if (responseData.head.code === 200) {
+          const company = responseData.body.company;
+          if (company && company.jewel_price_details) {
+            try {
+              const rates = JSON.parse(company.jewel_price_details);
+              setCompanyRates(rates);
+            } catch (e) {
+              console.error("Error parsing rates:", e);
+              setCompanyRates({});
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching company:", error);
+      }
+    };
+
+    fetchCompany();
+  }, []);
+
+const getRate = useCallback(
+    (carrat) => {
+      if (!carrat) return 0;
+      const caratNum = carrat.split(" ")[0];
+      const key = `${caratNum}_carat_price`;
+      return parseFloat(companyRates[key]) || 0;
+    },
+    [companyRates])
   const fetchDatapawn = async () => {
     try {
-      setLoading(true);
       const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customer_no: rowData.customer_no,
         }),
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+      console.log(responseData, "📦 Raw Pawn Data");
+      setLoading(false);
+
       if (responseData.head.code === 200) {
-        let sortedData = responseData.body.pawnjewelry.map((user) => ({
-          ...user,
-          jewel_product: JSON.parse(user.jewel_product || "[]"),
-        }));
+        let sortedData = responseData.body.pawnjewelry.map((user) => {
+          const jewelProduct = Array.isArray(user.jewel_product)
+            ? user.jewel_product // already array ✅
+            : JSON.parse(user.jewel_product || "[]"); // fallback if string
+
+          const totalValue = jewelProduct.reduce((sum, row) => {
+            const net =
+              parseFloat(row.weight || 0) -
+              parseFloat(row.deduction_weight || 0);
+            const rate = getRate(row.carrat);
+            return sum + net * rate;
+          }, 0);
+
+          return {
+            ...user,
+            jewel_product: jewelProduct,
+            jewel_pawn_value: totalValue.toFixed(2),
+          };
+        });
 
         setpawnData(sortedData);
+        console.log(
+          "✅ Processed Pawn Data with Jewel Pawn Value:",
+          sortedData
+        );
       } else {
         throw new Error(responseData.head.msg);
       }
     } catch (error) {
-      console.error("Error fetching data:", error.message);
-    } finally {
       setLoading(false);
+      console.error("❌ Error fetching data:", error.message);
     }
   };
+
 
   // New handlers for dropdown clicks
   const handleInterestClick = (pawnRow) => {
@@ -114,23 +200,20 @@ const CustomerDetails = () => {
       state: { type: "repledge", rowData: pawnRow },
     });
   };
-
-  const handleBankDetailsClick = (pawnRow) => {
-    navigate("/console/customer/customerbankdetails", {
-      state: {
-        bankData: pawnRow.bank_pledger || [],
-        receiptNo: pawnRow.receipt_no,
-        customerNo: rowData.customer_no,
-      },
-    });
-  };
-
+  // ✅ Run these only after companyRates are loaded
   useEffect(() => {
-    if (rowData) {
+    if (rowData && Object.keys(companyRates).length > 0) {
       fetchCustomerDetails();
       fetchDatapawn();
     }
-  }, [rowData]);
+  }, [rowData, companyRates]);
+
+  // useEffect(() => {
+  //   if (rowData) {
+  //     fetchCustomerDetails();
+  //     fetchDatapawn();
+  //   }
+  // }, [rowData]);
 
   return (
     <div>
@@ -200,7 +283,7 @@ const CustomerDetails = () => {
             </Col>
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100">
-                <h5 className="mb-3">கடன் விவரங்கள்</h5>
+                <h5 className="mb-3">Summary Details</h5>
                 <ul className="list-unstyled">
                   <li className="mb-2 d-flex justify-content-between">
                     <strong>Total Original Amount:</strong>
@@ -271,7 +354,6 @@ const CustomerDetails = () => {
                     interest: handleInterestClick,
                     recovery: handleRecoveryClick,
                     repledge: handleRePledgeClick,
-                    bankDetails: handleBankDetailsClick,
                   }}
                 />
               </Col>
