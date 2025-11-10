@@ -682,7 +682,7 @@ const DashBoard = () => {
     {
       accessorKey: "original_amount",
       header: "Principal Amount (₹)",
-        size: 200,
+      size: 200,
       Cell: ({ cell }) =>
         `₹${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
     },
@@ -740,7 +740,7 @@ const DashBoard = () => {
     {
       accessorKey: "jewel_value",
       header: "Jewelry Value (Pawned)",
-        size: 300,
+      size: 300,
       Cell: ({ row }) => {
         const jewelList = Array.isArray(row.original.jewel_product)
           ? row.original.jewel_product
@@ -792,18 +792,6 @@ const DashBoard = () => {
       },
     },
 
-    // {
-    //   accessorKey: "interest_payment_amount",
-    //   header: "Interest Outstanding (₹)",
-    //   Cell: ({ row }) => (
-    //     <span style={{ color: "green", fontWeight: 500 }}>
-    //       ₹
-    //       {Math.round(parseFloat(row.original.interest_payment_amount || 0)).toLocaleString(
-    //         "en-IN"
-    //       )}
-    //     </span>
-    //   ),
-    // },
     {
       accessorKey: "interest_paid",
       header: "Interest Paid (₹)",
@@ -865,7 +853,7 @@ const DashBoard = () => {
     {
       accessorKey: "overdue_months",
       header: "Interest Overdue (Months)",
-        size: 300,
+      size: 300,
       muiTableHeadCellProps: {
         align: "center", // centers the header text horizontally
       },
@@ -937,64 +925,6 @@ const DashBoard = () => {
         );
       },
     },
-
-    // {
-    //   accessorKey: "alert",
-    //   header: "Alert",
-    //   muiTableHeadCellProps: {
-    //     align: "center",
-    //   },
-    //   muiTableBodyCellProps: {
-    //     align: "center",
-    //   },
-    //   Cell: ({ row }) => {
-    //     const item = row.original;
-    //     const alertContent = item.alertContent;
-    //     if (item.status === "நகை மீட்கபட்டது")
-    //       return <span style={{ color: "#999" }}>-</span>;
-
-    //     return (
-    //       <Stack direction="row" spacing={1} justifyContent="center">
-    //         <Tooltip title="Send WhatsApp">
-    //           <IconButton
-    //             onClick={() => {
-    //               const url = `https://wa.me/${
-    //                 item.mobile_number
-    //               }?text=${encodeURIComponent(alertContent)}`;
-    //               window.open(url, "_blank");
-    //             }}
-    //             sx={{
-    //               backgroundColor: "#25D366",
-    //               color: "#4ae69dff",
-    //               "&:hover": { backgroundColor: "#1DA851" },
-    //             }}
-    //             size="medium"
-    //           >
-    //             <WhatsAppIcon fontSize="medium" />
-    //           </IconButton>
-    //         </Tooltip>
-
-    //         <Tooltip title="Send SMS">
-    //           <IconButton
-    //             onClick={() =>
-    //               (window.location.href = `sms:${
-    //                 item.mobile_number
-    //               }?body=${encodeURIComponent(alertContent)}`)
-    //             }
-    //             sx={{
-    //               backgroundColor: "#e4205bff",
-    //               color: "#d42626ff",
-    //               "&:hover": { backgroundColor: "#c91818ff" },
-    //             }}
-    //             size="medium"
-    //           >
-    //             <SmsIcon fontSize="medium" />
-    //           </IconButton>
-    //         </Tooltip>
-    //       </Stack>
-    //     );
-    //   },
-    // },
   ];
   const noticeColumns = [
     {
@@ -1320,6 +1250,12 @@ const DashBoard = () => {
                       getMonthsDifference(row.original.pawnjewelry_date)
                     ),
                   })}
+                  muiTableHeadRowProps={{
+                    sx: {
+                        backgroundColor: '#000000', // Ensure the header row itself is black
+                         color: "#fff", // White text
+                      }
+                  }}
                   muiTableBodyCellProps={{
                     sx: {
                       fontWeight: "bold", // Bold all body text
@@ -1334,9 +1270,8 @@ const DashBoard = () => {
                     sx: {
                       fontWeight: "1000", // extra bold
                       fontSize: "17px", // larger font
-                   
-                      backgroundColor: "#212529", // Dark background
-                      color: "#fff", // White tex
+                      backgroundColor: "#000000", // PURE Black background
+                      color: "#fff", // White text
                       textAlign: "center",
                     },
                   }}
