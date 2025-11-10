@@ -18,26 +18,26 @@ import InterestStatementPDF from "../../pdf/InterestStatementPDF";
 // const ActionMenu = ({ row, navigate, onInterest, onRecovery, onRePledge, onDownloadPawnAgreement, isAdmin, handleJewelPawningEditClick, handleJewelPawningDeleteClick }) => {
 // Note: You'll need to pass isAdmin, handleJewelPawningEditClick, and handleJewelPawningDeleteClick from the parent CustomerDetails component to the ActionMenu component, and from the pawnColumns Cell property.
 
-const ActionMenu = ({ 
-    row, 
-    navigate, 
-    onInterest, 
-    onRecovery, 
-    onRePledge, 
-    onDownloadPawnAgreement,
-    // Assuming these are passed as props from the parent:
-    isAdmin, 
-    handleJewelPawningEditClick, 
-    handleJewelPawningDeleteClick 
+const ActionMenu = ({
+  row,
+  navigate,
+  onInterest,
+  onRecovery,
+  onRePledge,
+  onDownloadPawnAgreement,
+  onBankDetails,
+  // Assuming these are passed as props from the parent:
+  isAdmin,
+  handleJewelPawningEditClick,
+  handleJewelPawningDeleteClick,
 }) => {
-  
   // 1. HOOKS MUST BE FIRST
-  const [anchorEl, setAnchorEl] = React.useState(null); 
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
   // 2. CRITICAL SAFETY CHECK
   if (!row) {
-      return null;
+    return null;
   }
 
   const handleOpen = (e) => setAnchorEl(e.currentTarget);
@@ -45,10 +45,10 @@ const ActionMenu = ({
 
   // 3. Conditional rendering checks based on your old logic
   // "நகை மீட்கபட்டது" (Item Recovered) - Prevents Interest/Repledge options
-  const isRecovered = row.status === "நகை மீட்கபட்டது"; 
-  
+  const isRecovered = row.status === "நகை மீட்கபட்டது";
+
   // "நகை மீட்கபடவில்லை" (Item Not Recovered) - Prevents Re-pledge option
-  const isNotRecovered = row.status === "நகை மீட்கபடவில்லை"; 
+  const isNotRecovered = row.status === "நகை மீட்கபடவில்லை";
 
   return (
     <>
@@ -64,7 +64,6 @@ const ActionMenu = ({
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         slotProps={{ paper: { sx: { zIndex: 1100 } } }}
       >
-
         {/* 1. Interest Payment (Conditional: NOT recovered) 
             Maps to: {rowData?.status !== "நகை மீட்கபட்டது" && (...) onClick={() => customActions?.interest?.(rowData)} */}
         {!isRecovered && (
@@ -78,26 +77,34 @@ const ActionMenu = ({
           </MenuItem>
         )}
 
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            onBankDetails(row);
+          }}
+        >
+          Bank Details
+        </MenuItem>
         {/* 2. Download Statement PDF (Unconditional) 
             Maps to: <Dropdown.Item onClick={() => handleDownloadStatement(rowData)} */}
         <MenuItem
-            onClick={() => {
-              handleClose();
-              onDownloadPawnAgreement(row);
-            }}
+          onClick={() => {
+            handleClose();
+            onDownloadPawnAgreement(row);
+          }}
         >
-            Download Statement PDF
+          Download Statement PDF
         </MenuItem>
 
         {/* 3. Recovery (Unconditional in your old code)
             Maps to: <Dropdown.Item onClick={() => customActions?.recovery?.(rowData)} */}
         <MenuItem
-            onClick={() => {
-              handleClose();
-              onRecovery(row); // Use onRecovery handler
-            }}
+          onClick={() => {
+            handleClose();
+            onRecovery(row); // Use onRecovery handler
+          }}
         >
-            Recovery
+          Recovery
         </MenuItem>
 
         {/* 4. Re-pledge (Conditional: NOT "நகை மீட்கபடவில்லை") 
@@ -112,7 +119,7 @@ const ActionMenu = ({
             Re-pledge
           </MenuItem>
         )}
-        
+
         {/* 5. Edit (Conditional: isAdmin) 
             Maps to: {isAdmin && (...) onClick={() => handleJewelPawningEditClick(rowData)} */}
         {isAdmin && handleJewelPawningEditClick && (
@@ -138,7 +145,6 @@ const ActionMenu = ({
             Delete
           </MenuItem>
         )}
-        
       </Menu>
     </>
   );
@@ -153,9 +159,9 @@ const CustomerDetails = () => {
   const [customerDetailsData, setCustomerDetailsData] = useState(null);
   const [pawnData, setpawnData] = useState([]);
   const [tempData, setTempData] = useState(null);
-    const [pendingDownload, setPendingDownload] = useState(null);
-    const [downloadUrl, setDownloadUrl] = useState(null);
-    const user = JSON.parse(localStorage.getItem("user")) || {};
+  const [pendingDownload, setPendingDownload] = useState(null);
+  const [downloadUrl, setDownloadUrl] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user")) || {};
   const isAdmin = user.role === "Admin";
 
   const fetchCustomerDetails = async () => {
@@ -172,7 +178,10 @@ const CustomerDetails = () => {
       if (responseData.head.code === 200) {
         setCustomerDetailsData(responseData.body);
       } else {
-        console.error("Error fetching customer details:", responseData.head.msg);
+        console.error(
+          "Error fetching customer details:",
+          responseData.head.msg
+        );
       }
     } catch (error) {
       console.error("Error fetching customer details:", error.message);
@@ -269,7 +278,19 @@ const CustomerDetails = () => {
   };
 
   const handleRecoveryClick = (pawnRow) => {
-    navigate("/console/customer/jewelrecovery", { state: { rowData: pawnRow } });
+    navigate("/console/customer/jewelrecovery", {
+      state: { rowData: pawnRow },
+    });
+  };
+
+  const handleBankDetailsClick = (pawnRow) => {
+    navigate("/console/customer/customerbankdetails", {
+      state: {
+        bankData: pawnRow.bank_pledger || [],
+        receiptNo: pawnRow.receipt_no,
+        customerNo: rowData.customer_no,
+      },
+    });
   };
 
   const handleRePledgeClick = (pawnRow) => {
@@ -283,7 +304,7 @@ const CustomerDetails = () => {
       state: { type: "edit", rowData: rowData },
     });
   };
-   const handleJewelPawningDeleteClick = async (id) => {
+  const handleJewelPawningDeleteClick = async (id) => {
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
@@ -319,58 +340,60 @@ const CustomerDetails = () => {
   }, [rowData, companyRates]);
   // Inside CustomerDetails component:
 
+  // Inside CustomerDetails component:
 
-// Inside CustomerDetails component:
-
-// 1. The Async Handler to fetch data and trigger PDF generation
-const handleDownloadStatement = useCallback(async (pawnRow) => {
-    setLoading(true);
-    try {
+  // 1. The Async Handler to fetch data and trigger PDF generation
+  const handleDownloadStatement = useCallback(
+    async (pawnRow) => {
+      setLoading(true);
+      try {
         const response = await fetch(
-            `${API_DOMAIN}/getintereststatementreport.php`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    receipt_no: pawnRow.receipt_no,
-                }),
-            }
+          `${API_DOMAIN}/getintereststatementreport.php`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              receipt_no: pawnRow.receipt_no,
+            }),
+          }
         );
         const responseData = await response.json();
         if (responseData.head.code === 200) {
-            setTempData({
-                statement: responseData.body,
-                customer: pawnRow,
-            });
-            // This line triggers the PDFDownloadLink to start generating the PDF
-            setPendingDownload(pawnRow.receipt_no); 
+          setTempData({
+            statement: responseData.body,
+            customer: pawnRow,
+          });
+          // This line triggers the PDFDownloadLink to start generating the PDF
+          setPendingDownload(pawnRow.receipt_no);
         } else {
-            console.error("Error fetching statement:", responseData.head.msg);
+          console.error("Error fetching statement:", responseData.head.msg);
         }
-    } catch (error) {
+      } catch (error) {
         console.error("Error fetching statement:", error.message);
-    } finally {
+      } finally {
         setLoading(false);
-    }
-}, [setLoading]); // Make sure to include all necessary dependencies
+      }
+    },
+    [setLoading]
+  ); // Make sure to include all necessary dependencies
 
-// 2. The useEffect to trigger the final browser download
-useEffect(() => {
+  // 2. The useEffect to trigger the final browser download
+  useEffect(() => {
     if (downloadUrl && pendingDownload) {
-        const link = document.createElement("a");
-        link.href = downloadUrl;
-        link.download = `${pendingDownload}_statement.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(downloadUrl);
-        setDownloadUrl(null);
-        setPendingDownload(null);
-        setTempData(null);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `${pendingDownload}_statement.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+      setDownloadUrl(null);
+      setPendingDownload(null);
+      setTempData(null);
     }
-}, [downloadUrl, pendingDownload]);
+  }, [downloadUrl, pendingDownload]);
 
   // ✅ MUI Menu-based Action column
   const pawnColumns = useMemo(
@@ -460,26 +483,27 @@ useEffect(() => {
         ),
         size: 120,
       },
-   // Inside CustomerDetails component, within the pawnColumns useMemo:
+      // Inside CustomerDetails component, within the pawnColumns useMemo:
 
-{
-    header: "Action",
-    id: "action",
-    // ...
-    Cell: ({ row }) => (
-        <ActionMenu 
-            row={row.original} 
-            navigate={navigate} 
+      {
+        header: "Action",
+        id: "action",
+        // ...
+        Cell: ({ row }) => (
+          <ActionMenu
+            row={row.original}
+            navigate={navigate}
             onInterest={handleInterestClick} // your handleInterestClick
             onRecovery={handleRecoveryClick} // your handleRecoveryClick
+            onBankDetails={handleBankDetailsClick} // your handleBankDetailsClick
             onRePledge={handleRePledgeClick} // your handleRePledgeClick
             onDownloadPawnAgreement={handleDownloadStatement} // your handleDownloadStatement
-            isAdmin={isAdmin} 
+            isAdmin={isAdmin}
             handleJewelPawningEditClick={handleJewelPawningEditClick}
             handleJewelPawningDeleteClick={handleJewelPawningDeleteClick}
-        />
-    ),
-},
+          />
+        ),
+      },
     ],
     [navigate]
   );
@@ -492,7 +516,7 @@ useEffect(() => {
             <PageNav pagetitle={"Customer Details"} />
           </Col>
 
-         <Row className="mb-4">
+          <Row className="mb-4">
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                 <h5 className="mb-3 text-center">Customer Image</h5>
@@ -625,7 +649,7 @@ useEffect(() => {
               </Col>
             </Row>
           )}
-                    {/* Bank Details Container */}
+          {/* Bank Details Container */}
           <Row className="mb-4">
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100">
@@ -676,21 +700,20 @@ useEffect(() => {
             </div>
           </Col>
           {pendingDownload && tempData && (
-    <PDFDownloadLink
-        document={<InterestStatementPDF data={tempData} />}
-        fileName={`${pendingDownload}_statement.pdf`}
-    >
-        {({ blob, url, loading: pdfLoading, error }) => {
-            if (!pdfLoading && url && !error) {
-                // If PDF is generated, set the URL which triggers the useEffect for download
-                setDownloadUrl(url); 
-            }
-            // This component must be rendered, but we hide its output
-            return <div style={{ display: "none" }} />;
-        }}
-    </PDFDownloadLink>
-)}
-          
+            <PDFDownloadLink
+              document={<InterestStatementPDF data={tempData} />}
+              fileName={`${pendingDownload}_statement.pdf`}
+            >
+              {({ blob, url, loading: pdfLoading, error }) => {
+                if (!pdfLoading && url && !error) {
+                  // If PDF is generated, set the URL which triggers the useEffect for download
+                  setDownloadUrl(url);
+                }
+                // This component must be rendered, but we hide its output
+                return <div style={{ display: "none" }} />;
+              }}
+            </PDFDownloadLink>
+          )}
         </Row>
       </Container>
     </div>
