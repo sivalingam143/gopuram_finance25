@@ -772,12 +772,11 @@ const DashBoard = () => {
       header: "Status",
       Cell: ({ cell }) => {
         const value = cell.getValue();
-        const isActive = value === "நகை மீட்கபட்டது";
-
+        const isRecovered = value === "நகை மீட்கபட்டது";
         return (
           <Chip
-            label={isActive ? "Active" : "Inactive"}
-            color={isActive ? "success" : "error"}
+            label={isRecovered ? "Recovered" : "Active"}
+            color={isRecovered ? "error" : "success"}
             size="small"
             sx={{
               fontWeight: "bold",
