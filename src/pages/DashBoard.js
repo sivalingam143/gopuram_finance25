@@ -775,12 +775,11 @@ const DashBoard = () => {
         const isRecovered = value === "நகை மீட்கபட்டது";
         return (
           <Chip
-            label={isRecovered ? "Recovered" : "Active"}
             color={isRecovered ? "error" : "success"}
-            size="small"
             sx={{
-              fontWeight: "bold",
-              color: "#fff",
+              borderRadius: "50px",
+              width: "20px",
+              height: "20px",
             }}
           />
         );
