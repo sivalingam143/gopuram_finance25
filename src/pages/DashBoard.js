@@ -200,7 +200,7 @@ const DashBoard = () => {
     }
     setLoadingHistory(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/customer.php`, {
+      const response = await fetch(`${API_DOMAIN}/customer_history.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -213,6 +213,7 @@ const DashBoard = () => {
       const responseData = await response.json();
       if (responseData.head.code === 200) {
         setCustomerHistory(responseData.body.history || []);
+        console.log("setCustomer",setCustomerHistory);
       } else {
         throw new Error(responseData.head.msg);
       }
@@ -1058,7 +1059,22 @@ const DashBoard = () => {
       header: "Date",
       Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY HH:mm"),
     },
-    { accessorKey: "receipt_no", header: "Receipt No" },
+{
+    // Use accessorFn to dynamically find receipt_no in either old_value or new_value
+    accessorFn: (row) => {
+      // 1. Check if old_value is an object and contains receipt_no
+      if (row.old_value && typeof row.old_value === 'object' && row.old_value.receipt_no) {
+        return row.old_value.receipt_no;
+      }
+      // 2. Check if new_value is an object and contains receipt_no
+      if (row.new_value && typeof row.new_value === 'object' && row.new_value.receipt_no) {
+        return row.new_value.receipt_no;
+      }
+      return 'N/A'; // Default value if not found
+    },
+    id: "receipt_no_combined", // Give it a unique ID since we use accessorFn
+    header: "Receipt No",
+  },
     {
       accessorKey: "old_value",
       header: "Old Value",
@@ -1252,8 +1268,9 @@ const DashBoard = () => {
                   })}
                   muiTableHeadRowProps={{
                     sx: {
-                        backgroundColor: '#000000', // Ensure the header row itself is black
-                         color: "#fff", // White text
+                        backgroundColor: '#000000', 
+                         color: "#fff", 
+                         textAlign: "center",
                       }
                   }}
                   muiTableBodyCellProps={{
@@ -1302,7 +1319,7 @@ const DashBoard = () => {
                     }
 
                     return (
-                      <div style={{ padding: 18, background: "#f8f9fa" }}>
+                      <div style={{ padding: 18 }}>
                         <h6 style={{ marginBottom: 8 }}>Bank Pledge Details</h6>
                         <table className="table table-sm">
                           <thead className="table-dark">
@@ -1760,7 +1777,7 @@ const DashBoard = () => {
                         sx: {
                           fontWeight: "bold",
                           fontSize: "13px",
-                          textAlign: "center",
+                          //textAlign: "center",
                         },
                       }}
                       muiTableContainerProps={{
@@ -1911,7 +1928,7 @@ const DashBoard = () => {
                         sx: {
                           fontWeight: "bold",
                           fontSize: "13px",
-                          textAlign: "center",
+                          //textAlign: "center",
                         },
                       }}
                       muiTableContainerProps={{

@@ -11,13 +11,12 @@
   vertical-align: middle;
   padding: 8px 8px !important;
   border: 2px solid #222222;
-  max-width: 120px;
+  max-width: 90px;
   font-size: 11px;
 }
   
 .balance-table-wrapper .table thead th {
-  background-color: #f8f9fa;
-  
+ 
   font-weight: bold;
   white-space: normal;
 }
