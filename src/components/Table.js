@@ -35,6 +35,8 @@ const TableUI = ({
   const [downloadUrl, setDownloadUrl] = useState(null);
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const isAdmin = user.role === "Admin";
+
+
   useEffect(() => {
     if (downloadUrl && pendingDownload) {
       const link = document.createElement("a");
@@ -67,12 +69,7 @@ const TableUI = ({
       }, 500); // simulate delay
     }
   };
-  // useEffect(() => {
-  // setLoading(true);
-  // setTimeout(() => {
-  // setLoading(false);
-  // }, 1000);
-  // }, []);
+ 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -302,22 +299,6 @@ const TableUI = ({
       setLoading(false);
     }
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   
   const handleJewelCategoryEditClick = (rowData) => {
     navigate("/console/master/category/create", {

@@ -73,20 +73,9 @@ const ActionMenu = ({
               onInterest(row); // Use onInterest handler
             }}
           >
-            Interest Payment
+            Interest
           </MenuItem>
         )}
-
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            onBankDetails(row);
-          }}
-        >
-          Bank Details
-        </MenuItem>
-        {/* 2. Download Statement PDF (Unconditional) 
-            Maps to: <Dropdown.Item onClick={() => handleDownloadStatement(rowData)} */}
         <MenuItem
           onClick={() => {
             handleClose();
@@ -96,32 +85,35 @@ const ActionMenu = ({
           Download Statement PDF
         </MenuItem>
 
-        {/* 3. Recovery (Unconditional in your old code)
-            Maps to: <Dropdown.Item onClick={() => customActions?.recovery?.(rowData)} */}
         <MenuItem
           onClick={() => {
             handleClose();
-            onRecovery(row); // Use onRecovery handler
+            onBankDetails(row);
+          }}
+        >
+          Bank Details
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            onRecovery(row);
           }}
         >
           Recovery
         </MenuItem>
 
-        {/* 4. Re-pledge (Conditional: NOT "நகை மீட்கபடவில்லை") 
-            Maps to: {rowData?.status !== "நகை மீட்கபடவில்லை" && (...) onClick={() => customActions?.repledge?.(rowData)} */}
         {!isNotRecovered && (
           <MenuItem
             onClick={() => {
               handleClose();
-              onRePledge(row); // Use onRePledge handler
+              onRePledge(row);
             }}
           >
             Re-pledge
           </MenuItem>
         )}
 
-        {/* 5. Edit (Conditional: isAdmin) 
-            Maps to: {isAdmin && (...) onClick={() => handleJewelPawningEditClick(rowData)} */}
         {isAdmin && handleJewelPawningEditClick && (
           <MenuItem
             onClick={() => {
@@ -132,9 +124,6 @@ const ActionMenu = ({
             Edit
           </MenuItem>
         )}
-
-        {/* 6. Delete (Unconditional in old code)
-            Maps to: <Dropdown.Item onClick={() => handleJewelPawningDeleteClick(rowData.pawnjewelry_id)} */}
         {handleJewelPawningDeleteClick && (
           <MenuItem
             onClick={() => {
@@ -338,7 +327,6 @@ const CustomerDetails = () => {
       fetchDatapawn();
     }
   }, [rowData, companyRates]);
-  // Inside CustomerDetails component:
 
   // Inside CustomerDetails component:
 
@@ -365,7 +353,7 @@ const CustomerDetails = () => {
             statement: responseData.body,
             customer: pawnRow,
           });
-          // This line triggers the PDFDownloadLink to start generating the PDF
+
           setPendingDownload(pawnRow.receipt_no);
         } else {
           console.error("Error fetching statement:", responseData.head.msg);
@@ -377,7 +365,7 @@ const CustomerDetails = () => {
       }
     },
     [setLoading]
-  ); // Make sure to include all necessary dependencies
+  );
 
   // 2. The useEffect to trigger the final browser download
   useEffect(() => {
@@ -419,8 +407,8 @@ const CustomerDetails = () => {
         header: "Principal Amount",
         accessorKey: "original_amount",
         Cell: ({ cell }) =>
-          `₹ ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
-        size: 140,
+          ` ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
+        size:80,
       },
       {
         header: "Interest Rate",
@@ -435,8 +423,15 @@ const CustomerDetails = () => {
           row.jewel_product
             .reduce((sum, item) => sum + parseFloat(item.weight || 0), 0)
             .toFixed(2),
-        Cell: ({ cell }) => `${cell.getValue()} g`,
+        Cell: ({ cell }) => `${cell.getValue()} `,
         size: 100,
+      },
+      {
+        header: "Existing Pledge Value",
+        accessorKey: "original_amount",
+        Cell: ({ cell }) =>
+          ` ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
+        size: 240,
       },
       {
         header: "Pledge Items",
@@ -449,7 +444,7 @@ const CustomerDetails = () => {
         header: "Pending Interest",
         accessorKey: "interest_payment_amount",
         Cell: ({ cell }) =>
-          `₹ ${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
+          `${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
         size: 140,
       },
       {
@@ -461,30 +456,41 @@ const CustomerDetails = () => {
           return (principal + interest).toFixed(2);
         },
         Cell: ({ cell }) =>
-          `₹ ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
+          ` ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
         size: 160,
       },
       {
         header: "Jewel Pawn Value",
         accessorKey: "jewel_pawn_value",
         Cell: ({ cell }) =>
-          `₹ ${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
+          `${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
         size: 140,
       },
+
       {
         header: "Status",
         accessorKey: "status",
-        Cell: ({ cell }) => (
-          <Chip
-            label={cell.getValue()}
-            color={cell.getValue() === "மீட்கப்பட்டது" ? "success" : "warning"}
-            sx={{ fontWeight: "bold" }}
-          />
-        ),
-        size: 120,
-      },
-      // Inside CustomerDetails component, within the pawnColumns useMemo:
+        Cell: ({ cell }) => {
+          const statusValue = cell.getValue();
+          let color;
+          if (statusValue === "நகை மீட்கபட்டது") {
+            color = "success"; // Green color
+          } else if (statusValue === "நகை மீட்கபடவில்லை") {
+            color = "error";
+          } else {
+            color = "warning";
+          }
 
+          return (
+            <Chip
+              label={statusValue}
+              color={color}
+              sx={{ fontWeight: "bold" }}
+            />
+          );
+        },
+        size: 150,
+      },
       {
         header: "Action",
         id: "action",
@@ -643,7 +649,7 @@ const CustomerDetails = () => {
                   enableColumnActions={false}
                   enableColumnFilters={false}
                   muiTableBodyCellProps={{
-                    sx: { fontSize: "13px", overflow: "visible" },
+                    sx: { fontSize: "13px", overflow: "visible",alignItems:"center" },
                   }}
                 />
               </Col>
@@ -706,10 +712,8 @@ const CustomerDetails = () => {
             >
               {({ blob, url, loading: pdfLoading, error }) => {
                 if (!pdfLoading && url && !error) {
-                  // If PDF is generated, set the URL which triggers the useEffect for download
                   setDownloadUrl(url);
                 }
-                // This component must be rendered, but we hide its output
                 return <div style={{ display: "none" }} />;
               }}
             </PDFDownloadLink>
