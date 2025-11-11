@@ -11,15 +11,49 @@
   --accent-green: #52c242;   /* accent for success */
 }
 
+/* ------------------------------------ */
+/* THEME A (Default)          */
+/* ------------------------------------ */
+:root {
+  /* BACKGROUNDS */
+  --theme-bg-page: #f7d36e; 
+  --theme-bg-card: #FFFFFF;
+  --theme-bg-sidebar: #ecd388;
+  --theme-bg-main-content:  #ECD794; /* Crisp white for main content areas */
 
-body {
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-family: "Inter", "Noto Sans Tamil", sans-serif !important;
-  background-color: #f8f9fa;
-  color: #212529;
- 
+  /* COLORS */
+  --theme-color-primary: #D4AF37; 
+  --theme-color-text: #1E3C72;/* Dark Navy Blue Text */
+  --theme-color-highlight: #A0B2C4; /* Soft Grey-Blue Accent */
+
+  /* BORDERS/SHADOWS */
+  --theme-border-color: #E8E8E8;
 }
 
+/* ------------------------------------ */
+/* THEME B (Toggle On)        */
+/* ------------------------------------ */
+.theme-b {
+  /* OVERRIDE BACKGROUNDS */
+  --theme-bg-page: #F0F5F2; /* Pale Mint Page */
+  --theme-bg-card: #FFFFFF;
+  --theme-bg-sidebar: #EAEAEA;   /* Light Silver Sidebar */
+  --theme-bg-main-content: #cbc1ce; 
+
+  /* OVERRIDE COLORS */
+  --theme-color-primary: #00A398; /* Deep Mint Green */
+  --theme-color-text: #333333; /* Soft Charcoal Text */
+  --theme-color-highlight: #748B9C; /* Muted Blue-Grey Accent */
+
+  /* OVERRIDE BORDERS/SHADOWS */
+  --theme-border-color: #D3D3D3;
+}
+
+/* Base styles using the variables */
+body {
+  background-color: var(--theme-bg-page);
+  color: var(--theme-color-text);
+   font-family: "Inter", "Noto Sans Tamil", sans-serif !important;
+  
+}
 

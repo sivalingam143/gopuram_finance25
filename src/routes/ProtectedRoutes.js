@@ -3,10 +3,14 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import SideBar from "../components/sidebar/SideBar";
 
-const ProtectedRoute = ({ loggedIn, onLogout }) => {
+const ProtectedRoute = ({ loggedIn, onLogout, currentTheme, toggleTheme })=>{
   return loggedIn ? (
     <>
-      <SideBar onLogout={onLogout} />
+      <SideBar 
+    onLogout={onLogout} 
+    currentTheme={currentTheme} // Pass state
+    toggleTheme={toggleTheme}   // Pass function
+/>
       <div className="main-content">
         <div className="main">
           <Outlet />

@@ -1,6 +1,4 @@
-
-
-import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
 import { FaMagnifyingGlass } from "react-icons/fa6";
@@ -9,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
+import { useLanguage } from "../../components/LanguageContext";
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
@@ -18,6 +17,7 @@ import { MdOutlineDelete } from "react-icons/md";
 
 const Action = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();  
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ const Action = () => {
       },
     });
   };
-const handleActionDeleteClick = async (actionId) => {
+  const handleActionDeleteClick = async (actionId) => {
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/action.php`, {
@@ -79,7 +79,11 @@ const handleActionDeleteClick = async (actionId) => {
       const responseData = await response.json();
       setLoading(false);
       if (responseData.head.code === 200) {
-        setUserData(responseData.body.action || []);
+        // Handle case where body.action might be a single object
+        const actionArray = Array.isArray(responseData.body.action)
+          ? responseData.body.action
+          : (responseData.body.action ? [responseData.body.action] : []);
+        setUserData(actionArray);
       } else {
         throw new Error(responseData.head.msg);
       }
@@ -92,30 +96,29 @@ const handleActionDeleteClick = async (actionId) => {
     fetchData();
   }, [searchText]);
 
-
-  // 3. Define Material React Table Columns
+  // 3. Define Material React Table Columns 
   const columns = useMemo(
     () => [
       {
         accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
       },
       {
         accessorKey: "receipt_no",
-        header: "Customer No",
+        header: t("Customer No"),
         size: 50,
       },
-       {
+      {
         accessorKey: "name",
-        header: "Customer Name",
+        header: t("Customer Name"),
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -128,7 +131,7 @@ const handleActionDeleteClick = async (actionId) => {
             }}
           >
             {/* Edit Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title={t("Edit")}>
               <IconButton
                 onClick={() => handleActionEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -138,7 +141,7 @@ const handleActionDeleteClick = async (actionId) => {
             </Tooltip>
 
             {/* Delete Icon */}
-            <Tooltip title="Delete">
+            <Tooltip title={t("Delete")}>
               <IconButton
                 onClick={() =>
                   handleActionDeleteClick(row.original.action_id)
@@ -152,7 +155,7 @@ const handleActionDeleteClick = async (actionId) => {
         ),
       },
     ],
-    []
+    [t]
   );
 
   // 4. Update JSX to render MaterialReactTable
@@ -160,38 +163,32 @@ const handleActionDeleteClick = async (actionId) => {
     <div>
       <Container fluid>
         <Row>
-          {/* ... (Navigation and Add Group button remain the same) ... */}
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Action</span>
+              {/* 🌐 Translate Page Title */}
+              <span className="nav-list">{t("Action")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Action</>}
+              // 🌐 Translate Button Label
+              label={<>{t("Add Action")}</>}
               onClick={() => navigate("/console/master/action/create")}
             ></ClickButton>
           </Col>
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
+          {/* ... (Search Bar - Left Commented Out as per original code) ... */}
+          {/* If the search bar is uncommented, the labels/placeholders should be translated:
+          <TextInputForm
+            placeholder={t("Search Action")}
+            prefix_icon={<FaMagnifyingGlass />}
+            onChange={(e) => setSearchText(e.target.value)}
+            labelname={t("Search")}
           >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
+          </TextInputForm> */}
+
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
-          {/* 5. Replace TableUI with MaterialReactTable */}
+          {/* 5. MaterialReactTable */}
           {loading ? (
             <LoadingOverlay isLoading={loading} />
           ) : (
@@ -202,7 +199,7 @@ const handleActionDeleteClick = async (actionId) => {
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                    enableColumnFilters={false} 
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}
@@ -232,4 +229,3 @@ const handleActionDeleteClick = async (actionId) => {
 };
 
 export default Action;
-

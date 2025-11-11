@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import { Col, Container, Row, Alert, Modal } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
-import { ClickButton,Delete } from "../../components/ClickButton";
+import { ClickButton, Delete } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
+// ✅ Import the useLanguage hook
+import { useLanguage } from "../../components/LanguageContext";
 
 const CompanyCreation = () => {
+  // ✅ Use the translation hook
+  const { t } = useLanguage();
+
   const location = useLocation();
   const { type, rowData } = location.state || {};
   console.log("rowData", rowData);
@@ -162,7 +167,8 @@ const CompanyCreation = () => {
       }
     } catch (error) {
       console.error("Error submitting company:", error.message);
-      toast.error("An error occurred. Please try again.", {
+      // ✅ Translate static error message
+      toast.error(t("An error occurred. Please try again."), {
         position: "top-center",
         autoClose: 2000,
         hideProgressBar: false,
@@ -184,36 +190,7 @@ const CompanyCreation = () => {
     //   label: "22 Carat Price",
     //   placeholder: "22 Carat Price",
     // },
-    // {
-    //   key: "21_carat_price",
-    //   label: "21 Carat Price",
-    //   placeholder: "21 Carat Price",
-    // },
-    // {
-    //   key: "20_carat_price",
-    //   label: "20 Carat Price",
-    //   placeholder: "20 Carat Price",
-    // },
-    // {
-    //   key: "19_carat_price",
-    //   label: "19 Carat Price",
-    //   placeholder: "19 Carat Price",
-    // },
-    // {
-    //   key: "18_carat_price",
-    //   label: "18 Carat Price",
-    //   placeholder: "18 Carat Price",
-    // },
-    // {
-    //   key: "17_carat_price",
-    //   label: "17 Carat Price",
-    //   placeholder: "17 Carat Price",
-    // },
-    // {
-    //   key: "16_carat_price",
-    //   label: "16 Carat Price",
-    //   placeholder: "16 Carat Price",
-    // },
+    // (Rest of the fields are commented out)
   ];
 
   return (
@@ -222,25 +199,27 @@ const CompanyCreation = () => {
         <Row className="regular">
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
-              pagetitle={`Company ${
-                type === "view" ? "view" : type === "edit" ? "Edit" : "Creation"
+              // ✅ Translate PageNav title
+              pagetitle={`${t("Company")} ${
+                type === "view" ? t("view") : type === "edit" ? t("Edit") : t("Creation")
               }`}
             ></PageNav>
           </Col>
 
+          {/* Company Name Field */}
           <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
-                placeholder={"Company Name"}
-                labelname={"Company Name"}
+                placeholder={t("Company Name")} // ✅
+                labelname={t("Company Name")} // ✅
                 name="company_name"
                 value={formData.company_name}
                 onChange={(e) => handleChange(e, "company_name")}
               ></TextInputForm>
             ) : (
               <TextInputForm
-                placeholder={"Company Name"}
-                labelname={"Company Name"}
+                placeholder={t("Company Name")} // ✅
+                labelname={t("Company Name")} // ✅
                 name="company_name"
                 value={
                   type === "view" ? rowData.company_name : formData.company_name
@@ -249,21 +228,22 @@ const CompanyCreation = () => {
               ></TextInputForm>
             )}
           </Col>
+          {/* Mobile Number Field */}
           <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
-                placeholder={"Mobile Number"}
+                placeholder={t("Mobile Number")} // ✅
                 type={"text"}
-                labelname={"Mobile Number"}
+                labelname={t("Mobile Number")} // ✅
                 name="mobile_number"
                 value={formData.mobile_number}
                 onChange={(e) => handleChange(e, "mobile_number")}
               ></TextInputForm>
             ) : (
               <TextInputForm
-                placeholder={"Mobile Number"}
+                placeholder={t("Mobile Number")} // ✅
                 type={"text"}
-                labelname={"Mobile Number"}
+                labelname={t("Mobile Number")} // ✅
                 name="mobile_number"
                 value={
                   type === "view"
@@ -274,57 +254,60 @@ const CompanyCreation = () => {
               ></TextInputForm>
             )}
           </Col>
+          {/* License Number Field (gst) */}
           <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
-                placeholder={"License number"}
-                labelname={"License number"}
+                placeholder={t("License number")} // ✅
+                labelname={t("License number")} // ✅
                 name="gst"
                 value={formData.gst}
                 onChange={(e) => handleChange(e, "gst")}
               ></TextInputForm>
             ) : (
               <TextInputForm
-                placeholder={"License number"}
-                labelname={"License number"}
+                placeholder={t("License number")} // ✅
+                labelname={t("License number")} // ✅
                 name="gst"
                 value={type === "view" ? rowData.gst : formData.gst}
                 onChange={(e) => handleChange(e, "gst")}
               ></TextInputForm>
             )}
           </Col>
+          {/* Place Field */}
           <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
-                placeholder={"Place"}
-                labelname={"Place"}
+                placeholder={t("Place")} // ✅
+                labelname={t("Place")} // ✅
                 name="place"
                 value={formData.place}
                 onChange={(e) => handleChange(e, "place")}
               ></TextInputForm>
             ) : (
               <TextInputForm
-                placeholder={"Place"}
-                labelname={"Place"}
+                placeholder={t("Place")} // ✅
+                labelname={t("Place")} // ✅
                 name="place"
                 value={type === "view" ? rowData.place : formData.place}
                 onChange={(e) => handleChange(e, "place")}
               ></TextInputForm>
             )}
           </Col>
+          {/* Pincode Field */}
           <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
-                placeholder={"Pincode"}
-                labelname={"Pincode"}
+                placeholder={t("Pincode")} // ✅
+                labelname={t("Pincode")} // ✅
                 name="pincode"
                 value={formData.pincode}
                 onChange={(e) => handleChange(e, "pincode")}
               ></TextInputForm>
             ) : (
               <TextInputForm
-                placeholder={"Pincode"}
-                labelname={"Pincode"}
+                placeholder={t("Pincode")} // ✅
+                labelname={t("Pincode")} // ✅
                 name="pincode"
                 value={type === "view" ? rowData.pincode : formData.pincode}
                 onChange={(e) => handleChange(e, "pincode")}
@@ -333,15 +316,15 @@ const CompanyCreation = () => {
           </Col>
 
           <Col lg="12" className="py-3">
-            <h5>Jewel Price Details</h5>
+            <h5>{t("Jewel Price Details")}</h5> {/* ✅ */}
           </Col>
 
           {priceFields.map((field) => (
             <Col lg="3" md="6" xs="12" key={field.key} className="py-3">
               {type === "view" ? (
                 <TextInputForm
-                  placeholder={field.placeholder}
-                  labelname={field.label}
+                  placeholder={t(field.placeholder)} // ✅
+                  labelname={t(field.label)} // ✅
                   name={field.key}
                   type="text"
                   value={getParsedValue(field.key)}
@@ -349,8 +332,8 @@ const CompanyCreation = () => {
                 />
               ) : (
                 <TextInputForm
-                  placeholder={field.placeholder}
-                  labelname={field.label}
+                  placeholder={t(field.placeholder)} // ✅
+                  labelname={t(field.label)} // ✅
                   name={field.key}
                   type="text"
                   value={formData[field.key]}
@@ -369,7 +352,7 @@ const CompanyCreation = () => {
             <div className="text-center">
               {type === "view" ? (
                 <ClickButton
-                  label={<>back</>}
+                  label={<>{t("back")}</>} // ✅
                   onClick={() => navigate("/console/company")}
                 ></ClickButton>
               ) : (
@@ -388,14 +371,15 @@ const CompanyCreation = () => {
                   />
                   <span className="mx-2">
                     <ClickButton
-                      label={<>{type === "edit" ? "Update" : "Submit"}</>}
+                      // ✅ Translate button label
+                      label={<>{type === "edit" ? t("Update") : t("Submit")}</>}
                       onClick={handleSubmit}
                       disabled={loading}
                     ></ClickButton>
                   </span>
                   <span className="mx-2">
                     <Delete
-                      label={<>Cancel</>}
+                      label={<>{t("Cancel")}</>} // ✅
                       onClick={() => navigate("/console/company")}
                     ></Delete>
                   </span>
@@ -420,15 +404,17 @@ const CompanyCreation = () => {
             src={require("../../components/sidebar/images/output-onlinegiftools.gif")}
             alt="Success GIF"
           />
-          <p>User saved successfully!</p>
+          {/* ✅ Translate modal text */}
+          <p>{t("User saved successfully!")}</p>
         </Modal.Body>
         <Modal.Footer>
           <ClickButton
             variant="secondary"
-            label={<> Close</>}
+            // ✅ Translate modal button
+            label={<> {t("Close")}</>}
             onClick={() => redirectModal()}
           >
-            Close
+            {t("Close")}
           </ClickButton>
         </Modal.Footer>
       </Modal>

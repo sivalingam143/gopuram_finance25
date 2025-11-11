@@ -3,7 +3,9 @@ import Modal from "react-bootstrap/Modal";
 import "../App.css";
 import { TextInputForm } from "../../components/Forms";
 import { ClickButton } from "../../components/ClickButton";
+import { useLanguage } from "../../components/LanguageContext"; 
 const GroupModal = () => {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     Group: "",
@@ -21,31 +23,33 @@ const GroupModal = () => {
     setLoading(true);
     console.log(formData);
     // ... (rest of the handleSubmit logic)
+    setLoading(false);
   };
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   return (
     <div>
-      <ClickButton label={<>Add New</>} onClick={handleShow}>
+      
+      <ClickButton label={<>{t("Add New")}</>} onClick={handleShow}>
         {" "}
       </ClickButton>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header>
-          <Modal.Title>Group Creation</Modal.Title>
+          <Modal.Title>{t("Group Creation")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <TextInputForm
-            placeholder={"Group Name"}
-            labelname={"Group Name"}
+            placeholder={t("Group Name")}
+            labelname={t("Group Name")}
             value={formData.Group}
-            onChange={(e) => handleChange(e, "Unit")}
+            onChange={(e) => handleChange(e, "Group")}
           />
         </Modal.Body>
         <Modal.Footer>
-          <ClickButton label={<>Close</>} onClick={handleClose}></ClickButton>
+          <ClickButton label={<>{t("Close")}</>} onClick={handleClose}></ClickButton>
           <ClickButton
-            label={<> Submit</>}
+            label={<> {t("Submit")}</>}
             onClick={handleSubmit}
             disabled={loading}
           ></ClickButton>

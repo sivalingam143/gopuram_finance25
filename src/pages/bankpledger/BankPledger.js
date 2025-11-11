@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
 import { FaMagnifyingGlass } from "react-icons/fa6";
@@ -11,11 +10,13 @@ import LoadingOverlay from "../../components/LoadingOverlay";
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import { useLanguage } from '../../components/LanguageContext'; 
 
 const BankPledger = () => {
   const navigate = useNavigate();
-   const [loanSearchText, setLoanSearchText] = useState("");
+  const { t } = useLanguage(); 
+  const [loanSearchText, setLoanSearchText] = useState("");
   const [allGroupedData, setAllGroupedData] = useState([]);
   const [groupedData, setGroupedData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -81,19 +82,19 @@ const updateGroupedData = (data) => {
     () => [
       {
         accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+        header: t("S.No"), // ✅ Translated
         size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
       },
       {
-        accessorKey: "pawn_loan_no",
-        header: "Pawn Loan No.",
+        accessorKey: "bank_loan_no",
+        header: t("Pawn Loan No."), 
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -105,21 +106,20 @@ const updateGroupedData = (data) => {
               gap: "2 rem",
             }}
           >
-            {/*  View Icon */}
-           <Tooltip title="Customer Details">
+            {/* View Icon */}
+            <Tooltip title={t("Customer Details")}> 
               <IconButton
-                onClick={() => handleViewDetails(row.original)}
+                onClick={() => handleViewDetails(row.original, row.original.pawn_loan_no)} // Pass loanNo or equivalent if needed in details page
                 sx={{ padding: 0 }}
               >
                 <VisibilityIcon/>
               </IconButton>
-                 </Tooltip>
-            
+            </Tooltip>
           </Box>
         ),
       },
     ],
-    []
+    [t] 
   );
 
   // 4. Update JSX to render MaterialReactTable
@@ -127,35 +127,18 @@ const updateGroupedData = (data) => {
     <div>
       <Container fluid>
         <Row>
-         
+          
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Bank Pledger</span>
+              <span class="nav-list">{t("Bank Pledger")}</span> 
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Bank Pledger</>}
-              onClick={() => navigate("/console/master/group/create")}
+              label={<>{t("Add Bank Pledger")}</>} 
+              onClick={() => navigate("/console/master/bankpledger/create")}
             ></ClickButton>
           </Col>
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
           {/* 5. Replace TableUI with MaterialReactTable */}
@@ -165,13 +148,11 @@ const updateGroupedData = (data) => {
             <>
               <Col lg="12" md="12" xs="12" className="px-0">
                 <div className="py-1">
-                  {/* Note: MobileView rendering is typically replaced by MRT's built-in responsiveness */}
-
                   <MaterialReactTable
                     columns={columns}
                     data={groupedData}
                     enableColumnActions={false}
-                   enableColumnFilters={false}
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}

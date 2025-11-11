@@ -24,7 +24,11 @@ import LoadingOverlay from "../components/LoadingOverlay";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import SmsIcon from "@mui/icons-material/Sms";
 import { motion } from "framer-motion";
+import { useTheme } from "@mui/material/styles";
+import { useLanguage } from "../components/LanguageContext"; // Adjust path
 const DashBoard = () => {
+  const { t } = useLanguage();
+  const theme = useTheme();
   const [userecoveryData, setUserrecoveryData] = useState([]);
   const [jewelpawnData, setUserjewlpawnData] = useState([]);
   const [customerData, setcustomerData] = useState([]);
@@ -618,25 +622,25 @@ const DashBoard = () => {
   const columns = [
     {
       accessorKey: "pawnjewelry_date",
-      header: "Date",
+      header: t("Date"),
       Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
     },
-    { accessorKey: "receipt_no", header: "Loan Number" },
-    { accessorKey: "customer_no", header: "Customer Number" },
-    { accessorKey: "name", header: "Customer Name" },
-    { accessorKey: "place", header: "Location" },
-    { accessorKey: "mobile_number", header: "Mobile Number" },
+    { accessorKey: "receipt_no", header: t("Loan Number") },
+    { accessorKey: "customer_no", header: t("Customer Number") },
+    { accessorKey: "name", header: t("Customer Name") },
+    { accessorKey: "place", header: t("Location") },
+    { accessorKey: "mobile_number", header: t("Mobile Number") },
     {
       accessorKey: "original_amount",
-      header: "Principal Amount (₹)",
+      header: t("Principal Amount (₹)"),
       size: 200,
       Cell: ({ cell }) =>
         `₹${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
     },
-    { accessorKey: "interest_rate", header: "Interest Rate (%)" },
+    { accessorKey: "interest_rate", header: t("Interest Rate (%)") },
     {
       accessorKey: "jewel_product",
-      header: "Pawned Items",
+      header: t("Pawned Items"),
       Cell: ({ cell }) => {
         try {
           const jewels = Array.isArray(cell.getValue())
@@ -650,7 +654,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "total_weight",
-      header: "Jewelry Weight (g)",
+      header: t("Jewelry Weight (g)"),
       Cell: ({ row }) => {
         try {
           const jewels = Array.isArray(row.original.jewel_product)
@@ -668,7 +672,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "net_weight",
-      header: "Net Weight (g)",
+      header: t("Net Weight (g)"),
       Cell: ({ row }) => {
         try {
           const jewels = Array.isArray(row.original.jewel_product)
@@ -686,7 +690,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "jewel_value",
-      header: "Jewelry Value (Pawned)",
+      header: t("Jewelry Value (Pawned)"),
       size: 300,
       Cell: ({ row }) => {
         const jewelList = Array.isArray(row.original.jewel_product)
@@ -707,7 +711,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "interest_payment_period",
-      header: "Interest Outstanding",
+      header: t("Interest Outstanding"),
       muiTableHeadCellProps: {
         align: "center", // centers the header text horizontally
       },
@@ -734,7 +738,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "interest_paid",
-      header: "Interest Paid (₹)",
+      header: t("Interest Paid (₹)"),
       Cell: ({ row }) => {
         const months = row.original.interest_payment_periods || "N/A";
         const total = parseFloat(row.original.total_interest_income || 0);
@@ -756,7 +760,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "total_appraisal",
-      header: "Total Appraisal (₹)",
+      header: t("Total Appraisal (₹)"),
       muiTableBodyCellProps: {
         align: "center", // aligns all cell values to the right
       },
@@ -769,7 +773,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("Status"),
       Cell: ({ cell }) => {
         const value = cell.getValue();
         const isRecovered = value === "நகை மீட்கபட்டது";
@@ -787,7 +791,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "overdue_months",
-      header: "Interest Overdue (Months)",
+      header: t("Interest Overdue (Months)"),
       size: 300,
       muiTableHeadCellProps: {
         align: "center", // centers the header text horizontally
@@ -802,7 +806,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "alert",
-      header: "Alert",
+      header: t("Alert"),
       muiTableHeadCellProps: {
         align: "center", // centers the header text horizontally
       },
@@ -871,7 +875,7 @@ const DashBoard = () => {
     {
       accessorFn: (_, index) => index + 1,
       id: "sno",
-      header: "S.No",
+      header: t("S.No"),
       size: 30,
       muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
@@ -885,7 +889,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "pawnjewelry_date",
-      header: "Loan Date",
+      header: t("Loan Date"),
       muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
@@ -894,21 +898,21 @@ const DashBoard = () => {
     },
     {
       accessorKey: "receipt_no",
-      header: "Loan Number",
+      header: t("Loan Number"),
       muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
     },
     {
       accessorKey: "name",
-      header: "Customer Name",
+      header: t("Customer Name"),
       muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
     },
     {
       accessorKey: "jewel_product",
-      header: "Ornaments",
+      header: t("Ornaments"),
       muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
@@ -916,7 +920,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "notice_date",
-      header: "Notice Date",
+      header: t("Notice Date"),
       muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
@@ -934,7 +938,7 @@ const DashBoard = () => {
     },
     {
       accessorKey: "notice_no",
-      header: "Notice No",
+      header: t("Notice No"),
       muiTableHeadCellProps: {
         align: "left", // centers the header text horizontally
       },
@@ -962,17 +966,17 @@ const DashBoard = () => {
     {
       accessorFn: (_, index) => index + 1,
       id: "sno",
-      header: "S.No",
+      header: t("S.No"),
       size: 50,
       Cell: ({ cell }) => (
         <strong style={{ fontWeight: 600 }}>{cell.getValue()}</strong>
       ),
     },
-    { accessorKey: "receipt_no", header: "Loan Number" },
-    { accessorKey: "name", header: "Customer Name" },
+    { accessorKey: "receipt_no", header: t("Loan Number") },
+    { accessorKey: "name", header: t("Customer Name") },
     {
       accessorKey: "jewel_product",
-      header: "Ornaments",
+      header: t("Ornaments"),
       Cell: ({ cell }) =>
         Array.isArray(cell.getValue())
           ? cell
@@ -983,20 +987,20 @@ const DashBoard = () => {
     },
     {
       accessorKey: "original_amount",
-      header: "Loan Amount (₹)",
+      header: t("Loan Amount (₹)"),
       Cell: ({ cell }) =>
         `₹${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
     },
     {
       accessorKey: "action_date",
-      header: "Action Date",
+      header: t("Action Date"),
       Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
     },
   ];
   const historyColumns = [
     {
       accessorKey: "created_at",
-      header: "Date",
+      header: t("Date"),
       Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY HH:mm"),
     },
     {
@@ -1018,19 +1022,19 @@ const DashBoard = () => {
         return "N/A";
       },
       id: "receipt_no_combined",
-      header: "Receipt No",
+      header: t("Receipt No"),
     },
     {
       accessorKey: "old_value",
-      header: "Old Value",
+      header: t("Old Value"),
       Cell: ({ cell }) => getValueDisplay(cell.getValue()),
     },
     {
       accessorKey: "new_value",
-      header: "New Value",
+      header: t("New Value"),
       Cell: ({ cell }) => getValueDisplay(cell.getValue()),
     },
-    { accessorKey: "remarks", header: "Remarks" },
+    { accessorKey: "remarks", header: t("Remarks") },
   ];
   return (
     <>
@@ -1040,7 +1044,7 @@ const DashBoard = () => {
           <Row className="mb-3 justify-content-center">
             <Col lg={6} md={8} xs={12} className="text-center">
               <button className="jewel-price-btn">
-                Today Jewel Rate = ₹
+                {t("Today Jewel Rate")} = ₹
                 {(jewelPrices.jewel_price || 0).toLocaleString("en-IN")}
               </button>
             </Col>
@@ -1048,26 +1052,26 @@ const DashBoard = () => {
           <Row className="mb-4 justify-content-center">
             <Col lg={12} md={12} xs={12} className="text-center">
               <div className="marquee-container">
-                <div className="marquee-text">{marqueeText}</div>
+                <div className="marquee-text">{t(marqueeText)}</div>
               </div>
             </Col>
           </Row>
           <Row className="mt-3 justify-content-center">
             {[
               {
-                title: "Customer",
+                title: t("Customer"),
                 value: customerData.length,
                 color: "#009688",
                 icon: <MdOutlinePerson size={40} />,
               },
               {
-                title: "Jewelry Pawn",
+                title: t("Jewelry Pawn"),
                 value: jewelpawnData.length,
                 color: "#03A9F4",
                 icon: <AiFillGolden size={40} />,
               },
               {
-                title: "Jewelry Recovery",
+                title: t("Jewelry Recovery"),
                 value: userecoveryData.length,
                 color: "#4CAF50",
                 icon: <RiDeviceRecoverLine size={40} />,
@@ -1142,20 +1146,21 @@ const DashBoard = () => {
           </Row> */}
           <Row className="mt-4">
             <Col lg="12">
-              <h5 className="mb-3"> 📌 Jewelry Pawn Details</h5>
+              <h5 className="mb-3"> 📌 {t("Jewelry Pawn Details")}</h5>
               <Row className="mb-3">
                 <Col lg="3" md="6" xs="12" className="mb-2">
                   <Form.Control
                     type="text"
-                    placeholder="Mobile number, pawn number or customer name"
-                    value={searchTerm}
+                    placeholder={t(
+                      "Mobile number, pawn number or customer name"
+                    )}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </Col>
                 <Col lg="3" md="6" xs="12" className="mb-2">
                   <Form.Control
                     type="text"
-                    placeholder="Place"
+                    placeholder={t("Place")}
                     value={placeSearchTerm}
                     onChange={(e) => setPlaceSearchTerm(e.target.value)}
                   />
@@ -1172,7 +1177,7 @@ const DashBoard = () => {
                       },
                     }}
                   >
-                    Clear
+                   {t("Remove")}
                   </Button>
                 </Col>
               </Row>
@@ -1245,25 +1250,27 @@ const DashBoard = () => {
                             color: "#777",
                           }}
                         >
-                          No Bank Pledge Details
+                          {t("No Bank Pledge Details")}
                         </div>
                       );
                     }
                     return (
                       <div style={{ padding: 18 }}>
-                        <h6 style={{ marginBottom: 8 }}>Bank Pledge Details</h6>
+                        <h6 style={{ marginBottom: 8 }}>
+                          {t("Bank Pledge Details")}
+                        </h6>
                         <table className="table table-sm">
                           <thead className="table-dark">
                             <tr>
-                              <th>Pledge Date</th>
-                              <th>Bank Loan No</th>
-                              <th>Assessor</th>
-                              <th>Bank Name</th>
-                              <th>Pawn Value</th>
-                              <th>Interest</th>
-                              <th>Due Date</th>
-                              <th>Closing Date</th>
-                              <th>Closing Amount</th>
+                              <th>{t("Pledge Date")}</th>
+                              <th>{t("Bank Loan No")}</th>
+                              <th>{t("Assessor")}</th>
+                              <th>{t("Bank Name")}</th>
+                              <th>{t("Pawn Value")}</th>
+                              <th>{t("Interest")}</th>
+                              <th>{t("Due Date")}</th>
+                              <th>{t("Closing Date")}</th>
+                              <th>{t("Closing Amount")}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1588,12 +1595,12 @@ const DashBoard = () => {
               </div>
               <Row className="mt-5">
                 <Col lg="12">
-                  <h5 className="mb-3">📌 Notice Alert Summary</h5>
+                  <h5 className="mb-3">📌 {t("Notice Alert Summary")}</h5>
                   <Row className="mb-3">
                     <Col lg="3" md="6" xs="12" className="mb-2">
                       <Form.Control
                         type="text"
-                        placeholder="Search by Loan Number, Customer Name, or Mobile Number"
+                        placeholder={t("Search by Loan Number, Customer Name, or Mobile Number")}
                         value={noticeSearchTerm}
                         onChange={(e) => setNoticeSearchTerm(e.target.value)}
                       />
@@ -1610,11 +1617,14 @@ const DashBoard = () => {
                           },
                         }}
                       >
-                        Clear
+                        {t("Remove")}
                       </Button>
                     </Col>
                   </Row>
-                  <div className="notice-table-wrapper shadow-sm rounded border p-3">
+                  <div
+                    className="notice-table-wrapper shadow-sm rounded border p-3"
+                    style={{ backgroundColor: "#ffffff" }}
+                  >
                     <MaterialReactTable
                       columns={noticeColumns}
                       data={handleNoticeSearch()}
@@ -1640,6 +1650,7 @@ const DashBoard = () => {
                         sx: {
                           borderRadius: "8px",
                           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                          backgroundColor: "#ffffff", // <-- FORCE WHITE HERE TOO
                         },
                       }}
                       renderEmptyRowsFallback={() => (
@@ -1650,7 +1661,7 @@ const DashBoard = () => {
                             color: "#777",
                           }}
                         >
-                          No notice alerts found at this time.
+                         {t("No notice alerts found at this time")}.
                         </div>
                       )}
                     />
@@ -1659,12 +1670,12 @@ const DashBoard = () => {
               </Row>
               <Row className="mt-5">
                 <Col lg="12">
-                  <h5 className="mb-3">📌 Action Alert Summary</h5>
+                  <h5 className="mb-3">📌 {t("Action Alert Summary")}</h5>
                   <Row className="mb-3">
                     <Col lg="3" md="6" xs="12" className="mb-2">
                       <Form.Control
                         type="text"
-                        placeholder="Search by Loan Number, Customer Name, or Mobile Number"
+                        placeholder={t("Search by Loan Number, Customer Name, or Mobile Number")}
                         value={actionSearchTerm}
                         onChange={(e) => setActionSearchTerm(e.target.value)}
                       />
@@ -1681,7 +1692,7 @@ const DashBoard = () => {
                           },
                         }}
                       >
-                        Clear
+                       {t("Remove")}
                       </Button>
                     </Col>
                   </Row>
@@ -1722,7 +1733,7 @@ const DashBoard = () => {
                             color: "#777",
                           }}
                         >
-                          No notice alerts found at this time.
+                         {t("No notice alerts found at this time")}.
                         </div>
                       )}
                     />
@@ -1731,12 +1742,12 @@ const DashBoard = () => {
               </Row>
               <Row className="mt-5">
                 <Col lg="12">
-                  <h5 className="mb-3">📌 Customer History</h5>
+                  <h5 className="mb-3">📌 {t("Customer History")}</h5>
                   <Row className="mb-3">
                     <Col lg={2} className="mb-2">
                       <Form.Control
                         type="text"
-                        placeholder="Customer Number"
+                        placeholder={t("Customer Number")}
                         value={selectedCustomerNo}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -1785,7 +1796,7 @@ const DashBoard = () => {
                           },
                         }}
                       >
-                        Search
+                       {t("Search")}
                       </Button>
                       <Button
                         variant="contained"
@@ -1796,7 +1807,7 @@ const DashBoard = () => {
                           "&:hover": { backgroundColor: "#b02a37 !important" },
                         }}
                       >
-                        Clear
+                       {t("Remove")}
                       </Button>
                     </Col>
                     {/* <Col lg={2} className="mb-2">
@@ -1870,7 +1881,7 @@ const DashBoard = () => {
                             color: "#777",
                           }}
                         >
-                          No notice alerts found at this time.
+                         {t("No notice alerts found at this time")}.
                         </div>
                       )}
                     />

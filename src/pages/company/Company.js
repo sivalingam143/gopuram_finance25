@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
@@ -10,11 +10,17 @@ import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
+// ✅ NEW: Import Language Hook
+import { useLanguage } from "../../components/LanguageContext";
+
 const Company = () => {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // ✅ NEW: Destructure the translation function
+  const { t } = useLanguage();
 
   // 1. Handlers for Edit Actions
   const handleCompanyEditClick = (rowData) => {
@@ -23,15 +29,13 @@ const Company = () => {
     navigate("/console/company/create", {
       state: {
         type: "edit",
-
         rowData: rowData,
       },
     });
   };
-  
 
   // 2. Data Fetching Logic (Unchanged)
-   useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -49,7 +53,6 @@ const Company = () => {
         console.log(responseData);
 
         if (responseData.head.code === 200) {
-          //setUserData(responseData.body.company);
           setUserData(
             Array.isArray(responseData.body.company)
               ? responseData.body.company
@@ -68,35 +71,34 @@ const Company = () => {
     fetchData();
   }, [searchText]);
 
-
-  // 3. Define Material React Table Columns
+  // 3. Define Material React Table Columns (UPDATED with t)
   const columns = useMemo(
     () => [
       {
         accessorFn: (originalRow) => originalRow.id,
-        header: "No",
+        header: t("S.No"), 
         size: 50,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "company_name",
-        header: "Company Name",
+        header: t("Company Name"), 
         size: 50,
       },
-       {
+      {
         accessorKey: "mobile_number",
-        header: "Mobile Number",
+        header: t("Mobile Number"), 
         size: 50,
       },
-       {
+      {
         accessorKey: "place",
-        header: "Location",
+        header: t("Location"), 
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"), 
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -109,7 +111,7 @@ const Company = () => {
             }}
           >
             {/* Edit Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title={t("Edit")}> 
               <IconButton
                 onClick={() => handleCompanyEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -121,7 +123,7 @@ const Company = () => {
         ),
       },
     ],
-    []
+    [t] 
   );
 
   // 4. Update JSX to render MaterialReactTable
@@ -129,35 +131,12 @@ const Company = () => {
     <div>
       <Container fluid>
         <Row>
-          {/* ... (Navigation and Add Group button remain the same) ... */}
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Company</span>
+              <span class="nav-list">{t("Company")}</span> 
             </div>
           </Col>
-          {/* <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-            <ClickButton
-              label={<>Add Group</>}
-              onClick={() => navigate("/console/master/group/create")}
-            ></ClickButton>
-          </Col> */}
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
+         
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
           {/* 5. Replace TableUI with MaterialReactTable */}
@@ -167,28 +146,24 @@ const Company = () => {
             <>
               <Col lg="12" md="12" xs="12" className="px-0">
                 <div className="py-1">
-                  {/* Note: MobileView rendering is typically replaced by MRT's built-in responsiveness */}
-
                   <MaterialReactTable
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                   enableColumnFilters={false}
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}
                     muiTablePaperProps={{
                       sx: {
                         borderRadius: "5px",
-                        // Keep the existing style property for the table container
                         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                        //textAlign: "center",
                       },
                     }}
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa", // Light gray header background
+                        backgroundColor: "#f8f9fa",
                       },
                     }}
                   />
@@ -204,7 +179,3 @@ const Company = () => {
 };
 
 export default Company;
-
-
-
-

@@ -7,8 +7,18 @@ import sidebarConfig from "./menuItems";
 import { FiUser } from "react-icons/fi";
 import { ClickButton } from "../ClickButton";
 import { LuDot } from "react-icons/lu";
+import { useLanguage } from '../LanguageContext';
+// 💡 New Imports for the Toggle Icon
+import { IconButton } from "@mui/material"; 
+import SettingsIcon from '@mui/icons-material/Settings';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+// 🎚️ Theme/Language Toggle Icons
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 
-const SideBar = ({ onLogout }) => {
+const SideBar = ({ onLogout, currentTheme, toggleTheme }) => { 
+// ----------------------------------------------------
   const [user, setUser] = useState({});
   const [openMenu, setOpenMenu] = useState(
     JSON.parse(localStorage.getItem("openMenu")) || {}
@@ -16,6 +26,67 @@ const SideBar = ({ onLogout }) => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+ const { currentLanguage, toggleLanguage, t, cacheVersion } = useLanguage();
+  // Define the missing state variables
+  const [translatedMenu, setTranslatedMenu] = useState(sidebarConfig); // The config is imported at the top
+  const [staticT, setStaticT] = useState({ 
+    language: "Language", 
+    languageTamil: "தமிழ்", 
+    languageEnglish: "English" 
+  });
+
+  useEffect(() => {
+    const translateMenu = async () => {
+        const configToTranslate = await Promise.all(sidebarConfig.map(async item => {
+            // Translate main item text
+            const translatedItem = {
+                ...item,
+                text: await t(item.text), 
+            };
+            
+            // Translate sub-menu items if they exist
+            if (item.subMenu) {
+                translatedItem.subMenu = await Promise.all(item.subMenu.map(async subItem => ({
+                    ...subItem,
+                    text: await t(subItem.text), 
+                })));
+            }
+            return translatedItem;
+        }));
+        
+        // Translate static texts in the menu
+        const [langText, langTamil, langEnglish] = await Promise.all([
+            t("Language"),
+            t("தமிழ்"),
+            t("English")
+        ]);
+
+        setTranslatedMenu(configToTranslate);
+        setStaticT({
+            language: langText,
+            languageTamil: langTamil,
+            languageEnglish: langEnglish
+        });
+    }
+
+    // Since t() now returns English first and triggers re-render, 
+    // for complex structures like the menu, we can switch to an 
+    // async approach in useEffect for smoother transition.
+    translateMenu();
+    
+    // This runs on language change AND when a new translation is added to the cache
+  }, [currentLanguage, cacheVersion]); // 👈 CRITICAL FIX: DEPENDS ON cacheVersion
+
+  // ✅ EXISTING FUNCTIONS to handle Menu
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
   const handleMenuClick = (menuIndex) => {
     setOpenMenu((prevOpenMenu) => {
       const newOpenMenu = {};
@@ -33,7 +104,12 @@ const SideBar = ({ onLogout }) => {
       setUser(JSON.parse(storedUser));
     }
     localStorage.setItem("openMenu", JSON.stringify(openMenu));
-  }, [openMenu]);
+    
+    // 💡 Add language class handling here if needed for CSS translation
+    document.body.classList.remove('lang-en', 'lang-ta');
+    document.body.classList.add(`lang-${currentLanguage.toLowerCase()}`);
+
+  }, [openMenu, currentLanguage]);
 
   const navigate = useNavigate();
 
@@ -52,9 +128,52 @@ const SideBar = ({ onLogout }) => {
   const handleShowLogoutModal = () => setShowLogoutModal(true);
   const handleCloseLogoutModal = () => setShowLogoutModal(false);
 
+  // ----------------------------------------------------
+  // ✅ API TRANSLATE MENU ITEMS LOGIC (Reruns on language change)
+  // ----------------------------------------------------
+  // useEffect(() => {
+  //   const translateMenuItems = async () => {
+  //     // Use original config immediately for EN
+  //     if (currentLanguage === "EN") {
+  //       setTranslatedMenu(sidebarConfig); 
+  //       return;
+  //     }
+
+  //     // 2. If Tamil, perform API calls for dynamic translation
+  //     const newTranslatedMenu = await Promise.all(
+  //       translatedSidebarConfig.map(async (item) => {
+  //         const translatedItem = { ...item };
+          
+  //         // Translate main menu item text using the global t function
+  //         translatedItem.text = await t(item.text);
+
+  //         // Translate sub-menu items if they exist
+  //         if (item.subMenu) {
+  //           translatedItem.subMenu = await Promise.all(
+  //             item.subMenu.map(async (subItem) => ({
+  //               ...subItem,
+  //               text: await t(subItem.text),
+  //             }))
+  //           );
+  //         }
+  //         return translatedItem;
+  //       })
+  //     );
+      
+  //     setTranslatedMenu(newTranslatedMenu);
+  //   };
+
+  //   translateMenuItems();
+    
+  // }, [currentLanguage, t]); // Depends on currentLanguage and the global t function
+  
+  // // Menu configuration to be used for rendering
+  // const menuConfigToRender = translatedMenu || sidebarConfig;
+
   return (
     <>
       <div id="sidebar-wrapper" className={isSidebarOpen ? "wrap-remove" : ""}>
+        {/* ... (Sidebar menu content remains the same) */}
         <div className="list-group regular">
           <ul>
             <li>
@@ -66,7 +185,7 @@ const SideBar = ({ onLogout }) => {
                 />
               </div>
             </li>
-            {sidebarConfig.map((item, index) => (
+            {translatedMenu.map((item, index) => (
               <li key={index}>
                 {item.subMenu ? (
                   <>
@@ -75,7 +194,7 @@ const SideBar = ({ onLogout }) => {
                       onClick={() => handleMenuClick(index)}
                     >
                       <span className="list-icon">{item.icon}</span>
-                      <span className="list-text">{item.text}</span>
+                      <span className="list-text">{item.text}</span> {/* Needs external translation mechanism */}
                       <span
                         className={`list-icon arrow ${
                           openMenu[index] ? "rotate" : ""
@@ -99,31 +218,11 @@ const SideBar = ({ onLogout }) => {
                             >
                               <span className="list-icon">
                                 {subItem.icon ? subItem.icon : <LuDot />}{" "}
-                                {/* ✅ shows custom icon or dot */}
                               </span>
-                              <span className="list-text">{subItem.text}</span>
+                              <span className="list-text">{subItem.text}</span> {/* Needs external translation mechanism */}
                             </NavLink>
                           </li>
                         ))}
-
-                        {/* {item.subMenu.map((subItem, subIndex) => (
-                          <li key={subIndex}>
-                            <NavLink
-                              to={subItem.path}
-                              className="nav-link"
-                              onClick={() => {
-                                if (window.innerWidth <= 768) {
-                                  setIsSidebarOpen(false);
-                                }
-                              }}
-                            >
-                              <span className="list-icon">
-                                <LuDot />
-                              </span>
-                              <span className="list-text">{subItem.text}</span>
-                            </NavLink>
-                          </li>
-                        ))} */}
                       </ul>
                     </Collapse>
                   </>
@@ -138,7 +237,7 @@ const SideBar = ({ onLogout }) => {
                     }}
                   >
                     <span className="list-icon">{item.icon}</span>
-                    <span className="list-text">{item.text}</span>
+                    <span className="list-text">{item.text}</span> {/* Needs external translation mechanism */}
                   </NavLink>
                 )}
               </li>
@@ -146,7 +245,12 @@ const SideBar = ({ onLogout }) => {
           </ul>
         </div>
       </div>
+      
+      {/* ---------------------------------------------------- */}
+      {/* HEADER / NAVBAR SECTION */}
+      {/* ---------------------------------------------------- */}
       <div className="navbar navbar-expand px-lg-4 header">
+        {/* ... (Toggle sidebar buttons remain the same) ... */}
         <div className="d-lg-block d-none">
           <Button
             className="menu-toggle"
@@ -167,15 +271,32 @@ const SideBar = ({ onLogout }) => {
         </div>
         <div className="collapse navbar-collapse" id="navbar-list">
           <ul className="navbar-nav ms-auto">
+            
+           <li className="nav-item mx-3">
+              <IconButton 
+                onClick={handleMenuOpen} // Open the dropdown when clicked
+                color="primary" 
+                title="Settings"
+                sx={{ marginTop: '-10px' }}
+              >
+                {/* Use the Settings icon, size set to large */}
+                <SettingsIcon fontSize="large" /> 
+              </IconButton>
+            </li>
+            
+            {/* Existing User Info */}
             <li className="nav-item mx-3">
               <span className="mx-1">
                 <FiUser />
               </span>
-              <span className="mx-1">{user?.user_name || "Aravind"}</span>
+              <span className="mx-1"style={{ paddingTop: '10px' }}
+              >{user?.user_name || "Aravind"}</span>
             </li>
+            
+            {/* Existing Logout Button */}
             <li className="nav-item mx-3">
               <button onClick={handleShowLogoutModal}>
-                <span className="list-icon">
+                <span className="list-icon" style={{ paddingTop: '10px' }}>
                   <BsBoxArrowRight />
                 </span>
               </button>
@@ -183,6 +304,7 @@ const SideBar = ({ onLogout }) => {
           </ul>
         </div>
       </div>
+      {/* ... (Modal code remains the same) */}
       <Modal
         show={showLogoutModal}
         onHide={handleCloseLogoutModal}
@@ -190,18 +312,85 @@ const SideBar = ({ onLogout }) => {
         backdrop="static"
       >
         <Modal.Header>
-          <Modal.Title>Logout Confirmation</Modal.Title>
+          {/* ✅ TRANSLATED MODAL TITLE */}
+        <Modal.Title>{t("Logout Confirmation")}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to logout?</Modal.Body>
+        {/* ✅ TRANSLATED MODAL BODY */}
+      <Modal.Body>{t("Are you sure you want to logout?")}</Modal.Body>
         <Modal.Footer>
-          <ClickButton label="Cancel" onClick={handleCloseLogoutModal} />
+          {/* ✅ TRANSLATED BUTTON LABELS */}
+         <ClickButton label={t("Cancel")} onClick={handleCloseLogoutModal} />
           <ClickButton
-            label="Logout"
+            label={t("Logout")}
             variant="primary"
             onClick={handleLogout}
           />
         </Modal.Footer>
       </Modal>
+
+      <Menu
+        id="theme-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleMenuClose}
+        // Position the menu below the settings icon
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        {/* ---------------------------------------------------- */}
+        {/* 1. THEME TOGGLE (Uses translated label) */}
+        {/* ---------------------------------------------------- */}
+        <MenuItem 
+          onClick={(e) => e.stopPropagation()} 
+          style={{ cursor: 'default', display: 'flex', justifyContent: 'space-between', minWidth: '150px' }}
+        >
+          {/* ✅ TRANSLATED THEME LABEL */}
+          <span style={{ marginRight: '16px', fontWeight: 'bold' }}>{t("Theme")}:</span>
+          
+          <IconButton 
+            onClick={toggleTheme} 
+            color="primary"
+            title={currentTheme === 'A' ? 'Switch to Theme B' : 'Switch to Theme A'}
+          >
+            {currentTheme === 'B' ? (
+              <ToggleOnIcon fontSize="large" /> 
+            ) : (
+              <ToggleOffIcon fontSize="large" />
+            )}
+          </IconButton>
+        </MenuItem>
+        
+        {/* ---------------------------------------------------- */}
+        {/* 2. ✅ NEW LANGUAGE TOGGLE */}
+        {/* ---------------------------------------------------- */}
+        <MenuItem 
+          onClick={(e) => e.stopPropagation()} 
+          style={{ cursor: 'default', display: 'flex', justifyContent: 'space-between', minWidth: '150px' }}
+        >
+          {/* ✅ TRANSLATED LANGUAGE LABEL */}
+          <span style={{ marginRight: '16px', fontWeight: 'bold' }}>{staticT.language}:</span>
+          
+          <IconButton 
+            onClick={toggleLanguage} 
+            color="primary"
+            title={currentLanguage === 'EN' ? `Switch to Tamil (${t('தமிழ்')})` : `Switch to English (${t('English')})`}
+          >
+            {/* Icon represents the switch being 'on' for Tamil (TA) */}
+            {currentLanguage === 'TA' ? (
+              <ToggleOnIcon fontSize="large" /> 
+            ) : (
+              <ToggleOffIcon fontSize="large" />
+            )}
+          </IconButton>
+        </MenuItem>
+        
+      </Menu>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
@@ -11,20 +11,24 @@ import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
+// 🌐 NEW IMPORT FOR TRANSLATION
+import { useLanguage } from "../../components/LanguageContext";
+
 const Products = () => {
   const navigate = useNavigate();
+  // 🌐 Initialize the translation hook
+  const { t } = useLanguage();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 1. Handlers for Edit and Delete Actions
+  // 1. Handlers for Edit and Delete Actions (Unchanged)
   const handleProductEditClick = (rowData) => {
     console.log("Edit Group3344443:", rowData);
     console.log("Edit Group:", rowData);
     navigate("/console/master/Products/create", {
       state: {
         type: "edit",
-
         rowData: rowData,
       },
     });
@@ -88,10 +92,10 @@ const Products = () => {
 
       if (responseData.head.code === 200) {
         setUserData(responseData.body.product);
-          setLoading(false);
+        setLoading(false);
       } else {
         throw new Error(responseData.head.msg);
-          setLoading(false);
+        setLoading(false);
       }
     } catch (error) {
       setLoading(false);
@@ -103,29 +107,30 @@ const Products = () => {
     fetchData();
   }, [searchText]);
 
-  // 3. Define Material React Table Columns
+  // 3. Define Material React Table Columns - using 't' for translation
   const columns = useMemo(
     () => [
       {
         accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+        header: t("S.No"), // 🌐 Translate
         size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
       },
       {
         accessorKey: "product_eng",
-        header: "Product Name",
+        header: t("Product Name"), // 🌐 Translate
         size: 50,
       },
       {
         accessorKey: "product_tam",
-        header: "பொருட்களின் பெயர் தமிழ்",
+        // 🌐 Translate - changed hardcoded Tamil string to a key for translation
+        header: t("Product Name Tamil"),
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"), // 🌐 Translate
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -138,7 +143,7 @@ const Products = () => {
             }}
           >
             {/* Edit Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title={t("Edit")}>
               <IconButton
                 onClick={() => handleProductEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -148,7 +153,7 @@ const Products = () => {
             </Tooltip>
 
             {/* Delete Icon */}
-            <Tooltip title="Delete">
+            <Tooltip title={t("Delete")}>
               <IconButton
                 onClick={() =>
                   handleProductDeleteClick(row.original.product_id)
@@ -162,7 +167,7 @@ const Products = () => {
         ),
       },
     ],
-    []
+    [t] // ⚠️ IMPORTANT: Add 't' to the dependency array
   );
 
   // 4. Update JSX to render MaterialReactTable
@@ -170,46 +175,28 @@ const Products = () => {
     <div>
       <Container fluid>
         <Row>
-          {/* ... (Navigation and Add Group button remain the same) ... */}
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Products</span>
+              {/* 🌐 Translate Page Title */}
+              <span class="nav-list">{t("Products")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Products</>}
+              // 🌐 Translate Button Label
+              label={<>{t("Add Products")}</>}
               onClick={() => navigate("/console/master/products/create")}
             ></ClickButton>
           </Col>
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
-          {/* 5. Replace TableUI with MaterialReactTable */}
+          {/* 5. MaterialReactTable */}
           {loading ? (
             <LoadingOverlay isLoading={loading} />
           ) : (
             <>
               <Col lg="12" md="12" xs="12" className="px-0">
                 <div className="py-1">
-                  {/* Note: MobileView rendering is typically replaced by MRT's built-in responsiveness */}
-
                   <MaterialReactTable
                     columns={columns}
                     data={userData}
@@ -221,9 +208,7 @@ const Products = () => {
                     muiTablePaperProps={{
                       sx: {
                         borderRadius: "5px",
-                        // Keep the existing style property for the table container
                         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                        //textAlign: "center",
                       },
                     }}
                     muiTableHeadCellProps={{
@@ -245,9 +230,3 @@ const Products = () => {
 };
 
 export default Products;
-
-
-
-
-
-

@@ -203,12 +203,44 @@ input:focus {
   outline: none;
 }
 
+/* App.css */
+
+/* App.css (Add this block) */
+
+/* Theme A: Dark Blue Page Background */
+.App {
+    /* Set the default (Theme A) background to Dark Blue */
+    background-color: #dbcc98; 
+    min-height: 100vh; 
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+/* Theme B: Light Green Page Background (When .theme-b is on the body) */
+.theme-b .App {
+    /* Overrides the Dark Blue with Theme B's color (e.g., #66bda3) */
+    background-color: #e7bcc5; 
+    min-height: 100vh;
+}
 .form-select:focus {
   border: 0 !important;
   border-radius: 4px !important;
   outline: 0px !important;
 }
+/* App.css (Add this at the bottom of the file) */
 
+/* App.css (Add this at the very bottom of the file) */
+
+/* Targets the MuiPaper root (the main table card wrapper) with maximum specificity */
+.notice-table-wrapper.shadow-sm.rounded.border > .MuiPaper-root {
+    background-color: #ffffff !important; 
+    /* Ensures the card is white */
+}
+
+/* Targets the MuiTableContainer (the inner wrapper) as a backup */
+.notice-table-wrapper.shadow-sm.rounded.border .MuiTableContainer-root {
+    background-color: #ffffff !important; 
+    /* Ensures the table itself is white */
+}
 /* .delete {
   color: red !important;
   border-radius: 6px !important;
@@ -228,7 +260,8 @@ input:focus {
 }
 
 .main {
-  background-color: rgb(168 157 42 / 44%);
+ background: var(--theme-bg-main-content) !important;
+  padding-top: 65px;
   border-radius: 10px;
   padding: 20px;
 }

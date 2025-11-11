@@ -1,115 +1,21 @@
-// import React, { useState, useEffect } from "react";
-// import "./App.css";
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-// import Login from "./pages/Login";
-// import NetworkStatusPopup from "./networkalert";
-// import ProtectedRoute from "./routes/ProtectedRoutes";
-// import routes from "./routes/routes";
-// import "./components/sidebar/sidebar.css";
-// import "./components/components.css";
-
-// const App = () => {
-//   const [loggedIn, setLoggedIn] = useState(() => {
-//     // Check localStorage for the logged-in status
-//     return localStorage.getItem("loggedIn") === "true";
-//   });
-
-//   const handleLogin = () => {
-//     setLoggedIn(true);
-//     localStorage.setItem("loggedIn", "true"); // Persist login state
-//   };
-
-//   const handleLogout = () => {
-//     setLoggedIn(false);
-//     localStorage.removeItem("loggedIn"); // Remove login state
-//   };
-
-//   return (
-//     <div className="App">
-//       <BrowserRouter basename="/">
-//         <Routes>
-//           <Route
-//             path="/"
-//             element={
-//               loggedIn ? (
-//                 <Navigate to="/console/dashboard" replace />
-//               ) : (
-//                 <Navigate to="/login" replace />
-//               )
-//             }
-//           />
-//           <Route path="/login" element={<Login onLogin={handleLogin} />} />
-//           <Route
-//             element={
-//               <ProtectedRoute loggedIn={loggedIn} onLogout={handleLogout} />
-//             }
-//           >
-//             {routes.map((route, index) => (
-//               <Route key={index} path={route.path} element={route.element} />
-//             ))}
-//           </Route>
-//         </Routes>
-//       </BrowserRouter>
-//     </div>
-//   );
-// };
-
-// export default App;
-
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import NetworkStatusPopup from "./networkalert";
 import ProtectedRoute from "./routes/ProtectedRoutes";
 import routes from "./routes/routes";
 import "./components/sidebar/sidebar.css";
 import "./components/components.css";
-
+import { LanguageProvider } from "./components/LanguageContext";
 // 🧩 Import Material UI Theme
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
-// 🖋️ Define custom theme
-const theme = createTheme({
-  typography: {
-    fontFamily: '"Poppins", "Noto Sans Tamil", sans-serif',
-    fontWeightRegular: 400,
-    fontWeightMedium: 500,
-    fontWeightBold: 600,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: "none",
-          fontWeight: 500,
-          fontFamily: '"Poppins", "Noto Sans Tamil", sans-serif',
-        },
-      },
-    },
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          fontFamily: '"Poppins", "Noto Sans Tamil", sans-serif',
-          fontWeight: 500,
-        },
-      },
-    },
-    MuiChip: {
-      styleOverrides: {
-        label: {
-          fontFamily: '"Poppins", "Noto Sans Tamil", sans-serif',
-          fontWeight: 600,
-        },
-      },
-    },
-  },
-});
-
+// 🎨 Import your two theme definitions
+import { themeA, themeB } from './theme';
 const App = () => {
+  // 1. Existing Login Logic
   const [loggedIn, setLoggedIn] = useState(() => {
     return localStorage.getItem("loggedIn") === "true";
   });
@@ -124,12 +30,39 @@ const App = () => {
     localStorage.removeItem("loggedIn");
   };
 
+  
+  // 2. New Theme Logic
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    // Initialize theme state from localStorage, defaulting to 'A'
+    return localStorage.getItem("appTheme") === "B" ? "B" : "A";
+  });
+
+  const toggleTheme = () => {
+    const newTheme = currentTheme === "A" ? "B" : "A";
+    setCurrentTheme(newTheme);
+    localStorage.setItem("appTheme", newTheme);
+  };
+  
+  // Select the theme object to be applied
+  const appliedTheme = currentTheme === "A" ? themeA : themeB;
+ 
+  useEffect(() => {
+    localStorage.setItem("appTheme", currentTheme);
+    if (currentTheme === "B") {
+      document.body.classList.add("theme-b");
+    } else {
+      document.body.classList.remove("theme-b");
+    }
+  }, [currentTheme]);
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline /> {/* ensures consistent font + clean base */}
+    <LanguageProvider>
+    <ThemeProvider theme={appliedTheme}>
+      <CssBaseline />
       <div className="App">
         <BrowserRouter basename="/">
           <Routes>
+            {/* Existing Root Path Logic: Redirects to dashboard if logged in */}
             <Route
               path="/"
               element={
@@ -140,10 +73,21 @@ const App = () => {
                 )
               }
             />
+            
+            {/* Existing Login Route */}
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            
+            {/* Protected Routes */}
             <Route
               element={
-                <ProtectedRoute loggedIn={loggedIn} onLogout={handleLogout} />
+                // 4. Pass Theme props to ProtectedRoute
+                <ProtectedRoute 
+                  loggedIn={loggedIn} 
+                  onLogout={handleLogout} 
+                  currentTheme={currentTheme} // Pass state
+                  toggleTheme={toggleTheme}   // Pass toggle function
+                  
+                />
               }
             >
               {routes.map((route, index) => (
@@ -154,8 +98,8 @@ const App = () => {
         </BrowserRouter>
       </div>
     </ThemeProvider>
+    </LanguageProvider>
   );
 };
 
 export default App;
-

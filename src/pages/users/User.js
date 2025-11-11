@@ -4,6 +4,8 @@ import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import LoadingOverlay from "../../components/LoadingOverlay";
+// ✅ NEW IMPORT for Language Context
+import { useLanguage } from "../../components/LanguageContext";
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
@@ -12,6 +14,9 @@ import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
 const User = () => {
+  // ✅ GET TRANSLATION FUNCTION
+  const { t } = useLanguage();
+  
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
@@ -40,7 +45,7 @@ const User = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-         delete_user_id: userId,
+          delete_user_id: userId,
         }),
       });
       const responseData = await response.json();
@@ -59,10 +64,10 @@ const User = () => {
   };
 
   const user = JSON.parse(localStorage.getItem("user")) || {};
- const isAdmin = user.role === "Admin";
+  const isAdmin = user.role === "Admin";
 
   // 2. Data Fetching Logic (Unchanged)
-     useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -106,38 +111,35 @@ const User = () => {
     fetchData();
   }, [searchText, formData]);
   
-
-
-  // 3. Define Material React Table Columns
-
+  // 3. Define Material React Table Columns (Using t() for headers and tooltips)
   const columns = useMemo(
     () => [
       {
         accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
       },
       {
         accessorKey: "Name",
-        header: "Name",
+        header: t("Name"),
         size: 50,
       },
       {
         accessorKey: "RoleSelection",
-        header: "Share",
+        header: t("Share"),
         size: 50,
       },
       {
         accessorKey: "Mobile_Number",
-        header: "Mobile Number",
+        header: t("Mobile Number"),
         size: 50,
       },
       
       {
         id: "action",
-        header: "Action",
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -149,8 +151,7 @@ const User = () => {
               gap: "2 rem",
             }}
           >
-            {/* Edit Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title={t("Edit")}>
               <IconButton
                 onClick={() => handleEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -159,8 +160,8 @@ const User = () => {
               </IconButton>
             </Tooltip>
 
-            {/* Delete Icon */}
-            <Tooltip title="Delete">
+         
+            <Tooltip title={t("Delete")}>
               <IconButton
                 onClick={() =>
                   handleDeleteClick(row.original.user_id)
@@ -174,47 +175,31 @@ const User = () => {
         ),
       },
     ],
-    []
+    [t] // ✅ Depend on t to re-run translations when language changes
   );
 
-  // 4. Update JSX to render MaterialReactTable
+  // 4. Update JSX to render MaterialReactTable (Using t() for display strings)
   return (
     <div>
       <Container fluid>
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">User & Access</span>
+              <span class="nav-list">{t("User & Access")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-           {isAdmin &&(
+            {isAdmin &&(
             <ClickButton
-              label={<>Add User</>}
+              label={<>{t("Add User")}</>}
               onClick={() => navigate("/console/user/create")}
             >
               
             </ClickButton>
-             )}
+              )}
             
           </Col>
           {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
           {/* 5. Replace TableUI with MaterialReactTable */}
@@ -224,13 +209,11 @@ const User = () => {
             <>
               <Col lg="12" md="12" xs="12" className="px-0">
                 <div className="py-1">
-                  {/* Note: MobileView rendering is typically replaced by MRT's built-in responsiveness */}
-
                   <MaterialReactTable
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                  enableColumnFilters={false}
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}

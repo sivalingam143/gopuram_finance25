@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Col, Container, Row, Alert, Modal } from "react-bootstrap";
 import { TextInputForm, DropDownUI } from "../../components/Forms";
-import { ClickButton,Delete } from "../../components/ClickButton";
+import { ClickButton, Delete } from "../../components/ClickButton";
 import PageNav from "../../components/PageNav";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +9,13 @@ import { ToastContainer, toast } from "react-toastify";
 import API_DOMAIN from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
 
+// ✅ Import the useLanguage hook
+import { useLanguage } from "../../components/LanguageContext";
+
 const BankDetailsCreation = () => {
+  // ✅ Get the translation function 't'
+  const { t } = useLanguage();
+
   const location = useLocation();
   const { type, rowData } = location.state || {};
   const initialState =
@@ -135,11 +141,11 @@ const BankDetailsCreation = () => {
           theme: "colored",
         });
         console.error(
-          responseData.message || "Unknown error occurred during update"
+          responseData.message || t("Unknown error occurred during update")
         );
       }
     } catch (error) {
-      console.error("Error updating bank:", error.message);
+      console.error(t("Error updating bank:"), error.message);
     }
 
     setLoading(false);
@@ -151,29 +157,29 @@ const BankDetailsCreation = () => {
         <Row className="regular justify-content-center">
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
-              pagetitle={`Bank${
+              pagetitle={
                 type === "view"
-                  ? " view "
+                  ? t("Bank View")
                   : type === "edit"
-                  ? "  Edit "
-                  : " Creation "
-              }`}
+                  ? t("Bank Edit")
+                  : t("Bank Creation")
+              }
             ></PageNav>
           </Col>
 
           <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
-                placeholder={"Bank name"}
-                labelname={"Bank name"}
+                placeholder={t("Bank Name")}
+                labelname={t("Bank Name")}
                 name="bank_name"
                 value={formData.bank_name}
                 onChange={(e) => handleChange(e, "bank_name")}
               ></TextInputForm>
             ) : (
               <TextInputForm
-                placeholder={"Bank name"}
-                labelname={"Bank name"}
+                placeholder={t("Bank Name")}
+                labelname={t("Bank Name")}
                 name="bank_name"
                 value={type === "view" ? rowData.bank_name : formData.bank_name}
                 onChange={(e) => handleChange(e, "bank_name")}
@@ -183,16 +189,16 @@ const BankDetailsCreation = () => {
           <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
-                placeholder={"Account limit"}
-                labelname={"Account limit"}
+                placeholder={t("Account Limit")}
+                labelname={t("Account Limit")}
                 name="account_limit"
                 value={formData.account_limit}
                 onChange={(e) => handleChange(e, "account_limit")}
               ></TextInputForm>
             ) : (
               <TextInputForm
-                placeholder={"Account limit"}
-                labelname={"Account limit"}
+                placeholder={t("Account Limit")}
+                labelname={t("Account Limit")}
                 name="account_limit"
                 value={
                   type === "view"
@@ -206,16 +212,16 @@ const BankDetailsCreation = () => {
           <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
-                placeholder={"Pledge count limit"}
-                labelname={"Pledge count limit"}
+                placeholder={t("Pledge Count Limit")}
+                labelname={t("Pledge Count Limit")}
                 name="pledge_count_limit"
                 value={formData.pledge_count_limit}
                 onChange={(e) => handleChange(e, "pledge_count_limit")}
               ></TextInputForm>
             ) : (
               <TextInputForm
-                placeholder={"Pledge count limit"}
-                labelname={"Pledge count limit"}
+                placeholder={t("Pledge Count Limit")}
+                labelname={t("Pledge Count Limit")}
                 name="pledge_count_limit"
                 value={
                   type === "view"
@@ -230,7 +236,7 @@ const BankDetailsCreation = () => {
             <div style={{ textAlign: "right", paddingRight: "5px" }}>
               {type === "view" ? (
                 <ClickButton
-                  label={<>back</>}
+                  label={<>{t("Back")}</>}
                   onClick={() => navigate("/console/master/bank")}
                 ></ClickButton>
               ) : (
@@ -251,15 +257,17 @@ const BankDetailsCreation = () => {
                       />
                       <span className="mx-2">
                         <ClickButton
-                          label={<>Update</>}
+                          label={<>{t("Update")}</>}
                           onClick={handleUpdateSubmit}
+                          disabled={loading}
                         ></ClickButton>
                       </span>
 
                       <span className="mx-2">
                         <ClickButton
-                          label={<>Cancel</>}
+                          label={<>{t("Cancel")}</>}
                           onClick={() => navigate("/console/master/bank")}
+                          disabled={loading}
                         ></ClickButton>
                       </span>
                     </>
@@ -279,15 +287,18 @@ const BankDetailsCreation = () => {
                       />
                       <span className="mx-2">
                         <ClickButton
-                          label={loading ? <>Submitting...</> : <> Submit</>}
+                          label={
+                            loading ? <>{t("Submitting...")}</> : <>{t("Submit")}</>
+                          }
                           onClick={handleSubmit}
                           disabled={loading}
                         ></ClickButton>
                       </span>
                       <span className="mx-2">
                         <Delete
-                          label={<>Cancel</>}
+                          label={<>{t("Cancel")}</>}
                           onClick={() => navigate("/console/master/bank")}
+                          disabled={loading}
                         ></Delete>
                       </span>
                     </>
@@ -309,20 +320,20 @@ const BankDetailsCreation = () => {
         centered
       >
         <Modal.Body className="text-center">
+          {/* Note: If the image path is relative, ensure the path is correct 
+          relative to the component's location. Assuming this path is correct: */}
           <img
             src={require("../../components/sidebar/images/output-onlinegiftools.gif")}
-            alt="Success GIF"
+            alt={t("Success GIF")}
           />
-          <p>Bank saved successfully!</p>
+          <p>{t("Bank saved successfully!")}</p>
         </Modal.Body>
         <Modal.Footer>
           <ClickButton
             variant="secondary"
-            label={<> Close</>}
+            label={<> {t("Close")}</>}
             onClick={() => redirectModal()}
-          >
-            Close
-          </ClickButton>
+          ></ClickButton>
         </Modal.Footer>
       </Modal>
     </div>

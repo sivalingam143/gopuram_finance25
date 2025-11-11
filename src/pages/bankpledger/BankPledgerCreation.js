@@ -9,8 +9,11 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import API_DOMAIN from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
+import { useLanguage } from "../../components/LanguageContext";
+
 const BankPledgerCreation = () => {
   const location = useLocation();
+  const { t } = useLanguage();
   const { type, rowData } = location.state || {};
   const mode =
     type === "closing"
@@ -378,59 +381,64 @@ const BankPledgerCreation = () => {
           {isClosing || isView ? (
             <>
               {/* Cards for static info in closing/view mode */}
+
               <Row className="mb-4">
                 <Col lg={4}>
                   <div className="customer-card bg-light border rounded p-3 h-100">
-                    <h5 className="mb-3">Pledger Information</h5>
+                    <h5 className="mb-3">{t("Pledger Information")}</h5>{" "}
                     <ul className="list-unstyled">
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Name:</strong>
-                        <span>{formData.name || "N/A"}</span>
+                        <strong>{t("Name")}:</strong>
+                        <span>{formData.name || t("N/A")}</span>{" "}
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Mobile No:</strong>
-                        <span>{formData.mobile_no || "N/A"}</span>
+                        <strong>{t("Mobile No")}:</strong>
+                        <span>{formData.mobile_no || t("N/A")}</span>{" "}
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Address:</strong>
-                        <span>{formData.address || "N/A"}</span>
+                        <strong>{t("Address")}:</strong>
+                        <span>{formData.address || t("N/A")}</span>{" "}
                       </li>
                     </ul>
                   </div>
                 </Col>
+                {/* ------------------------------------------------------------------ */}
                 <Col lg={4}>
                   <div className="customer-card bg-light border rounded p-3 h-100">
-                    <h5 className="mb-3">Bank Details</h5>
+                    <h5 className="mb-3">{t("Bank Details")}</h5>{" "}
                     <ul className="list-unstyled">
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Bank Name:</strong>
-                        <span>{selectedBank?.bank_name || "N/A"}</span>
+                        <strong>{t("Bank Name")}:</strong>
+                        <span>{selectedBank?.bank_name || t("N/A")}</span>{" "}
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Account Limit:</strong>
-                        <span>{selectedBank?.account_limit || "N/A"}</span>
+                        <strong>{t("Account Limit")}:</strong>{" "}
+                        <span>{selectedBank?.account_limit || t("N/A")}</span>{" "}
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Pledge Count Limit:</strong>
-                        <span>{selectedBank?.pledge_count_limit || "N/A"}</span>
+                        <strong>{t("Pledge Count Limit")}:</strong>{" "}
+                        <span>
+                          {selectedBank?.pledge_count_limit || t("N/A")}
+                        </span>{" "}
                       </li>
                     </ul>
                   </div>
                 </Col>
+                {/* ------------------------------------------------------------------ */}
                 <Col lg={4}>
                   <div className="customer-card bg-light border rounded p-3 h-100">
-                    <h5 className="mb-3">Pledge Summary</h5>
+                    <h5 className="mb-3">{t("Pledge Summary")}</h5>{" "}
                     <ul className="list-unstyled">
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Bank Loan No:</strong>
-                        <span>{formData.bank_loan_no || "N/A"}</span>
+                        <strong>{t("Bank Loan No")}:</strong>{" "}
+                        <span>{formData.bank_loan_no || t("N/A")}</span>{" "}
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Pawn Loan No:</strong>
-                        <span>{formData.pawn_loan_no || "N/A"}</span>
+                        <strong>{t("Pawn Loan No")}:</strong>{" "}
+                        <span>{formData.pawn_loan_no || t("N/A")}</span>{" "}
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Pawn Value:</strong>
+                        <strong>{t("Pawn Value")}:</strong>{" "}
                         <span>
                           ₹
                           {parseFloat(
@@ -439,15 +447,17 @@ const BankPledgerCreation = () => {
                         </span>
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Interest Rate:</strong>
-                        <span>{formData.interest_rate || "N/A"}%</span>
+                        <strong>{t("Interest Rate")}:</strong>{" "}
+                        <span>{formData.interest_rate || t("N/A")}%</span>{" "}
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Duration Month:</strong>
-                        <span>{formData.duration_month || "N/A"} months</span>
+                        <strong>{t("Duration Month")}:</strong>{" "}
+                        <span>
+                          {formData.duration_month || t("N/A")} {t("months")}
+                        </span>{" "}
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Interest Amount:</strong>
+                        <strong>{t("Interest Amount")}:</strong>{" "}
                         <span>
                           ₹
                           {parseFloat(
@@ -456,11 +466,11 @@ const BankPledgerCreation = () => {
                         </span>
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Pledge Due Date:</strong>
-                        <span>{formData.pledge_due_date || "N/A"}</span>
+                        <strong>{t("Pledge Due Date")}:</strong>{" "}
+                        <span>{formData.pledge_due_date || t("N/A")}</span>{" "}
                       </li>
                       <li className="mb-2 d-flex justify-content-between">
-                        <strong>Additional Charges:</strong>
+                        <strong>{t("Additional Charges")}:</strong>{" "}
                         <span>
                           ₹
                           {parseFloat(
@@ -473,16 +483,19 @@ const BankPledgerCreation = () => {
                 </Col>
               </Row>
               <Row className="mb-4">
+                // NOTE: This assumes you have imported the useLanguage hook and
+                destructured 't'. // e.g., const {t} = useLanguage();
                 <Col lg={4}>
                   <div className="customer-card bg-light border rounded p-3 h-100">
-                    <h5 className="mb-3">Closing Details</h5>
+                    <h5 className="mb-3">{t("Closing Details")}</h5>{" "}
+                    {/* ✅ Translated Heading */}
                     <ul className="list-unstyled">
                       {isClosing ? (
                         <>
                           <li className="mb-2">
                             <TextInputForm
-                              placeholder={"Closing Date"}
-                              labelname={"Closing Date"}
+                              placeholder={t("Closing Date")} // ✅ Translated Placeholder
+                              labelname={t("Closing Date")} // ✅ Translated Label
                               name="closing_date"
                               type="date"
                               value={formData.closing_date}
@@ -491,8 +504,8 @@ const BankPledgerCreation = () => {
                           </li>
                           <li className="mb-2">
                             <TextInputForm
-                              placeholder={"Closing Amount"}
-                              labelname={"Closing Amount"}
+                              placeholder={t("Closing Amount")} // ✅ Translated Placeholder
+                              labelname={t("Closing Amount")} // ✅ Translated Label
                               name="closing_amount"
                               value={formData.closing_amount}
                               onChange={(e) =>
@@ -502,8 +515,8 @@ const BankPledgerCreation = () => {
                           </li>
                           <li className="mb-2">
                             <TextInputForm
-                              placeholder={"Closing Interest Amount"}
-                              labelname={"Closing Interest Amount"}
+                              placeholder={t("Closing Interest Amount")} // ✅ Translated Placeholder
+                              labelname={t("Closing Interest Amount")} // ✅ Translated Label
                               name="closing_interest_amount"
                               value={formData.closing_interest_amount}
                               onChange={(e) =>
@@ -513,8 +526,8 @@ const BankPledgerCreation = () => {
                           </li>
                           <li className="mb-2">
                             <TextInputForm
-                              placeholder={"Extra Charges"}
-                              labelname={"Extra Charges"}
+                              placeholder={t("Extra Charges")} // ✅ Translated Placeholder
+                              labelname={t("Extra Charges")} // ✅ Translated Label
                               name="extra_charges"
                               value={formData.extra_charges}
                               onChange={(e) => handleChange(e, "extra_charges")}
@@ -524,11 +537,16 @@ const BankPledgerCreation = () => {
                       ) : (
                         <>
                           <li className="mb-2 d-flex justify-content-between">
-                            <strong>Closing Date:</strong>
-                            <span>{formData.closing_date || "N/A"}</span>
+                            <strong>{t("Closing Date")}:</strong>{" "}
+                            {/* ✅ Translated Display Label */}
+                            <span>
+                              {formData.closing_date || t("N/A")}
+                            </span>{" "}
+                            {/* ✅ Translated Fallback */}
                           </li>
                           <li className="mb-2 d-flex justify-content-between">
-                            <strong>Closing Amount:</strong>
+                            <strong>{t("Closing Amount")}:</strong>{" "}
+                            {/* ✅ Translated Display Label */}
                             <span>
                               ₹
                               {parseFloat(
@@ -537,7 +555,8 @@ const BankPledgerCreation = () => {
                             </span>
                           </li>
                           <li className="mb-2 d-flex justify-content-between">
-                            <strong>Closing Interest Amount:</strong>
+                            <strong>{t("Closing Interest Amount")}:</strong>{" "}
+                            {/* ✅ Translated Display Label */}
                             <span>
                               ₹
                               {parseFloat(
@@ -546,7 +565,8 @@ const BankPledgerCreation = () => {
                             </span>
                           </li>
                           <li className="mb-2 d-flex justify-content-between">
-                            <strong>Extra Charges:</strong>
+                            <strong>{t("Extra Charges")}:</strong>{" "}
+                            {/* ✅ Translated Display Label */}
                             <span>
                               ₹
                               {parseFloat(
@@ -564,9 +584,10 @@ const BankPledgerCreation = () => {
           ) : (
             <>
               {/* Original form for create/edit modes */}
+
               <Col lg="4" md="12" xs="12" className="py-3">
                 <label htmlFor="pledger-select">
-                  Select Bank Pledger Details
+                  {t("Select Bank Pledger Details")} {/* ✅ Translated Label */}
                 </label>
                 <Select
                   id="pledger-select"
@@ -574,48 +595,52 @@ const BankPledgerCreation = () => {
                   onChange={handlePledgerSelect}
                   options={options}
                   isDisabled={isEdit}
-                  placeholder="Search and select Pledger"
+                  placeholder={t("Search and select Pledger")}
                   isSearchable={true}
                 />
               </Col>
               <Col lg="4" className="py-3"></Col>
               <Col lg="4" className="py-3"></Col>
               {bankList.length > 0 && (
-                <Col lg="12" md="12" xs="12" className="py-3">
-                  <Table bordered responsive>
-                    <thead>
-                      <tr>
-                        <th>S.No</th>
-                        <th>Bank Name</th>
-                        <th>Account Limit</th>
-                        <th>Pledge Count Limit</th>
-                        <th>Select</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {bankList.map((bank, index) => (
-                        <tr key={bank.id}>
-                          <td>{index + 1}</td>
-                          <td>{bank.bank_name}</td>
-                          <td>{bank.account_limit}</td>
-                          <td>{bank.pledge_count_limit}</td>
-                          <td>
-                            <input
-                              type="checkbox"
-                              checked={selectedBankId === bank.id}
-                              onChange={(e) => {
-                                setSelectedBankId(
-                                  e.target.checked ? bank.id : null
-                                );
-                              }}
-                              disabled={isEdit}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </Col>
+                // NOTE: This assumes you have access to the 't' function, e.g., 
+// import { useLanguage } from "../../components/LanguageContext";
+// const { t } = useLanguage();
+
+<Col lg="12" md="12" xs="12" className="py-3">
+  <Table bordered responsive>
+    <thead>
+      <tr>
+        <th>{t("S.No")}</th>                     {/* ✅ Translated Header */}
+        <th>{t("Bank Name")}</th>                {/* ✅ Translated Header */}
+        <th>{t("Account Limit")}</th>            {/* ✅ Translated Header */}
+        <th>{t("Pledge Count Limit")}</th>       {/* ✅ Translated Header */}
+        <th>{t("Select")}</th>                   {/* ✅ Translated Header */}
+      </tr>
+    </thead>
+    <tbody>
+      {bankList.map((bank, index) => (
+        <tr key={bank.id}>
+          <td>{index + 1}</td>
+          <td>{bank.bank_name}</td>
+          <td>{bank.account_limit}</td>
+          <td>{bank.pledge_count_limit}</td>
+          <td>
+            <input
+              type="checkbox"
+              checked={selectedBankId === bank.id}
+              onChange={(e) => {
+                setSelectedBankId(
+                  e.target.checked ? bank.id : null
+                );
+              }}
+              disabled={isEdit}
+            />
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </Table>
+</Col>
               )}
               {/* Existing fields with updated disabled logic */}
               <Col lg="4" md="6" xs="12" className="py-3">

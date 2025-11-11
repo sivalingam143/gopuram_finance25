@@ -9,22 +9,11 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
+import { useLanguage } from "../../components/LanguageContext"; // Adjust path
 
-const DropList = [
-  {
-    value: "Admin",
-    label: "Admin",
-  },
-  {
-    value: "Super admin",
-    label: "Super admin",
-  },
-  {
-    value: "Employee",
-    label: "Employee",
-  },
-];
+
 const UserCreation = () => {
+   const { t } = useLanguage();
   const location = useLocation();
   const { type, rowData } = location.state || {};
   const initialState =
@@ -39,12 +28,28 @@ const UserCreation = () => {
           nickname: "",
         };
   const [formData, setFormData] = useState(initialState);
-
-  const [error, setError] = useState("");
+   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+   const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
+   const navigate = useNavigate();
 
-  const navigate = useNavigate();
+  //Role dropdrown
+  const DropList = [
+    {
+      value: "Admin",
+      label: t("Admin"), 
+    },
+    {
+      value: "Super admin",
+      label: t("Super admin"), 
+    },
+    {
+      value: "Employee",
+      label: t("Employee"), 
+    },
+  ];
 
   const redirectModal = () => {
     navigate("/console/user");
@@ -59,8 +64,13 @@ const UserCreation = () => {
     });
   };
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const userTitleSegment = 
+    type === "view"
+      ? ` ${t("view")}`
+      : type === "edit"
+      ? ` ${t("Edit")}`
+      : ` ${t("Creation")}`;
+ 
   const handleSubmit = async () => {
     for (const key in formData) {
       if (formData[key] === "") {
@@ -137,6 +147,7 @@ const UserCreation = () => {
       console.error("Error:", error);
     }
   };
+
   const handleUpdateSubmit = async () => {
     console.log("Inside handleUpdateSubmit");
     setLoading(true);
@@ -200,225 +211,207 @@ const UserCreation = () => {
       <Container>
         <Row className="regular">
           <Col lg="12" md="12" xs="12" className="py-3">
-            <PageNav
-              pagetitle={`User${
-                type === "view"
-                  ? " view "
-                  : type === "edit"
-                  ? " Edit "
-                  : " Creation "
-              }`}
-            ></PageNav>
-          </Col>
+        {/* 3. Apply translation to the PageNav title */}
+        <PageNav
+          pagetitle={`${t("User")}${userTitleSegment}`}
+        ></PageNav>
+      </Col>
 
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
-              <TextInputForm
-                placeholder={"Name"}
-                labelname={"Name"}
-                name="Name"
-                value={formData.Name}
-                onChange={(e) => handleChange(e, "Name")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={" Name"}
-                labelname={" Name"}
-                name="Name"
-                value={type === "view" ? rowData.Name : formData.Name}
-                onChange={(e) => handleChange(e, "Name")}
-              ></TextInputForm>
-            )}
-          </Col>
+        {type === "edit" ? (
+          <TextInputForm
+            placeholder={t("Name")} // 4. Apply t()
+            labelname={t("Name")} // 4. Apply t()
+            name="Name"
+            value={formData.Name}
+            onChange={(e) => handleChange(e, "Name")}
+          ></TextInputForm>
+        ) : (
+          <TextInputForm
+            placeholder={t("Name")} // 4. Apply t() (Removed leading space for clean key)
+            labelname={t("Name")} // 4. Apply t() (Removed leading space for clean key)
+            name="Name"
+            value={type === "view" ? rowData.Name : formData.Name}
+            onChange={(e) => handleChange(e, "Name")}
+          ></TextInputForm>
+        )}
+      </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
-              <DropDownUI
-                optionlist={DropList}
-                placeholder="RoleSelection"
-                labelname="RoleSelection"
-                name="RoleSelection"
-                value={formData.RoleSelection}
-                onChange={(updatedFormData) =>
-                  setFormData({
-                    ...formData,
-                    RoleSelection: updatedFormData.RoleSelection,
-                  })
-                }
-              />
-            ) : (
-              <DropDownUI
-                optionlist={DropList}
-                placeholder="RoleSelection"
-                labelname="RoleSelection"
-                name="RoleSelection"
-                value={
-                  type === "view"
-                    ? rowData.RoleSelection
-                    : formData.RoleSelection
-                }
-                onChange={(updatedFormData) =>
-                  setFormData({
-                    ...formData,
-                    RoleSelection: updatedFormData.RoleSelection,
-                  })
-                }
-              />
-            )}
-          </Col>
-          <Col lg="4" md="12" xs="12" className="py-3">
-            {type === "edit" ? (
-              <TextInputForm
-                placeholder={"Mobile Number"}
-                type={"number"}
-                labelname={"Mobile Number"}
-                name="Mobile_Number"
-                value={formData.Mobile_Number}
-                onChange={(e) => handleChange(e, "Mobile_Number")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Mobile Number"}
-                type={"number"}
-                labelname={"Mobile Number"}
-                name="Mobile_Number"
-                value={
-                  type === "view"
-                    ? rowData.Mobile_Number
-                    : formData.Mobile_Number
-                }
-                onChange={(e) => handleChange(e, "Mobile_Number")}
-              ></TextInputForm>
-            )}
-          </Col>
+        {type === "edit" ? (
+          <DropDownUI
+            optionlist={DropList}
+            placeholder={t("Role Selection")} // 4. Apply t() (Using "Role Selection" as key)
+            labelname={t("Role Selection")} // 4. Apply t()
+            name="RoleSelection"
+            value={formData.RoleSelection}
+            onChange={(updatedFormData) =>
+              setFormData({
+                ...formData,
+                RoleSelection: updatedFormData.RoleSelection,
+              })
+            }
+          />
+        ) : (
+          <DropDownUI
+            optionlist={DropList}
+            placeholder={t("Role Selection")} // 4. Apply t()
+            labelname={t("Role Selection")} // 4. Apply t()
+            name="RoleSelection"
+            value={
+              type === "view"
+                ? rowData.RoleSelection
+                : formData.RoleSelection
+            }
+            onChange={(updatedFormData) =>
+              setFormData({
+                ...formData,
+                RoleSelection: updatedFormData.RoleSelection,
+              })
+            }
+          />
+        )}
+      </Col>
+         <Col lg="4" md="12" xs="12" className="py-3">
+        {type === "edit" ? (
+          <TextInputForm
+            placeholder={t("Mobile Number")} // 4. Apply t()
+            type={"number"}
+            labelname={t("Mobile Number")} // 4. Apply t()
+            name="Mobile_Number"
+            value={formData.Mobile_Number}
+            onChange={(e) => handleChange(e, "Mobile_Number")}
+          ></TextInputForm>
+        ) : (
+          <TextInputForm
+            placeholder={t("Mobile Number")} // 4. Apply t()
+            type={"number"}
+            labelname={t("Mobile Number")} // 4. Apply t()
+            name="Mobile_Number"
+            value={
+              type === "view"
+                ? rowData.Mobile_Number
+                : formData.Mobile_Number
+            }
+            onChange={(e) => handleChange(e, "Mobile_Number")}
+          ></TextInputForm>
+        )}
+      </Col>
           <Col lg="3" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
-              <TextInputForm
-                placeholder={"User Name"}
-                labelname={"User Name"}
-                name="User_Name"
-                value={formData.User_Name}
-                onChange={(e) => handleChange(e, "User_Name")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"User Name"}
-                labelname={"User Name"}
-                name="User_Name"
-                value={type === "view" ? rowData.User_Name : formData.User_Name}
-                onChange={(e) => handleChange(e, "User_Name")}
-              ></TextInputForm>
-            )}
-          </Col>
+        {type === "edit" ? (
+          <TextInputForm
+            placeholder={t("User Name")} // 4. Apply t()
+            labelname={t("User Name")} // 4. Apply t()
+            name="User_Name"
+            value={formData.User_Name}
+            onChange={(e) => handleChange(e, "User_Name")}
+          ></TextInputForm>
+        ) : (
+          <TextInputForm
+            placeholder={t("User Name")} // 4. Apply t()
+            labelname={t("User Name")} // 4. Apply t()
+            name="User_Name"
+            value={type === "view" ? rowData.User_Name : formData.User_Name}
+            onChange={(e) => handleChange(e, "User_Name")}
+          ></TextInputForm>
+        )}
+      </Col>
           <Col lg="3" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
-              <TextInputForm
-                placeholder={"Nick Name"}
-                labelname={"Nick Name"}
-                name="nickname"
-                value={formData.nickname}
-                onChange={(e) => handleChange(e, "nickname")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={"Nick Name"}
-                labelname={"Nick Name"}
-                name="nickname"
-                value={type === "view" ? rowData.nickname : formData.nickname}
-                onChange={(e) => handleChange(e, "nickname")}
-              ></TextInputForm>
-            )}
-          </Col>
-          <Col lg="3" md="6" xs="12" className="py-3">
-            {type === "view" ? null : (
-              <TextInputForm
-                placeholder={"Password"}
-                suffix_icon={
-                  showPassword ? (
-                    <VscEye onClick={() => setShowPassword(false)} />
-                  ) : (
-                    <VscEyeClosed onClick={() => setShowPassword(true)} />
-                  )
-                }
-                labelname={"Password"}
-                type={showPassword ? "text" : "password"}
-                name="Password"
-                value={formData.Password}
-                onChange={(e) => handleChange(e, "Password")}
-              ></TextInputForm>
-            )}
-          </Col>
+        {type === "edit" ? (
+          <TextInputForm
+            placeholder={t("Nick Name")} // 4. Apply t()
+            labelname={t("Nick Name")} // 4. Apply t()
+            name="nickname"
+            value={formData.nickname}
+            onChange={(e) => handleChange(e, "nickname")}
+          ></TextInputForm>
+        ) : (
+          <TextInputForm
+            placeholder={t("Nick Name")} // 4. Apply t()
+            labelname={t("Nick Name")} // 4. Apply t()
+            name="nickname"
+            value={type === "view" ? rowData.nickname : formData.nickname}
+            onChange={(e) => handleChange(e, "nickname")}
+          ></TextInputForm>
+        )}
+      </Col>
+         <Col lg="3" md="6" xs="12" className="py-3">
+        {type === "view" ? null : (
+          <TextInputForm
+            placeholder={t("Password")} // 4. Apply t()
+            suffix_icon={
+              showPassword ? (
+                <VscEye onClick={() => setShowPassword(false)} />
+              ) : (
+                <VscEyeClosed onClick={() => setShowPassword(true)} />
+              )
+            }
+            labelname={t("Password")} // 4. Apply t()
+            type={showPassword ? "text" : "password"}
+            name="Password"
+            value={formData.Password}
+            onChange={(e) => handleChange(e, "Password")}
+          ></TextInputForm>
+        )}
+      </Col>
 
-          <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
-            <div style={{ textAlign: "right", paddingRight: "5px" }}>
+         <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
+        <div style={{ textAlign: "right", paddingRight: "5px" }}>
+          {type === "view" ? (
+            <ClickButton
+              label={<>{t("Back")}</>} // 4. Apply t() (Capitalized for key consistency)
+              onClick={() => navigate("/console/user")}
+            ></ClickButton>
+          ) : (
+            <>
+              <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+              />
+              {type === "edit" ? (
+                <>
+                  <span className="mx-2">
+                    <ClickButton
+                      label={<>{t("Update")}</>} // 4. Apply t()
+                      onClick={handleUpdateSubmit}
+                    ></ClickButton>
+                  </span>
 
-              {type === "view" ? (
-                <ClickButton
-                  label={<>back</>}
-                  onClick={() => navigate("/console/user")}
-                ></ClickButton>
+                  <span className="mx-2">
+                    <Delete
+                      label={<>{t("Cancel")}</>} // 4. Apply t()
+                      onClick={() => navigate("/console/user")}
+                    ></Delete>
+                  </span>
+                </>
               ) : (
                 <>
-                  {type === "edit" ? (
-                    <>
-                      <ToastContainer
-                        position="top-center"
-                        autoClose={2000}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="colored"
-                      />
-                      <span className="mx-2">
-                        <ClickButton
-                          label={<>Update</>}
-                          onClick={handleUpdateSubmit}
-                        ></ClickButton>
-                      </span>
-
-                      <span className="mx-2">
-                        <Delete
-                          label={<>Cancel</>}
-                          onClick={() => navigate("/console/user")}
-                        ></Delete>
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <ToastContainer
-                        position="top-center"
-                        autoClose={2000}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="colored"
-                      />
-                      <span className="mx-2">
-                        <ClickButton
-                          label={loading ? <>Submitting...</> : <> Submit</>}
-                          onClick={handleSubmit}
-                          disabled={loading}
-                        ></ClickButton>
-                      </span>
-                      <span className="mx-2">
-                        <Delete
-                          label="Cancel"
-                          onClick={() => navigate("/console/user")}
-                        ></Delete>
-                      </span>
-                    </>
-                  )}
+                  <span className="mx-2">
+                    <ClickButton
+                      label={loading ? <>{t("Submitting...")}</> : <>{t("Submit")}</>} // 4. Apply t()
+                      onClick={handleSubmit}
+                      disabled={loading}
+                    ></ClickButton>
+                  </span>
+                  <span className="mx-2">
+                    <Delete
+                      label={t("Cancel")} // 4. Apply t()
+                      onClick={() => navigate("/console/user")}
+                    ></Delete>
+                  </span>
                 </>
               )}
-            </div>
-          </Col>
+            </>
+          )}
+        </div>
+      </Col>
         </Row>
         {error && (
           <Alert variant="danger" className="error-alert">
@@ -436,7 +429,7 @@ const UserCreation = () => {
             src={require("../../components/sidebar/images/output-onlinegiftools.gif")}
             alt="Success GIF"
           />
-          <p>User saved successfully!</p>
+          <p>{t("User saved successfully!")}</p>
         </Modal.Body>
         <Modal.Footer>
           <ClickButton
@@ -444,7 +437,7 @@ const UserCreation = () => {
             label={<> Close</>}
             onClick={() => redirectModal()}
           >
-            Close
+            {t("Close")}
           </ClickButton>
         </Modal.Footer>
       </Modal>

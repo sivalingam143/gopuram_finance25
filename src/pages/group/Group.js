@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
+import { useLanguage } from "../../components/LanguageContext"; // 💡 IMPORT useLanguage
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
@@ -16,18 +17,18 @@ import { MdOutlineDelete } from "react-icons/md";
 
 const Group = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage(); // 💡 USE LANGUAGE HOOK
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 1. Handlers for Edit and Delete Actions
+  // 1. Handlers for Edit and Delete Actions (Unchanged)
   const handleJewelGroupEditClick = (rowData) => {
     console.log("Edit Group3344443:", rowData);
     console.log("Edit Group:", rowData);
     navigate("/console/master/group/create", {
       state: {
         type: "edit",
-
         rowData: rowData,
       },
     });
@@ -93,27 +94,26 @@ const Group = () => {
 
   useEffect(() => {
     fetchData();
-  }, [searchText]);
+  }, [searchText]); 
 
-
-  // 3. Define Material React Table Columns
+  // 3. Define Material React Table Columns (UPDATED with t)
   const columns = useMemo(
     () => [
       {
         accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+        header: t("S.No"), // 💡 TRANSLATE
         size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
       },
       {
         accessorKey: "Group_type",
-        header: "Group",
+        header: t("Group"), 
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -126,7 +126,7 @@ const Group = () => {
             }}
           >
             {/* Edit Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title={t("Edit")}> 
               <IconButton
                 onClick={() => handleJewelGroupEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -136,7 +136,7 @@ const Group = () => {
             </Tooltip>
 
             {/* Delete Icon */}
-            <Tooltip title="Delete">
+            <Tooltip title={t("Delete")}> 
               <IconButton
                 onClick={() =>
                   handleJewelGroupDeleteClick(row.original.Group_id)
@@ -150,66 +150,44 @@ const Group = () => {
         ),
       },
     ],
-    []
+    [t] 
   );
 
-  // 4. Update JSX to render MaterialReactTable
+  // 4. Update JSX to render MaterialReactTable (UPDATED with t)
   return (
     <div>
       <Container fluid>
         <Row>
-          {/* ... (Navigation and Add Group button remain the same) ... */}
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Group</span>
+              <span className="nav-list">{t("Group")}</span> 
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Group</>}
+              label={<>{t("Add Group")}</>} 
               onClick={() => navigate("/console/master/group/create")}
             ></ClickButton>
           </Col>
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
+        
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
-
-          {/* 5. Replace TableUI with MaterialReactTable */}
           {loading ? (
             <LoadingOverlay isLoading={loading} />
           ) : (
             <>
               <Col lg="12" md="12" xs="12" className="px-0">
                 <div className="py-1">
-                  {/* Note: MobileView rendering is typically replaced by MRT's built-in responsiveness */}
-
                   <MaterialReactTable
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                   enableColumnFilters={false}
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}
                     muiTablePaperProps={{
                       sx: {
                         borderRadius: "5px",
-                        // Keep the existing style property for the table container
                         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                         //textAlign: "center",
                       },

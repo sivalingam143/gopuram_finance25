@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
 import { FaMagnifyingGlass } from "react-icons/fa6";
@@ -14,11 +14,17 @@ import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
+// ✅ NEW IMPORT FOR TRANSLATION
+import { useLanguage } from "../../components/LanguageContext";
+
 const BankPledgerDetails = () => {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // ✅ USE TRANSLATION HOOK
+  const { t, cacheVersion } = useLanguage();
 
   // 1. Handlers for Edit and Delete Actions
   const handleBankPledgerDetailsEditClick = (rowData) => {
@@ -27,7 +33,6 @@ const BankPledgerDetails = () => {
     navigate("/console/master/bankpledgerdetails/create", {
       state: {
         type: "edit",
-
         rowData: rowData,
       },
     });
@@ -93,29 +98,29 @@ const BankPledgerDetails = () => {
     fetchData();
   }, [searchText]);
 
-  // 3. Define Material React Table Columns
+  // 3. Define Material React Table Columns (UPDATED for translation)
   const columns = useMemo(
     () => [
       {
         accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+        header: t("S.No"), // ✅ Translated
         size: 50,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "name",
-        header: "Pleger Name",
+        header: t("Pleger Name"), // ✅ Translated
         size: 50,
       },
       {
         accessorKey: "mobile_no",
-        header: "Mobile No",
+        header: t("Mobile No"), // ✅ Translated
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"), // ✅ Translated
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -128,7 +133,7 @@ const BankPledgerDetails = () => {
             }}
           >
             {/* Edit Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title={t("Edit")}>
               <IconButton
                 onClick={() => handleBankPledgerDetailsEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -138,7 +143,7 @@ const BankPledgerDetails = () => {
             </Tooltip>
 
             {/* Delete Icon */}
-            <Tooltip title="Delete">
+            <Tooltip title={t("Delete")}>
               <IconButton
                 onClick={() =>
                   handleBankPledgerDetailsDeleteClick(
@@ -154,78 +159,73 @@ const BankPledgerDetails = () => {
         ),
       },
     ],
-    []
+    [t, cacheVersion] // ✅ DEPENDENCY: Include t and cacheVersion to ensure re-render on language switch/translation load
   );
 
   // 4. Update JSX to render MaterialReactTable
   return (
     <div>
+      {loading && <LoadingOverlay isLoading={loading} />}
       <Container fluid>
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Bank Pledger</span>
+              <span class="nav-list">{t("Bank Pledger")}</span>{" "}
+              {/* ✅ Translated */}
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Bank Pledger</>}
+              label={<>{t("Add Bank Pledger")}</>}
               onClick={() =>
                 navigate("/console/master/bankpledgerdetails/create")
               }
             ></ClickButton>
           </Col>
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
+          
+          <Col lg={3} md={12} xs={12} className="py-2">
             <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
-          <Col lg={9} md={12} xs={12} className="py-2"></Col>
+              type="text"
+              placeholder={t("Search")} 
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              icon={<FaMagnifyingGlass />}
+            />
+          </Col>
 
-          {loading ? (
-            <LoadingOverlay isLoading={loading} />
-          ) : (
-            <>
-              <Col lg="12" md="12" xs="12" className="px-0">
-                <div className="py-1">
-                  <MaterialReactTable
-                    columns={columns}
-                    data={userData}
-                    enableColumnActions={false}
-                    enableColumnFilters={false}
-                    enablePagination={true}
-                    enableSorting={true}
-                    initialState={{ density: "compact" }}
-                    muiTablePaperProps={{
-                      sx: {
-                        borderRadius: "5px",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                        //textAlign: "center",
-                      },
-                    }}
-                    muiTableHeadCellProps={{
-                      sx: {
-                        fontWeight: "bold",
-                        backgroundColor: "#f8f9fa",
-                      },
-                    }}
-                  />
-                </div>
-              </Col>
-            </>
-          )}
+          <Col lg={9} md={12} xs={12} className="py-2"></Col>
+          
+          <Col lg="12" md="12" xs="12" className="px-0">
+            <div className="py-1">
+              <MaterialReactTable
+                columns={columns}
+                data={userData}
+                enableColumnActions={false}
+                enableColumnFilters={false}
+                enablePagination={true}
+                enableSorting={true}
+                initialState={{ density: "compact" }}
+                // Pass translation to internal text strings
+                localization={{
+                    noRecordsToDisplay: t('No records to display'), 
+                    // Add other strings like 'Show' for pagination if needed
+                }}
+                muiTablePaperProps={{
+                  sx: {
+                    borderRadius: "5px",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    //textAlign: "center",
+                  },
+                }}
+                muiTableHeadCellProps={{
+                  sx: {
+                    fontWeight: "bold",
+                    backgroundColor: "#f8f9fa",
+                  },
+                }}
+              />
+            </div>
+          </Col>
           <Col lg="4"></Col>
         </Row>
       </Container>

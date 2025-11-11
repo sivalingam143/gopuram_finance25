@@ -1,12 +1,10 @@
-
-
-
-import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import LoadingOverlay from "../../components/LoadingOverlay";
+import { useLanguage } from "../../components/LanguageContext";
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
@@ -16,6 +14,7 @@ import { MdOutlineDelete } from "react-icons/md";
 
 const Bank = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -27,13 +26,12 @@ const Bank = () => {
     navigate("/console/master/bank/create", {
       state: {
         type: "edit",
-
         rowData: rowData,
       },
     });
   };
 
- const handleBankDeleteClick = async (bankId) => {
+  const handleBankDeleteClick = async (bankId) => {
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/bank_details.php`, {
@@ -60,7 +58,7 @@ const Bank = () => {
   };
 
   // 2. Data Fetching Logic (Unchanged)
-   const fetchData = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/bank_details.php`, {
@@ -93,35 +91,34 @@ const Bank = () => {
     fetchData();
   }, [searchText]);
 
-
-  // 3. Define Material React Table Columns
+  // 3. Define Material React Table Columns (TRANSLATED)
   const columns = useMemo(
     () => [
       {
         accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
       },
       {
         accessorKey: "bank_name",
-        header: "Bank",
+        header: t("Bank"),
         size: 50,
       },
-       {
+      {
         accessorKey: "account_limit",
-        header: "Account Limit",
+        header: t("Account Limit"),
         size: 50,
       },
       {
         accessorKey: "pledge_count_limit",
-        header: "Pledge Count Limit",
+        header: t("Pledge Count Limit"),
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -134,7 +131,7 @@ const Bank = () => {
             }}
           >
             {/* Edit Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title={t("Edit")}>
               <IconButton
                 onClick={() => handleBankEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -144,11 +141,9 @@ const Bank = () => {
             </Tooltip>
 
             {/* Delete Icon */}
-            <Tooltip title="Delete">
+            <Tooltip title={t("Delete")}>
               <IconButton
-                onClick={() =>
-                  handleBankDeleteClick(row.original.bank_id)
-                }
+                onClick={() => handleBankDeleteClick(row.original.bank_id)}
                 sx={{ color: "#dc3545", padding: 0 }}
               >
                 <MdOutlineDelete />
@@ -158,42 +153,25 @@ const Bank = () => {
         ),
       },
     ],
-    []
+    [t] 
   );
 
-  // 4. Update JSX to render MaterialReactTable
+  // 4. Update JSX to render MaterialReactTable (TRANSLATED)
   return (
     <div>
       <Container fluid>
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Bank</span>
+              <span className="nav-list">{t("Bank")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Bank</>}
+              label={<>{t("Add Bank")}</>}
               onClick={() => navigate("/console/master/bank/create")}
             ></ClickButton>
           </Col>
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
           {loading ? (
@@ -206,7 +184,7 @@ const Bank = () => {
                     columns={columns}
                     data={userData}
                     enableColumnActions={false}
-                     enableColumnFilters={false} 
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}

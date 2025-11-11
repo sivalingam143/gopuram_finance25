@@ -27,7 +27,7 @@ a {
   z-index: 999;
   position: fixed;
   margin-left: 0px;
-background: linear-gradient(180deg, var(--gold-light), var(--gold-mid), var(--gold-dark)) !important;
+background: var(--theme-bg-sidebar) !important;
   padding-top: 65px;
   top: 0;
 }
@@ -113,11 +113,13 @@ background: linear-gradient(180deg, var(--gold-light), var(--gold-mid), var(--go
 
 #navbar-list .nav-item {
   color: rgb(76, 0, 255) !important;
+  padding-top: 22px!important;
 }
 
 .list-icon {
   height: 24px;
   width: 24px;
+  
 }
 
 .list-icon svg {
