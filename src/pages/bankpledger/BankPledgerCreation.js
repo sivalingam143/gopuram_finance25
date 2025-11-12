@@ -483,19 +483,16 @@ const BankPledgerCreation = () => {
                 </Col>
               </Row>
               <Row className="mb-4">
-                // NOTE: This assumes you have imported the useLanguage hook and
-                destructured 't'. // e.g., const {t} = useLanguage();
                 <Col lg={4}>
                   <div className="customer-card bg-light border rounded p-3 h-100">
                     <h5 className="mb-3">{t("Closing Details")}</h5>{" "}
-                    {/* ✅ Translated Heading */}
                     <ul className="list-unstyled">
                       {isClosing ? (
                         <>
                           <li className="mb-2">
                             <TextInputForm
-                              placeholder={t("Closing Date")} // ✅ Translated Placeholder
-                              labelname={t("Closing Date")} // ✅ Translated Label
+                              placeholder={t("Closing Date")} 
+                              labelname={t("Closing Date")} 
                               name="closing_date"
                               type="date"
                               value={formData.closing_date}
@@ -504,8 +501,8 @@ const BankPledgerCreation = () => {
                           </li>
                           <li className="mb-2">
                             <TextInputForm
-                              placeholder={t("Closing Amount")} // ✅ Translated Placeholder
-                              labelname={t("Closing Amount")} // ✅ Translated Label
+                              placeholder={t("Closing Amount")} 
+                              labelname={t("Closing Amount")} 
                               name="closing_amount"
                               value={formData.closing_amount}
                               onChange={(e) =>
@@ -515,8 +512,8 @@ const BankPledgerCreation = () => {
                           </li>
                           <li className="mb-2">
                             <TextInputForm
-                              placeholder={t("Closing Interest Amount")} // ✅ Translated Placeholder
-                              labelname={t("Closing Interest Amount")} // ✅ Translated Label
+                              placeholder={t("Closing Interest Amount")} 
+                              labelname={t("Closing Interest Amount")} 
                               name="closing_interest_amount"
                               value={formData.closing_interest_amount}
                               onChange={(e) =>
@@ -526,8 +523,8 @@ const BankPledgerCreation = () => {
                           </li>
                           <li className="mb-2">
                             <TextInputForm
-                              placeholder={t("Extra Charges")} // ✅ Translated Placeholder
-                              labelname={t("Extra Charges")} // ✅ Translated Label
+                              placeholder={t("Extra Charges")}
+                              labelname={t("Extra Charges")} 
                               name="extra_charges"
                               value={formData.extra_charges}
                               onChange={(e) => handleChange(e, "extra_charges")}
@@ -538,15 +535,12 @@ const BankPledgerCreation = () => {
                         <>
                           <li className="mb-2 d-flex justify-content-between">
                             <strong>{t("Closing Date")}:</strong>{" "}
-                            {/* ✅ Translated Display Label */}
                             <span>
                               {formData.closing_date || t("N/A")}
                             </span>{" "}
-                            {/* ✅ Translated Fallback */}
                           </li>
                           <li className="mb-2 d-flex justify-content-between">
                             <strong>{t("Closing Amount")}:</strong>{" "}
-                            {/* ✅ Translated Display Label */}
                             <span>
                               ₹
                               {parseFloat(
@@ -556,7 +550,6 @@ const BankPledgerCreation = () => {
                           </li>
                           <li className="mb-2 d-flex justify-content-between">
                             <strong>{t("Closing Interest Amount")}:</strong>{" "}
-                            {/* ✅ Translated Display Label */}
                             <span>
                               ₹
                               {parseFloat(
@@ -566,7 +559,6 @@ const BankPledgerCreation = () => {
                           </li>
                           <li className="mb-2 d-flex justify-content-between">
                             <strong>{t("Extra Charges")}:</strong>{" "}
-                            {/* ✅ Translated Display Label */}
                             <span>
                               ₹
                               {parseFloat(
@@ -587,7 +579,7 @@ const BankPledgerCreation = () => {
 
               <Col lg="4" md="12" xs="12" className="py-3">
                 <label htmlFor="pledger-select">
-                  {t("Select Bank Pledger Details")} {/* ✅ Translated Label */}
+                  {t("Select Bank Pledger Details")} 
                 </label>
                 <Select
                   id="pledger-select"
@@ -602,51 +594,47 @@ const BankPledgerCreation = () => {
               <Col lg="4" className="py-3"></Col>
               <Col lg="4" className="py-3"></Col>
               {bankList.length > 0 && (
-                // NOTE: This assumes you have access to the 't' function, e.g., 
-// import { useLanguage } from "../../components/LanguageContext";
-// const { t } = useLanguage();
-
-<Col lg="12" md="12" xs="12" className="py-3">
-  <Table bordered responsive>
-    <thead>
-      <tr>
-        <th>{t("S.No")}</th>                     {/* ✅ Translated Header */}
-        <th>{t("Bank Name")}</th>                {/* ✅ Translated Header */}
-        <th>{t("Account Limit")}</th>            {/* ✅ Translated Header */}
-        <th>{t("Pledge Count Limit")}</th>       {/* ✅ Translated Header */}
-        <th>{t("Select")}</th>                   {/* ✅ Translated Header */}
-      </tr>
-    </thead>
-    <tbody>
-      {bankList.map((bank, index) => (
-        <tr key={bank.id}>
-          <td>{index + 1}</td>
-          <td>{bank.bank_name}</td>
-          <td>{bank.account_limit}</td>
-          <td>{bank.pledge_count_limit}</td>
-          <td>
-            <input
-              type="checkbox"
-              checked={selectedBankId === bank.id}
-              onChange={(e) => {
-                setSelectedBankId(
-                  e.target.checked ? bank.id : null
-                );
-              }}
-              disabled={isEdit}
-            />
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </Table>
-</Col>
+                <Col lg="12" md="12" xs="12" className="py-3">
+                  <Table bordered responsive>
+                    <thead>
+                      <tr>
+                        <th>{t("S.No")}</th>
+                        <th>{t("Bank Name")}</th>
+                        <th>{t("Account Limit")}</th>{" "}
+                        <th>{t("Pledge Count Limit")}</th>{" "}
+                        <th>{t("Select")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bankList.map((bank, index) => (
+                        <tr key={bank.id}>
+                          <td>{index + 1}</td>
+                          <td>{bank.bank_name}</td>
+                          <td>{bank.account_limit}</td>
+                          <td>{bank.pledge_count_limit}</td>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedBankId === bank.id}
+                              onChange={(e) => {
+                                setSelectedBankId(
+                                  e.target.checked ? bank.id : null
+                                );
+                              }}
+                              disabled={isEdit}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </Col>
               )}
-              {/* Existing fields with updated disabled logic */}
+
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Pledge Date"}
-                  labelname={"Pledge Date"}
+                  placeholder={t("Pledge Date")} 
+                  labelname={t("Pledge Date")}
                   name="pledge_date"
                   type="date"
                   value={formData.pledge_date}
@@ -656,8 +644,8 @@ const BankPledgerCreation = () => {
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Bank Loan No"}
-                  labelname={"Bank Loan No"}
+                  placeholder={t("Bank Loan No")} 
+                  labelname={t("Bank Loan No")} 
                   name="bank_loan_no"
                   value={formData.bank_loan_no}
                   onChange={(e) => handleChange(e, "bank_loan_no")}
@@ -666,8 +654,8 @@ const BankPledgerCreation = () => {
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Pawn Loan No"}
-                  labelname={"Pawn Loan No"}
+                  placeholder={t("Pawn Loan No")} 
+                  labelname={t("Pawn Loan No")} 
                   name="pawn_loan_no"
                   value={formData.pawn_loan_no}
                   onChange={(e) => handleChange(e, "pawn_loan_no")}
@@ -676,8 +664,7 @@ const BankPledgerCreation = () => {
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Pawn Value"}
-                  labelname={"Pawn Value"}
+                  placeholder={t("Pawn Value")} 
                   name="pawn_value"
                   value={formData.pawn_value}
                   onChange={(e) => handleChange(e, "pawn_value")}
@@ -686,8 +673,8 @@ const BankPledgerCreation = () => {
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Interest Rate"}
-                  labelname={"Interest Rate"}
+                  placeholder={t("Interest Rate")} 
+                  labelname={t("Interest Rate")} 
                   name="interest_rate"
                   value={formData.interest_rate}
                   onChange={(e) => handleChange(e, "interest_rate")}
@@ -696,8 +683,8 @@ const BankPledgerCreation = () => {
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Duration Month"}
-                  labelname={"Duration Month"}
+                  placeholder={t("Duration Month")} 
+                  labelname={t("Duration Month")} 
                   name="duration_month"
                   value={formData.duration_month}
                   onChange={(e) => handleChange(e, "duration_month")}
@@ -706,8 +693,8 @@ const BankPledgerCreation = () => {
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Interest Amount"}
-                  labelname={"Interest Amount"}
+                  placeholder={t("Interest Amount")} 
+                  labelname={t("Interest Amount")} 
                   name="interest_amount"
                   value={formData.interest_amount}
                   onChange={(e) => handleChange(e, "interest_amount")}
@@ -716,8 +703,8 @@ const BankPledgerCreation = () => {
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Pledge Due Date"}
-                  labelname={"Pledge Due Date"}
+                  placeholder={t("Pledge Due Date")} 
+                  labelname={t("Pledge Due Date")} 
                   name="pledge_due_date"
                   type="date"
                   value={formData.pledge_due_date}
@@ -727,8 +714,7 @@ const BankPledgerCreation = () => {
               </Col>
               <Col lg="4" md="6" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Additional Charges"}
-                  labelname={"Additional Charges"}
+                  placeholder={t("Additional Charges")} 
                   name="additional_charges"
                   value={formData.additional_charges}
                   onChange={(e) => handleChange(e, "additional_charges")}
@@ -737,6 +723,7 @@ const BankPledgerCreation = () => {
               </Col>
             </>
           )}
+
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
               <>
@@ -755,7 +742,7 @@ const BankPledgerCreation = () => {
                 {isView ? (
                   <span className="mx-2">
                     <ClickButton
-                      label={<>Back</>}
+                      label={<>{t("Back")}</>} 
                       onClick={() => navigate("/console/master/bankpledger")}
                     ></ClickButton>
                   </span>
@@ -765,13 +752,13 @@ const BankPledgerCreation = () => {
                       <ClickButton
                         label={
                           loading ? (
-                            <>Processing...</>
+                            <>{t("Processing...")}</> 
                           ) : isClosing ? (
-                            <>Closing</>
+                            <>{t("Closing")}</> 
                           ) : isEdit ? (
-                            <>Update</>
+                            <>{t("Update")}</> 
                           ) : (
-                            <>Submit</>
+                            <>{t("Submit")}</> 
                           )
                         }
                         onClick={handleFormSubmit}
@@ -780,7 +767,7 @@ const BankPledgerCreation = () => {
                     </span>
                     <span className="mx-2">
                       <ClickButton
-                        label={<>Cancel</>}
+                        label={<>{t("Cancel")}</>} 
                         onClick={() => navigate("/console/master/bankpledger")}
                       ></ClickButton>
                     </span>

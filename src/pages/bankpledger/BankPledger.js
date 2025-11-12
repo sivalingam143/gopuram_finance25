@@ -42,6 +42,7 @@ const BankPledger = () => {
         }),
       });
       const responseData = await response.json();
+      console.log("responseData",responseData);
       if (responseData.head.code === 200) {
         const grouped = responseData.body.grouped_pledger || [];
         setAllGroupedData(grouped);
@@ -78,49 +79,56 @@ const updateGroupedData = (data) => {
   }
 
   // 3. Define Material React Table Columns
-  const columns = useMemo(
-    () => [
-      {
-        accessorFn: (originalRow) => originalRow.id,
-        header: t("S.No"), // ✅ Translated
-        size: 50,
-        enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
-      },
-      {
-        accessorKey: "bank_loan_no",
-        header: t("Pawn Loan No."), 
-        size: 50,
-      },
-      {
-        id: "action",
-        header: t("Action"),
-        size: 100,
-        enableColumnFilter: false,
-        enableColumnOrdering: false,
-        enableSorting: false,
-        Cell: ({ row }) => (
-          <Box
-            sx={{
-              justifyContent: "center",
-              gap: "2 rem",
-            }}
-          >
-            {/* View Icon */}
-            <Tooltip title={t("Customer Details")}> 
-              <IconButton
-                onClick={() => handleViewDetails(row.original, row.original.pawn_loan_no)} // Pass loanNo or equivalent if needed in details page
-                sx={{ padding: 0 }}
-              >
-                <VisibilityIcon/>
-              </IconButton>
-            </Tooltip>
-          </Box>
-        ),
-      },
-    ],
-    [t] 
-  );
+ const columns = useMemo(
+        () => [
+            {
+                // FIX: Use 's_no' as accessor. The Cell function for row.index + 1 is redundant 
+                // if 's_no' is sequential from the backend, but is okay if you prefer it.
+                accessorKey: "s_no", 
+                header: t("S.No"),
+                size: 50,
+                enableColumnFilter: false,
+            },
+            {
+                // FIX: Must use 'loan_no' (the key present in groupedData)
+                accessorKey: "loan_no", 
+                header: t("Pawn Loan No."), 
+                size: 50,
+            },
+            {
+                id: "action",
+                header: t("Action"),
+                size: 100,
+                enableColumnFilter: false,
+                enableColumnOrdering: false,
+                enableSorting: false,
+                Cell: ({ row }) => (
+                    <Box
+                        sx={{
+                            justifyContent: "center",
+                            gap: "2 rem",
+                        }}
+                    >
+                        {/* View Icon */}
+                        <Tooltip title={t("View Details")}> 
+                            <IconButton
+                                // 🛑 FIX: Pass the NESTED `records` array (the details)
+                                // 🛑 FIX: Use the correct loan number key: `loan_no`
+                                onClick={() => handleViewDetails(
+                                    row.original.records, // Pass the array of detail records
+                                    row.original.loan_no // Pass the grouping loan number
+                                )} 
+                                sx={{ padding: 0 }}
+                            >
+                                <VisibilityIcon/>
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                ),
+            },
+        ],
+        [handleViewDetails, t],
+    );
 
   // 4. Update JSX to render MaterialReactTable
   return (

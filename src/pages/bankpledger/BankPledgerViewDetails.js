@@ -6,25 +6,32 @@ import { TextInputForm } from "../../components/Forms";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import LoadingOverlay from "../../components/LoadingOverlay";
+import { useLanguage } from "../../components/LanguageContext";
+
 const BankPledgerViewDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useLanguage(); 
+  
   const { records = [], loanNo } = location.state || {};
   const [filteredRecords, setFilteredRecords] = useState(records);
   console.log(filteredRecords);
   const [detailsSearchText, setDetailsSearchText] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // ✅ Translate table headers
   const UserTablehead = [
-    "No",
-    "Name",
-    "Pawn Loan No",
-    "Pawn Value",
-    "Pledge Date",
-    "Pledge Due Date",
-    "Status",
-    "Due Days",
-    "Action",
+    t("No"),
+    t("Name"),
+    t("Pawn Loan No"),
+    t("Pawn Value"),
+    t("Pledge Date"),
+    t("Pledge Due Date"),
+    t("Status"),
+    t("Due Days"),
+    t("Action"),
   ];
+
   useEffect(() => {
     // Filter by name on search change
     if (detailsSearchText) {
@@ -38,12 +45,15 @@ const BankPledgerViewDetails = () => {
       setFilteredRecords([...records]);
     }
   }, [detailsSearchText, records]);
+
   const handleDetailsSearch = (value) => {
     setDetailsSearchText(value);
   };
+
   const handleBack = () => {
     navigate("/console/master/bankpledger");
   };
+
   if (!records || records.length === 0) {
     return (
       <div>
@@ -51,20 +61,24 @@ const BankPledgerViewDetails = () => {
           <Row>
             <Col lg="12">
               <div className="page-nav py-3">
-                <span className="nav-list">Bank Pledger Details</span>
+                {/* ✅ Translated Page Title */}
+                <span className="nav-list">{t("Bank Pledger Details")}</span> 
               </div>
             </Col>
           </Row>
           <Row>
             <Col lg="12" className="text-center py-4">
-              <p>No details available for this loan.</p>
-              <ClickButton label={<>Back</>} onClick={handleBack} />
+              {/* ✅ Translated Message */}
+              <p>{t("No details available for this loan.")}</p> 
+              {/* ✅ Translated Button Label */}
+              <ClickButton label={<>{t("Back")}</>} onClick={handleBack} /> 
             </Col>
           </Row>
         </Container>
       </div>
     );
   }
+
   return (
     <div>
       <LoadingOverlay isLoading={loading} />
@@ -72,11 +86,13 @@ const BankPledgerViewDetails = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span className="nav-list">Bank Pledger Details</span>
+              {/* ✅ Translated Page Title */}
+              <span className="nav-list">{t("Bank Pledger Details")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-            <ClickButton label={<>Back</>} onClick={handleBack} />
+            {/* ✅ Translated Button Label */}
+            <ClickButton label={<>{t("Back")}</>} onClick={handleBack} /> 
           </Col>
         </Row>
         <Row>
@@ -84,7 +100,8 @@ const BankPledgerViewDetails = () => {
             <Row className="py-1">
               <Col lg="4" md="6" xs="12">
                 <TextInputForm
-                  placeholder={"Search by Name"}
+                  // ✅ Translated Placeholder
+                  placeholder={t("Search by Name")} 
                   prefix_icon={<FaMagnifyingGlass />}
                   onChange={(e) => handleDetailsSearch(e.target.value)}
                   value={detailsSearchText}
@@ -93,7 +110,8 @@ const BankPledgerViewDetails = () => {
             </Row>
             <div className="py-1">
               {filteredRecords.length === 0 ? (
-                <p>No records found for the search criteria.</p>
+             
+                <p>{t("No records found for the search criteria.")}</p> 
               ) : (
                 <TableUI
                   headers={UserTablehead}
@@ -110,4 +128,5 @@ const BankPledgerViewDetails = () => {
     </div>
   );
 };
+
 export default BankPledgerViewDetails;
