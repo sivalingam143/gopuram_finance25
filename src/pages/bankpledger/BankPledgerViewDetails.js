@@ -61,16 +61,13 @@ const BankPledgerViewDetails = () => {
           <Row>
             <Col lg="12">
               <div className="page-nav py-3">
-                {/* ✅ Translated Page Title */}
                 <span className="nav-list">{t("Bank Pledger Details")}</span> 
               </div>
             </Col>
           </Row>
           <Row>
             <Col lg="12" className="text-center py-4">
-              {/* ✅ Translated Message */}
               <p>{t("No details available for this loan.")}</p> 
-              {/* ✅ Translated Button Label */}
               <ClickButton label={<>{t("Back")}</>} onClick={handleBack} /> 
             </Col>
           </Row>
@@ -86,12 +83,10 @@ const BankPledgerViewDetails = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              {/* ✅ Translated Page Title */}
               <span className="nav-list">{t("Bank Pledger Details")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-            {/* ✅ Translated Button Label */}
             <ClickButton label={<>{t("Back")}</>} onClick={handleBack} /> 
           </Col>
         </Row>
@@ -100,7 +95,6 @@ const BankPledgerViewDetails = () => {
             <Row className="py-1">
               <Col lg="4" md="6" xs="12">
                 <TextInputForm
-                  // ✅ Translated Placeholder
                   placeholder={t("Search by Name")} 
                   prefix_icon={<FaMagnifyingGlass />}
                   onChange={(e) => handleDetailsSearch(e.target.value)}
