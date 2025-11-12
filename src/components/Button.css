@@ -102,7 +102,8 @@ button {
 
 /* Submit (Blue) */
 .create-btn {
-  background: #041a3f !important;
+  background: var(--theme-color-primary) !important;
+  /* background:#574d1fe3!important; */
 }
 
 /* Cancel (Red) */
@@ -115,7 +116,7 @@ button {
 }
 /* Hover effects */
 .create-btn:hover {
-  background: #004ecb !important;
+  background: var(--theme-bg-button-hover) !important;
 }
 
 .delete:hover {

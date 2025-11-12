@@ -10,14 +10,11 @@ import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
-
-// 🌐 NEW IMPORT FOR TRANSLATION
 import { useLanguage } from "../../components/LanguageContext";
 
 const Products = () => {
   const navigate = useNavigate();
-  // 🌐 Initialize the translation hook
-  const { t } = useLanguage();
+  const { t,cacheVersion } = useLanguage();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -107,30 +104,29 @@ const Products = () => {
     fetchData();
   }, [searchText]);
 
-  // 3. Define Material React Table Columns - using 't' for translation
+  // 3. Define Material React Table Columns 
   const columns = useMemo(
     () => [
-      {
-        accessorFn: (originalRow) => originalRow.id,
-        header: t("S.No"), // 🌐 Translate
+       {
+        accessorKey: "s_no_key", 
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "product_eng",
-        header: t("Product Name"), // 🌐 Translate
+        header: t("Product Name"), 
         size: 50,
       },
       {
         accessorKey: "product_tam",
-        // 🌐 Translate - changed hardcoded Tamil string to a key for translation
         header: t("Product Name Tamil"),
         size: 50,
       },
       {
         id: "action",
-        header: t("Action"), // 🌐 Translate
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -167,7 +163,7 @@ const Products = () => {
         ),
       },
     ],
-    [t] // ⚠️ IMPORTANT: Add 't' to the dependency array
+    [t,cacheVersion] 
   );
 
   // 4. Update JSX to render MaterialReactTable
@@ -177,13 +173,11 @@ const Products = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              {/* 🌐 Translate Page Title */}
               <span class="nav-list">{t("Products")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              // 🌐 Translate Button Label
               label={<>{t("Add Products")}</>}
               onClick={() => navigate("/console/master/products/create")}
             ></ClickButton>

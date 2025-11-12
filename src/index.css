@@ -1,59 +1,92 @@
 
-/* === Global Jewel Finance Theme === */
+/* === Global Jewel Finance Theme Variables (Keep these for global defaults if needed) === */
 :root {
-  --gold-light: #fff8dc;     /* soft cream gold */
-  --gold-mid: #f7d36e;       /* rich gold */
-  --gold-dark: #d4af37;      /* deep metallic gold */
-  --gold-glow: #ffefba;      /* glow highlight */
-  --text-dark: #3b2f1e;      /* elegant brown text */
-  --card-bg: #ffffff;        /* white card background */
-  --accent-blue: #1e3c72;    /* accent for buttons or highlights */
-  --accent-green: #52c242;   /* accent for success */
-}
-
-/* ------------------------------------ */
-/* THEME A (Default)          */
-/* ------------------------------------ */
-:root {
-  /* BACKGROUNDS */
-  --theme-bg-page: #f7d36e; 
+  --gold-light: #fff8dc;
+  --gold-mid: #f7d36e; 
+  --gold-dark: #d4af37;
+  --gold-glow: #ffefba; 
+  --text-dark: #3b2f1e;
+  --card-bg: #ffffff;
+  --accent-blue: #1e3c72; 
+  --accent-green: #52c242; 
+  
+  /* Set Theme A as the :root default for fallback */
+  --theme-bg-page: #ECD794; 
   --theme-bg-card: #FFFFFF;
-  --theme-bg-sidebar: #ecd388;
-  --theme-bg-main-content:  #ECD794; /* Crisp white for main content areas */
-
-  /* COLORS */
-  --theme-color-primary: #D4AF37; 
-  --theme-color-text: #1E3C72;/* Dark Navy Blue Text */
-  --theme-color-highlight: #A0B2C4; /* Soft Grey-Blue Accent */
-
-  /* BORDERS/SHADOWS */
-  --theme-border-color: #E8E8E8;
+  --theme-bg-sidebar: #D4AF37; 
+  --theme-bg-main-content: #FFFFFF; 
+  --theme-color-primary: #1E3C72; 
+  --theme-color-text: #3b2f1e;
+  --theme-color-highlight: #A0B2C4;
+  --theme-text-sidebar: #FFFFFF;
 }
 
 /* ------------------------------------ */
-/* THEME B (Toggle On)        */
+/* THEME A (Default - Gold)      */
+
+.theme-a {
+  --theme-bg-page:rgb(206 187 83);
+  --theme-bg-sidebar:rgb(106 91 7 / 94%);
+ --theme-bg-main-content:  linear-gradient(180deg, #ecd67a,#f7d36e, #d4af37) !important;
+
+ --theme-color-primary: #574d1fe3!important;
+ --theme-bg-button-hover: #958b5de3 !important;
+  --theme-color-text: #3b2f1e;
+  --theme-text-sidebar: #FFFFFF;
+}
+
+/* ------------------------------------ */
+/* THEME B (Pale Mint)          */
 /* ------------------------------------ */
 .theme-b {
-  /* OVERRIDE BACKGROUNDS */
-  --theme-bg-page: #F0F5F2; /* Pale Mint Page */
-  --theme-bg-card: #FFFFFF;
-  --theme-bg-sidebar: #EAEAEA;   /* Light Silver Sidebar */
-  --theme-bg-main-content: #cbc1ce; 
+  --theme-bg-page: #426d4d;
+  --theme-bg-sidebar:#3e4d3d;
+  --theme-bg-main-content:  #7e9e6d;
 
   /* OVERRIDE COLORS */
-  --theme-color-primary: #00A398; /* Deep Mint Green */
-  --theme-color-text: #333333; /* Soft Charcoal Text */
-  --theme-color-highlight: #748B9C; /* Muted Blue-Grey Accent */
-
-  /* OVERRIDE BORDERS/SHADOWS */
-  --theme-border-color: #D3D3D3;
+  --theme-color-primary: #086760;
+  --theme-bg-button-hover:  #509491!important;
+  --theme-color-text: #333333;
+  --theme-text-sidebar: #FFFFFF;
 }
 
-/* Base styles using the variables */
+/* ------------------------------------ */
+/* THEME C (Ruby Red)          */
+/* ------------------------------------ */
+.theme-c {
+  /* OVERRIDE BACKGROUNDS */
+  --theme-bg-page: #D7D3BF;
+  --theme-bg-sidebar: #7c755f;
+  --theme-bg-main-content: #C1BAA1;
+
+  /* OVERRIDE COLORS */
+  --theme-color-primary:#726438;
+  --theme-bg-button-hover: #a18c4bdb;
+  --theme-color-text: #2c3e50;
+  --theme-text-sidebar: #FFFFFF;
+}
+
+/* ------------------------------------ */
+/* THEME D (Emerald Green)     */
+/* ------------------------------------ */
+.theme-d {
+  /* OVERRIDE BACKGROUNDS */
+  --theme-bg-page:#cabbbf96;
+  --theme-bg-sidebar:#5f1f1fd1;
+  --theme-bg-main-content:#9E7676;
+
+  /* OVERRIDE COLORS */
+  --theme-color-primary: #490606cc;
+   --theme-bg-button-hover:#876b6bdb;
+  --theme-color-text: #1b5e20;
+  --theme-text-sidebar: #FFFFFF;
+}
+
+
+/* Body/Page Background */
 body {
-  background-color: var(--theme-bg-page);
-  color: var(--theme-color-text);
-   font-family: "Inter", "Noto Sans Tamil", sans-serif !important;
-  
+    background-color: var(--theme-bg-page);
+    color: var(--theme-color-text);
+    font-family: "Inter", "Noto Sans Tamil", sans-serif !important; 
 }
 

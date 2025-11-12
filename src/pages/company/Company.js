@@ -9,8 +9,6 @@ import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
-
-// ✅ NEW: Import Language Hook
 import { useLanguage } from "../../components/LanguageContext";
 
 const Company = () => {
@@ -18,9 +16,7 @@ const Company = () => {
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  // ✅ NEW: Destructure the translation function
-  const { t } = useLanguage();
+  const { t,cacheVersion} = useLanguage();
 
   // 1. Handlers for Edit Actions
   const handleCompanyEditClick = (rowData) => {
@@ -75,8 +71,8 @@ const Company = () => {
   const columns = useMemo(
     () => [
       {
-        accessorFn: (originalRow) => originalRow.id,
-        header: t("S.No"), 
+        accessorKey: "s_no_key", // Add a unique, stable accessorKey
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1,
@@ -123,7 +119,7 @@ const Company = () => {
         ),
       },
     ],
-    [t] 
+    [t,cacheVersion] 
   );
 
   // 4. Update JSX to render MaterialReactTable

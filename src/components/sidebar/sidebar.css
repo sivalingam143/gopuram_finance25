@@ -27,7 +27,7 @@ a {
   z-index: 999;
   position: fixed;
   margin-left: 0px;
-background: var(--theme-bg-sidebar) !important;
+background-color: var(--theme-bg-sidebar) !important;
   padding-top: 65px;
   top: 0;
 }
@@ -49,6 +49,7 @@ background: var(--theme-bg-sidebar) !important;
 
 .menu-toggle {
   background: none;
+ 
   border: none;
 }
 
@@ -85,7 +86,7 @@ background: var(--theme-bg-sidebar) !important;
 #sidebar-wrapper .list-group ul li a,
 .sub-menu {
   border-radius: 5px;
-  color: rgb(62, 62, 62) !important;
+  color: rgb(255, 255, 255) !important;
   transition: 0.25s all;
   width: 100% !important;
   border-radius: 8px;
@@ -106,7 +107,7 @@ background: var(--theme-bg-sidebar) !important;
 #sidebar-wrapper .list-group li > .nav-link:hover,
 #sidebar-wrapper .list-group li > .sub-menu:hover,
 #sidebar-wrapper .list-group li .active {
-  background-color: #041a3f;
+  background-color:#d2cec785;
   color: rgb(255 255 255) !important;
   width: 100%;
 }
@@ -130,7 +131,7 @@ background: var(--theme-bg-sidebar) !important;
   position: fixed;
   width: 100%;
   z-index: 999;
-  background: white;
+  background:white;
   top: 0;
 }
 

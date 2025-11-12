@@ -17,7 +17,7 @@ import { MdOutlineDelete } from "react-icons/md";
 
 const Action = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();  
+  const { t, cacheVersion } = useLanguage();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -82,7 +82,9 @@ const Action = () => {
         // Handle case where body.action might be a single object
         const actionArray = Array.isArray(responseData.body.action)
           ? responseData.body.action
-          : (responseData.body.action ? [responseData.body.action] : []);
+          : responseData.body.action
+          ? [responseData.body.action]
+          : [];
         setUserData(actionArray);
       } else {
         throw new Error(responseData.head.msg);
@@ -96,15 +98,15 @@ const Action = () => {
     fetchData();
   }, [searchText]);
 
-  // 3. Define Material React Table Columns 
+  // 3. Define Material React Table Columns
   const columns = useMemo(
     () => [
       {
-        accessorFn: (originalRow) => originalRow.id,
+        accessorKey: "s_no_key", // Add a unique, stable accessorKey
         header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "receipt_no",
@@ -143,9 +145,7 @@ const Action = () => {
             {/* Delete Icon */}
             <Tooltip title={t("Delete")}>
               <IconButton
-                onClick={() =>
-                  handleActionDeleteClick(row.original.action_id)
-                }
+                onClick={() => handleActionDeleteClick(row.original.action_id)}
                 sx={{ color: "#dc3545", padding: 0 }}
               >
                 <MdOutlineDelete />
@@ -155,7 +155,7 @@ const Action = () => {
         ),
       },
     ],
-    [t]
+    [t, cacheVersion]
   );
 
   // 4. Update JSX to render MaterialReactTable

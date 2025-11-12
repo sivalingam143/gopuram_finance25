@@ -13,8 +13,6 @@ import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
-
-// ✅ NEW IMPORT FOR TRANSLATION
 import { useLanguage } from "../../components/LanguageContext";
 
 const BankPledgerDetails = () => {
@@ -22,8 +20,6 @@ const BankPledgerDetails = () => {
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  // ✅ USE TRANSLATION HOOK
   const { t, cacheVersion } = useLanguage();
 
   // 1. Handlers for Edit and Delete Actions
@@ -102,25 +98,25 @@ const BankPledgerDetails = () => {
   const columns = useMemo(
     () => [
       {
-        accessorFn: (originalRow) => originalRow.id,
-        header: t("S.No"), // ✅ Translated
+        accessorKey: "s_no_key", 
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "name",
-        header: t("Pleger Name"), // ✅ Translated
+        header: t("Pleger Name"), 
         size: 50,
       },
       {
         accessorKey: "mobile_no",
-        header: t("Mobile No"), // ✅ Translated
+        header: t("Mobile No"),
         size: 50,
       },
       {
         id: "action",
-        header: t("Action"), // ✅ Translated
+        header: t("Action"), 
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -159,7 +155,7 @@ const BankPledgerDetails = () => {
         ),
       },
     ],
-    [t, cacheVersion] // ✅ DEPENDENCY: Include t and cacheVersion to ensure re-render on language switch/translation load
+    [t, cacheVersion] 
   );
 
   // 4. Update JSX to render MaterialReactTable
@@ -183,7 +179,7 @@ const BankPledgerDetails = () => {
             ></ClickButton>
           </Col>
           
-          <Col lg={3} md={12} xs={12} className="py-2">
+          {/* <Col lg={3} md={12} xs={12} className="py-2">
             <TextInputForm
               type="text"
               placeholder={t("Search")} 
@@ -191,7 +187,7 @@ const BankPledgerDetails = () => {
               onChange={(e) => setSearchText(e.target.value)}
               icon={<FaMagnifyingGlass />}
             />
-          </Col>
+          </Col> */}
 
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
           

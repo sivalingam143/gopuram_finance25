@@ -9,15 +9,16 @@ import { ClickButton } from "../ClickButton";
 import { LuDot } from "react-icons/lu";
 import { useLanguage } from '../LanguageContext';
 // 💡 New Imports for the Toggle Icon
-import { IconButton } from "@mui/material"; 
+import { IconButton,Box } from "@mui/material"; 
 import SettingsIcon from '@mui/icons-material/Settings';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 // 🎚️ Theme/Language Toggle Icons
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import CheckIcon from '@mui/icons-material/Check'; // ADD CheckIcon
 
-const SideBar = ({ onLogout, currentTheme, toggleTheme }) => { 
+const SideBar = ({ onLogout, currentTheme, toggleTheme,setTheme }) => { 
 // ----------------------------------------------------
   const [user, setUser] = useState({});
   const [openMenu, setOpenMenu] = useState(
@@ -28,14 +29,21 @@ const SideBar = ({ onLogout, currentTheme, toggleTheme }) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
- const { currentLanguage, toggleLanguage, t, cacheVersion } = useLanguage();
+  const { currentLanguage, toggleLanguage, t, cacheVersion } = useLanguage();
   // Define the missing state variables
   const [translatedMenu, setTranslatedMenu] = useState(sidebarConfig); // The config is imported at the top
   const [staticT, setStaticT] = useState({ 
-    language: "Language", 
+    // language: "Language", 
     languageTamil: "தமிழ்", 
     languageEnglish: "English" 
   });
+
+  const themePalettes = [
+  { id: 'A', label: 'Regal Gold', color: '#D4AF37' }, // Theme A: Gold
+  { id: 'B', label: 'Mint', color: '#426d4d'}, // Theme B: Mint/Teal
+  { id: 'C', label: 'RusticRuby', color:  ' #7c755f'},
+  { id: 'D', label: 'Deep Emerald', color: '#5f1f1fd1'}
+];
 
   useEffect(() => {
     const translateMenu = async () => {
@@ -128,47 +136,7 @@ const SideBar = ({ onLogout, currentTheme, toggleTheme }) => {
   const handleShowLogoutModal = () => setShowLogoutModal(true);
   const handleCloseLogoutModal = () => setShowLogoutModal(false);
 
-  // ----------------------------------------------------
-  // ✅ API TRANSLATE MENU ITEMS LOGIC (Reruns on language change)
-  // ----------------------------------------------------
-  // useEffect(() => {
-  //   const translateMenuItems = async () => {
-  //     // Use original config immediately for EN
-  //     if (currentLanguage === "EN") {
-  //       setTranslatedMenu(sidebarConfig); 
-  //       return;
-  //     }
-
-  //     // 2. If Tamil, perform API calls for dynamic translation
-  //     const newTranslatedMenu = await Promise.all(
-  //       translatedSidebarConfig.map(async (item) => {
-  //         const translatedItem = { ...item };
-          
-  //         // Translate main menu item text using the global t function
-  //         translatedItem.text = await t(item.text);
-
-  //         // Translate sub-menu items if they exist
-  //         if (item.subMenu) {
-  //           translatedItem.subMenu = await Promise.all(
-  //             item.subMenu.map(async (subItem) => ({
-  //               ...subItem,
-  //               text: await t(subItem.text),
-  //             }))
-  //           );
-  //         }
-  //         return translatedItem;
-  //       })
-  //     );
-      
-  //     setTranslatedMenu(newTranslatedMenu);
-  //   };
-
-  //   translateMenuItems();
-    
-  // }, [currentLanguage, t]); // Depends on currentLanguage and the global t function
   
-  // // Menu configuration to be used for rendering
-  // const menuConfigToRender = translatedMenu || sidebarConfig;
 
   return (
     <>
@@ -272,14 +240,31 @@ const SideBar = ({ onLogout, currentTheme, toggleTheme }) => {
         <div className="collapse navbar-collapse" id="navbar-list">
           <ul className="navbar-nav ms-auto">
             
-           <li className="nav-item mx-3">
+            {/* 🛑 NEW: 1. LANGUAGE TOGGLE BUTTON (Moved out of Menu) */}
+            <li className="nav-item mx-3">
+              <span style={{ marginRight: '8px', fontWeight: 'bold', lineHeight: '30px' }}>
+                {/* {staticT.language}: */}
+              </span>
               <IconButton 
-                onClick={handleMenuOpen} // Open the dropdown when clicked
+                onClick={toggleLanguage} 
+                color="primary"
+                title={currentLanguage === 'EN' ? `Switch to Tamil (${staticT.languageTamil})` : `Switch to English (${staticT.languageEnglish})`}
+                sx={{ marginTop: '-10px' }}
+              >
+                {currentLanguage === 'TA' ? (
+                  <ToggleOnIcon fontSize="large" /> 
+                ) : (
+                  <ToggleOffIcon fontSize="large" />
+                )}
+              </IconButton>
+            </li>
+            <li className="nav-item mx-3">
+              <IconButton 
+                onClick={handleMenuOpen}
                 color="primary" 
                 title="Settings"
                 sx={{ marginTop: '-10px' }}
               >
-                {/* Use the Settings icon, size set to large */}
                 <SettingsIcon fontSize="large" /> 
               </IconButton>
             </li>
@@ -304,7 +289,6 @@ const SideBar = ({ onLogout, currentTheme, toggleTheme }) => {
           </ul>
         </div>
       </div>
-      {/* ... (Modal code remains the same) */}
       <Modal
         show={showLogoutModal}
         onHide={handleCloseLogoutModal}
@@ -312,14 +296,13 @@ const SideBar = ({ onLogout, currentTheme, toggleTheme }) => {
         backdrop="static"
       >
         <Modal.Header>
-          {/* ✅ TRANSLATED MODAL TITLE */}
         <Modal.Title>{t("Logout Confirmation")}</Modal.Title>
         </Modal.Header>
         {/* ✅ TRANSLATED MODAL BODY */}
       <Modal.Body>{t("Are you sure you want to logout?")}</Modal.Body>
         <Modal.Footer>
           {/* ✅ TRANSLATED BUTTON LABELS */}
-         <ClickButton label={t("Cancel")} onClick={handleCloseLogoutModal} />
+          <ClickButton label={t("Cancel")} onClick={handleCloseLogoutModal} />
           <ClickButton
             label={t("Logout")}
             variant="primary"
@@ -333,7 +316,6 @@ const SideBar = ({ onLogout, currentTheme, toggleTheme }) => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleMenuClose}
-        // Position the menu below the settings icon
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',
@@ -343,17 +325,56 @@ const SideBar = ({ onLogout, currentTheme, toggleTheme }) => {
           horizontal: 'right',
         }}
       >
-        {/* ---------------------------------------------------- */}
-        {/* 1. THEME TOGGLE (Uses translated label) */}
-        {/* ---------------------------------------------------- */}
-        <MenuItem 
+        {/* New title for the Theme Selection section */}
+        <MenuItem style={{ cursor: 'default', fontWeight: 'bold' }}>
+          {t("Select Theme")}
+        </MenuItem>
+
+        {/* 🛑 NEW: RENDER FOUR THEME PALETTES */}
+        {themePalettes.map((theme) => (
+          <MenuItem 
+            key={theme.id}
+            onClick={() => {
+              setTheme(theme.id); // Call new setTheme function with theme ID
+              handleMenuClose();  // Close menu after selection
+            }}
+            style={{ 
+              minWidth: '150px',
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {/* Color Palette Swatch */}
+              <Box
+                sx={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: '50%',
+                  backgroundColor: theme.color,
+                  marginRight: 1.5,
+                  border: currentTheme === theme.id ? '2px solid' : '1px solid #ccc',
+                  borderColor: currentTheme === theme.id ? 'primary.main' : '#ccc',
+                }}
+              />
+              {t(theme.label)} {/* Translate theme label */}
+            </Box>
+            
+            {/* Checkmark for active theme */}
+            {currentTheme === theme.id && (
+              <CheckIcon color="primary" fontSize="small" />
+            )}
+          </MenuItem>
+        ))}
+        {/* <MenuItem 
           onClick={(e) => e.stopPropagation()} 
           style={{ cursor: 'default', display: 'flex', justifyContent: 'space-between', minWidth: '150px' }}
         >
           {/* ✅ TRANSLATED THEME LABEL */}
-          <span style={{ marginRight: '16px', fontWeight: 'bold' }}>{t("Theme")}:</span>
+          {/* <span style={{ marginRight: '16px', fontWeight: 'bold' }}>{t("Theme")}:</span> */}
           
-          <IconButton 
+          {/* <IconButton 
             onClick={toggleTheme} 
             color="primary"
             title={currentTheme === 'A' ? 'Switch to Theme B' : 'Switch to Theme A'}
@@ -363,32 +384,10 @@ const SideBar = ({ onLogout, currentTheme, toggleTheme }) => {
             ) : (
               <ToggleOffIcon fontSize="large" />
             )}
-          </IconButton>
-        </MenuItem>
+          </IconButton> */}
+        {/* </MenuItem>  */}
         
-        {/* ---------------------------------------------------- */}
-        {/* 2. ✅ NEW LANGUAGE TOGGLE */}
-        {/* ---------------------------------------------------- */}
-        <MenuItem 
-          onClick={(e) => e.stopPropagation()} 
-          style={{ cursor: 'default', display: 'flex', justifyContent: 'space-between', minWidth: '150px' }}
-        >
-          {/* ✅ TRANSLATED LANGUAGE LABEL */}
-          <span style={{ marginRight: '16px', fontWeight: 'bold' }}>{staticT.language}:</span>
-          
-          <IconButton 
-            onClick={toggleLanguage} 
-            color="primary"
-            title={currentLanguage === 'EN' ? `Switch to Tamil (${t('தமிழ்')})` : `Switch to English (${t('English')})`}
-          >
-            {/* Icon represents the switch being 'on' for Tamil (TA) */}
-            {currentLanguage === 'TA' ? (
-              <ToggleOnIcon fontSize="large" /> 
-            ) : (
-              <ToggleOffIcon fontSize="large" />
-            )}
-          </IconButton>
-        </MenuItem>
+   
         
       </Menu>
     </>

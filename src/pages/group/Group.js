@@ -17,7 +17,7 @@ import { MdOutlineDelete } from "react-icons/md";
 
 const Group = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage(); // 💡 USE LANGUAGE HOOK
+  const { t,cacheVersion } = useLanguage(); // 💡 USE LANGUAGE HOOK
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -100,11 +100,11 @@ const Group = () => {
   const columns = useMemo(
     () => [
       {
-        accessorFn: (originalRow) => originalRow.id,
-        header: t("S.No"), // 💡 TRANSLATE
+        accessorKey: "s_no_key", // Add a unique, stable accessorKey
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "Group_type",
@@ -150,7 +150,7 @@ const Group = () => {
         ),
       },
     ],
-    [t] 
+    [t,cacheVersion] 
   );
 
   // 4. Update JSX to render MaterialReactTable (UPDATED with t)

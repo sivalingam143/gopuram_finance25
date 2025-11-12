@@ -15,7 +15,7 @@ import { MdOutlineDelete } from "react-icons/md";
 
 const User = () => {
   // ✅ GET TRANSLATION FUNCTION
-  const { t } = useLanguage();
+  const { t,cacheVersion} = useLanguage();
   
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
@@ -114,12 +114,12 @@ const User = () => {
   // 3. Define Material React Table Columns (Using t() for headers and tooltips)
   const columns = useMemo(
     () => [
-      {
-        accessorFn: (originalRow) => originalRow.id,
+     {
+        accessorKey: "s_no_key", // Add a unique, stable accessorKey
         header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "Name",
@@ -175,7 +175,7 @@ const User = () => {
         ),
       },
     ],
-    [t] // ✅ Depend on t to re-run translations when language changes
+    [t,cacheVersion] // ✅ Depend on t to re-run translations when language changes
   );
 
   // 4. Update JSX to render MaterialReactTable (Using t() for display strings)

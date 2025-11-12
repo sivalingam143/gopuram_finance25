@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useMemo } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
@@ -13,7 +13,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
 // 🎨 Import your two theme definitions
-import { themeA, themeB } from './theme';
+import { themeA, themeB, themeC, themeD, themeMap } from './theme';
 const App = () => {
   // 1. Existing Login Logic
   const [loggedIn, setLoggedIn] = useState(() => {
@@ -30,30 +30,38 @@ const App = () => {
     localStorage.removeItem("loggedIn");
   };
 
-  
-  // 2. New Theme Logic
   const [currentTheme, setCurrentTheme] = useState(() => {
-    // Initialize theme state from localStorage, defaulting to 'A'
-    return localStorage.getItem("appTheme") === "B" ? "B" : "A";
+    // Initialize theme state from localStorage, allowing four possible values
+    return localStorage.getItem("appTheme") || "A";
   });
 
+  const setTheme = (themeId) => {
+    setCurrentTheme(themeId);
+    localStorage.setItem("appTheme", themeId);
+  };
   const toggleTheme = () => {
+    // This maintains the A <-> B functionality for the dedicated toggle button
     const newTheme = currentTheme === "A" ? "B" : "A";
-    setCurrentTheme(newTheme);
-    localStorage.setItem("appTheme", newTheme);
+    setTheme(newTheme); 
   };
   
-  // Select the theme object to be applied
-  const appliedTheme = currentTheme === "A" ? themeA : themeB;
- 
-  useEffect(() => {
-    localStorage.setItem("appTheme", currentTheme);
-    if (currentTheme === "B") {
-      document.body.classList.add("theme-b");
-    } else {
-      document.body.classList.remove("theme-b");
-    }
+ const appliedTheme = useMemo(() => {
+      // Use the map to get the correct theme object, defaulting to themeA
+      return themeMap[currentTheme] || themeA;
   }, [currentTheme]);
+ 
+ // App.js
+
+useEffect(() => {
+    // 1. Clean up old classes (using lowercase to be safe)
+    document.body.classList.remove('theme-a', 'theme-b', 'theme-c', 'theme-d');
+    
+    // 2. ✅ FIX: Convert currentTheme to lowercase before adding the class
+    document.body.classList.add(`theme-${currentTheme.toLowerCase()}`);
+    
+    // Ensure local storage is set 
+    localStorage.setItem("appTheme", currentTheme);
+}, [currentTheme]);
 
   return (
     <LanguageProvider>
@@ -82,10 +90,11 @@ const App = () => {
               element={
                 // 4. Pass Theme props to ProtectedRoute
                 <ProtectedRoute 
-                  loggedIn={loggedIn} 
+                 loggedIn={loggedIn} 
                   onLogout={handleLogout} 
-                  currentTheme={currentTheme} // Pass state
-                  toggleTheme={toggleTheme}   // Pass toggle function
+                  currentTheme={currentTheme} 
+                  toggleTheme={toggleTheme}   
+                  setTheme={setTheme} 
                   
                 />
               }

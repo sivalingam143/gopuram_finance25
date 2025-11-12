@@ -1,3 +1,4 @@
+// theme.js
 import { createTheme } from "@mui/material/styles";
 
 const baseTypography = {
@@ -11,7 +12,6 @@ const baseComponents = {
   MuiPaper: {
     styleOverrides: {
       root: ({ theme }) => ({
-        // Ensure all Paper elements (which tables often use) use the paper background
         backgroundColor: theme.palette.background.paper, 
       }),
     },
@@ -19,18 +19,16 @@ const baseComponents = {
   MuiTableContainer: {
     styleOverrides: {
       root: ({ theme }) => ({
-        // This ensures the main table area uses the white 'paper' background
         backgroundColor: theme.palette.background.paper, 
       }),
     },
   },
-  // Your existing component overrides for buttons, tables, etc.
   MuiButton: {
     styleOverrides: {
       root: {
         textTransform: "none",
         fontWeight: 500,
-        ...baseTypography, // Apply typography here
+        ...baseTypography,
       },
     },
   },
@@ -53,49 +51,65 @@ const baseComponents = {
 };
 
 // ---------------------------
-// 1. THEME A (Gold/Light)
+// 1. THEME A (Default - Blue)
 // ---------------------------
 export const themeA = createTheme({
-  typography: baseTypography,
-  components: baseComponents,
-  palette: {
-    mode: "light",
-    primary: {
-      main: "#d4af37", // Deep metallic gold
+    palette: { 
+        mode: 'light', 
+        primary: { main: '#3f51b5' }, // Default Blue
     },
-    secondary: {
-      main: "#721e25ff", // Accent blue
-    },
-    background: {
-      // default: "#350303ff", // Light page background
-      paper: "#ffffff", // White card background
-    },
-    text: {
-      primary: "#3b2f1e", // Dark text
-    },
-  },
+    components: baseComponents,
+    typography: baseTypography,
 });
 
 // ---------------------------
-// 2. THEME B (Blue/Dark)
+// 2. THEME B (Dark)
 // ---------------------------
 export const themeB = createTheme({
-  typography: baseTypography,
-  components: baseComponents,
-  palette: {
-    mode: "dark", // Use 'dark' mode palette for MUI defaults
-    primary: {
-      main: "#ffefba", // Gold glow highlight for primary actions
+    palette: { 
+        mode: 'light', 
+        primary: { main: '#90caf9' }, // Lighter blue for dark mode primary
+        background: { 
+            default: '#ffffffff', 
+            paper: '#ffe7e7ff',    
+        }
     },
-    secondary: {
-      main: "#52c242", // Accent green
-    },
-    background: {
-      default: "#ffffff", // Light page background
-      paper: "#ffffff", // White card background
-    },
-    text: {
-      primary: "#3b2f1e", // Dark text
-    },
-  },
+    components: baseComponents,
+    typography: baseTypography,
 });
+
+// ---------------------------
+// 3. THEME C (Indigo)
+// ---------------------------
+export const themeC = createTheme({
+    palette: { 
+        mode: 'light',
+        primary: { main: '#303f9f' }, // Indigo
+    },
+    components: baseComponents,
+    typography: baseTypography,
+});
+
+// ---------------------------
+// 4. THEME D (Teal)
+// ---------------------------
+export const themeD = createTheme({
+    palette: { 
+        mode: 'light',
+        primary: { main: '#2E7D32' }, // Emerald Green
+        background: { 
+            default: '#ffffffff', 
+            paper: '#ffe7e7ff',    
+        }
+    },
+    components: baseComponents,
+    typography: baseTypography,
+});
+
+// ✅ Theme Map for dynamic lookup in App.js
+export const themeMap = {
+    A: themeA,
+    B: themeB,
+    C: themeC,
+    D: themeD
+};
