@@ -7,8 +7,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import API_DOMAIN from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
+import { useLanguage } from "../../components/LanguageContext";
 
 const CustomerCreations = () => {
+  const { t, cacheVersion } = useLanguage();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const { type, rowData } = location.state || {};
@@ -22,11 +24,11 @@ const CustomerCreations = () => {
   const [showProofNumberInput, setShowProofNumberInput] = useState(false);
 
   const proofOptions = [
-    { label: "Aadhar Card", value: "aadhar" },
-    { label: "PAN Card", value: "pan" },
-    { label: "Voter ID", value: "voter" },
-    { label: "Ration Card", value: "ration" },
-    { label: "Driving License", value: "license" },
+    { label: t("Aadhar Card"), value: "aadhar" },
+    { label: t("PAN Card"), value: "pan" },
+    { label: t("Voter ID"), value: "voter" },
+    { label: t("Ration Card"), value: "ration" },
+    { label: t("Driving License"), value: "license" },
   ];
 
   const initialState =
@@ -632,11 +634,11 @@ const CustomerCreations = () => {
         <Container fluid>
           <Row className="py-3">
             <Col>
-              <h3>Capture Image</h3>
+              <h3>{t("Capture Image")}</h3>
             </Col>
             <Col className="text-end">
               <ClickButton
-                label="Close"
+                label={t("Close")}
                 onClick={() => {
                   stopWebcam();
                   setShowCapturePage(false);
@@ -663,16 +665,16 @@ const CustomerCreations = () => {
               />
               <canvas ref={canvasRef} style={{ display: "none" }} />
               <div className="mt-3">
-                <ChooseButton label="Capture" onClick={captureImage} />
+                <ChooseButton label={t("Capture")} onClick={captureImage} />
                 <ChooseButton
-                  label="Cancel"
+                  label={t("Cancel")}
                   onClick={() => {
                     stopWebcam();
                     setShowCapturePage(false);
                   }}
                 />
                 <ChooseButton
-                  label="Gallery"
+                  label={t("Gallery")}
                   onClick={() => {
                     stopWebcam();
                     setShowCapturePage(false);
@@ -732,8 +734,8 @@ const CustomerCreations = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Customer No"}
-              labelname={"Customer No"}
+              placeholder={t("Customer No")}
+              labelname={t("Customer No")}
               name="customer_no"
               value={formData.customer_no}
               onChange={(e) => handleChange(e, "customer_no")}
@@ -742,19 +744,19 @@ const CustomerCreations = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Name"}
-              labelname={"Name"}
+              placeholder={t("Name")}
+              labelname={t("Name")}
               name="name"
               value={formData.name}
               onChange={(e) => handleChange(e, "name")}
             />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-4">
-            <label htmlFor="customer_details">Address</label>
+            <label htmlFor="customer_details">{t("Address")}</label>
             <textarea
               id="customer_details"
               className="form-cntrl-bt w-100"
-              placeholder={"Address"}
+              placeholder={t("Address")}
               name="customer_details"
               value={formData.customer_details}
               onChange={(e) => handleChange(e, "customer_details")}
@@ -762,8 +764,8 @@ const CustomerCreations = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder="Place"
-              labelname="Place"
+              placeholder={t("Place")}
+              labelname={t("Place")}
               name="place"
               value={formData.place}
               onChange={(e) => handleChange(e, "place")} // ✅ only update state
@@ -773,8 +775,8 @@ const CustomerCreations = () => {
 
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder="Pincode"
-              labelname="Pincode"
+              placeholder={t("Pincode")}
+              labelname={t("Pincode")}
               name="pincode"
               value={formData.pincode}
               onChange={(e) => handleChange(e, "pincode")}
@@ -783,8 +785,8 @@ const CustomerCreations = () => {
 
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Mobile Number"}
-              labelname={"Mobile Number"}
+              placeholder={t("Mobile Number")}
+              labelname={t("Mobile Number")}
               name="mobile_number"
               value={formData.mobile_number}
               onChange={(e) => handleChange(e, "mobile_number")}
@@ -792,8 +794,8 @@ const CustomerCreations = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Additional Number"}
-              labelname={"Additional Number"}
+              placeholder={t("Additional Number")}
+              labelname={t("Additional Number")}
               name="additional_number"
               value={formData.additional_number}
               onChange={(e) => handleChange(e, "additional_number")}
@@ -801,8 +803,8 @@ const CustomerCreations = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Reference"}
-              labelname={"Reference"}
+              placeholder={t("Reference")}
+              labelname={t("Reference")}
               name="reference"
               value={formData.reference}
               onChange={(e) => handleChange(e, "reference")}
@@ -812,7 +814,7 @@ const CustomerCreations = () => {
           <Col lg="3" md="4" xs="12" className="py-3">
             <div className="mb-3">
               <label htmlFor="proofType" className="form-label">
-                Select Proof Type
+                {t("Select Proof Type")}
               </label>
               <select
                 id="proofType"
@@ -821,7 +823,7 @@ const CustomerCreations = () => {
                 onChange={handleProofTypeChange}
                 disabled={type === "view"}
               >
-                <option value="">-- Select Proof Type --</option>
+                <option value="">{t("-- Select Proof Type --")}</option>
                 {proofOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -834,8 +836,8 @@ const CustomerCreations = () => {
           {showProofNumberInput && (
             <Col lg="3" md="4" xs="12" className="py-3">
               <TextInputForm
-                placeholder={"Proof Number"}
-                labelname={"Proof Number"}
+                label={t("Proof Number")}
+                placeholder={t("Proof Number")}
                 name="proof_number"
                 value={proofNumber}
                 onChange={handleProofNumberChange}
@@ -847,8 +849,8 @@ const CustomerCreations = () => {
             <div className="file-upload">
               <label>
                 {type === "edit"
-                  ? "Preview Customer Photo"
-                  : "Upload Customer Photo"}
+                  ? t("Preview Customer Photo")
+                  : t("Upload Customer Photo")}
               </label>
               <input
                 type="file"
@@ -860,7 +862,7 @@ const CustomerCreations = () => {
                 style={{ display: "none" }}
               />
               <ChooseButton
-                label="Choose File"
+                label={t("Choose File")}
                 onClick={() => startWebcam("proof")}
                 className="choosefilebtn"
                 disabled={!selectedProofType || !proofNumber}
@@ -899,13 +901,15 @@ const CustomerCreations = () => {
                             role="status"
                             style={{ width: "1.5rem", height: "1.5rem" }}
                           >
-                            <span className="visually-hidden">Loading...</span>
+                            <span className="visually-hidden">
+                              {t("Loading...")}
+                            </span>
                           </div>
                         </div>
                       )}
                       <img
                         src={file.data}
-                        alt={`Preview ${file.name}`}
+                        alt={`${t("Preview")} ${file.name}`}
                         onLoad={() => setIsLoading(false)}
                         onError={(e) => {
                           e.target.src = "path/to/fallback-image.png";
@@ -940,12 +944,12 @@ const CustomerCreations = () => {
                     </div>
                   )}
                   <ChooseButton
-                    label="Preview"
+                    label={t("Preview")}
                     className="btn btn-primary btn-sm me-2"
                     onClick={() => handlePreview(file)}
                   />
                   <ChooseButton
-                    label="Delete"
+                    label={t("Delete")}
                     className="btn btn-danger btn-sm"
                     onClick={() => handleImageDelete(index, "proof")}
                   />
@@ -1039,12 +1043,12 @@ const CustomerCreations = () => {
             </div>
           </Col>
           <Col lg="12" className="py-3">
-            <h5>Bank Details</h5>
+            <h5>{t("Bank Details")}</h5>
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Account Holder Name"}
-              labelname={"Account Holder Name"}
+              label={t("Account Holder Name")}
+              placeholder={t("Account Holder Name")}
               name="account_holder_name"
               value={formData.account_holder_name}
               onChange={(e) => handleChange(e, "account_holder_name")}
@@ -1053,8 +1057,8 @@ const CustomerCreations = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Bank Name"}
-              labelname={"Bank Name"}
+              label={t("Bank Name")}
+              placeholder={t("Bank Name")}
               name="bank_name"
               value={formData.bank_name}
               onChange={(e) => handleChange(e, "bank_name")}
@@ -1063,8 +1067,8 @@ const CustomerCreations = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Account Number"}
-              labelname={"Account Number"}
+              label={t("Account Number")}
+              placeholder={t("Account Number")}
               name="account_number"
               value={formData.account_number}
               onChange={(e) => handleChange(e, "account_number")}
@@ -1073,8 +1077,8 @@ const CustomerCreations = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"IFSC Code"}
-              labelname={"IFSC Code"}
+              label={t("IFSC Code")}
+              placeholder={t("IFSC Code")}
               name="ifsc_code"
               value={formData.ifsc_code}
               onChange={(e) => handleChange(e, "ifsc_code")}
@@ -1083,8 +1087,8 @@ const CustomerCreations = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Branch Name"}
-              labelname={"Branch Name"}
+              label={t("Branch Name")}
+              placeholder={t("Branch Name")}
               name="branch_name"
               value={formData.branch_name}
               onChange={(e) => handleChange(e, "branch_name")}
@@ -1095,7 +1099,7 @@ const CustomerCreations = () => {
             <div className="text-center">
               {type === "view" ? (
                 <ClickButton
-                  label={<>Back</>}
+                  label={<>{t("Back")}</>}
                   onClick={() => navigate("/console/master/customer")}
                 />
               ) : (
@@ -1116,14 +1120,14 @@ const CustomerCreations = () => {
                       />
                       <span className="mx-2">
                         <ClickButton
-                          label={<>Update</>}
+                          label={<>{t("Update")}</>}
                           onClick={handleUpdateSubmit}
                           disabled={loading}
                         />
                       </span>
                       <span className="mx-2">
                         <ClickButton
-                          label={<>Cancel</>}
+                          label={<>{t("Cancel")}</>}
                           onClick={() => navigate("/console/master/customer")}
                         />
                       </span>
@@ -1144,14 +1148,20 @@ const CustomerCreations = () => {
                       />
                       <span className="mx-2">
                         <ClickButton
-                          label={loading ? <>Submitting...</> : <> Submit</>}
+                          label={
+                            loading ? (
+                              <>{t("Submitting...")}</>
+                            ) : (
+                              <>{t("Submit")}</>
+                            )
+                          }
                           onClick={handleSubmit}
                           disabled={loading}
                         />
                       </span>
                       <span className="mx-2">
                         <ClickButton
-                          label={<>Cancel</>}
+                          label={<>{t("Cancel")}</>}
                           onClick={() => navigate("/console/master/customer")}
                         />
                       </span>

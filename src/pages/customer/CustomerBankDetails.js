@@ -5,8 +5,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ClickButton } from "../../components/Buttons";
 import { BiArrowBack } from "react-icons/bi";
 import API_DOMAIN from "../../config/config";
+import { useLanguage } from "../../components/LanguageContext";
 
 const CustomerBankDetails = () => {
+  const { t, cacheVersion } = useLanguage();
   const location = useLocation();
   const { state } = location;
   const navigate = useNavigate();
@@ -79,17 +81,19 @@ const CustomerBankDetails = () => {
             <Card className="text-center professional-card">
               <Card.Body>
                 <Card.Title className="mb-3">
-                  No Bank Details Available
+                  {t("No Bank Details Available")}
                 </Card.Title>
                 <Card.Text className="mb-4">
-                  No bank pledge records found for Receipt No: {receiptNo}.
+                  {t("No bank pledge records found for Receipt No:")}{" "}
+                  {receiptNo}.
                 </Card.Text>
                 <Button
                   variant="secondary"
                   onClick={() => navigate(-1)}
                   className="professional-btn"
                 >
-                  <BiArrowBack className="me-2" /> Back to Customer Details
+                  <BiArrowBack className="me-2" />{" "}
+                  {t("Back to Customer Details")}
                 </Button>
               </Card.Body>
             </Card>
@@ -103,7 +107,9 @@ const CustomerBankDetails = () => {
     <Container fluid className="py-4 professional-container">
       <Row className="mb-4">
         <Col lg={12}>
-          <PageNav pagetitle={`Bank Details for Receipt No: ${receiptNo}`} />
+          <PageNav
+            pagetitle={`${t("Bank Details for Receipt No")}: ${receiptNo}`}
+          />
         </Col>
       </Row>
       <Row>
@@ -111,7 +117,7 @@ const CustomerBankDetails = () => {
           <Card className="shadow-sm border-0 professional-card">
             <Card.Header>
               <h5 className="mb-0 fw-bold">
-                Bank Pledge Summary - Customer No: {customerNo}
+                {t("Bank Pledge Summary - Customer No")}: {customerNo}
               </h5>
             </Card.Header>
             <Card.Body className="py-3">
@@ -124,19 +130,23 @@ const CustomerBankDetails = () => {
                 >
                   <thead className="table-dark">
                     <tr>
-                      <th className="text-center fw-bold">S.No</th>
-                      <th className="fw-bold">Bank Name</th>
-                      <th className="fw-bold">Pledge Date</th>
-                      <th className="fw-bold">Bank Loan No</th>
-                      <th className="fw-bold text-success">Pawn Value</th>
-                      <th className="fw-bold text-warning">
-                        Interest Rate (%)
+                      <th className="text-center fw-bold">{t("S.No")}</th>
+                      <th className="fw-bold">{t("Bank Name")}</th>
+                      <th className="fw-bold">{t("Pledge Date")}</th>
+                      <th className="fw-bold">{t("Bank Loan No")}</th>
+                      <th className="fw-bold text-success">
+                        {t("Pawn Value")}
                       </th>
-                      <th className="fw-bold">Duration (Months)</th>
-                      <th className="fw-bold text-info">Interest Amount</th>
-                      <th className="fw-bold">Pledge Due Date</th>
-                      <th className="fw-bold">Additional Charges</th>
-                      <th className="fw-bold">Status</th>
+                      <th className="fw-bold text-warning">
+                        {t("Interest Rate (%)")}
+                      </th>
+                      <th className="fw-bold">{t("Duration (Months)")}</th>
+                      <th className="fw-bold text-info">
+                        {t("Interest Amount")}
+                      </th>
+                      <th className="fw-bold">{t("Pledge Due Date")}</th>
+                      <th className="fw-bold">{t("Additional Charges")}</th>
+                      <th className="fw-bold">{t("Status")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -200,7 +210,7 @@ const CustomerBankDetails = () => {
                               }`}
                               style={{ fontSize: "0.85rem" }}
                             >
-                              {bank.status}
+                              {t(bank.status)}
                             </span>
                           </td>
                         </tr>
@@ -212,8 +222,8 @@ const CustomerBankDetails = () => {
             </Card.Body>
             <Card.Footer className="bg-light text-center professional-footer">
               <small className="text-muted fw-medium">
-                Total Records: {bankData.length} | Showing all bank pledges for
-                this receipt.
+                {t("Total Records")}: {bankData.length} |
+                {t("Showing all bank pledges for this receipt")}.
               </small>
             </Card.Footer>
           </Card>
@@ -226,14 +236,16 @@ const CustomerBankDetails = () => {
           <Card className="shadow-sm border-0 professional-card">
             <Card.Header className="bg-primary text-white">
               <h5 className="mb-0 fw-bold">
-                Interest Summary for Receipt No: {receiptNo}
+                {t("Interest Summary for Receipt No")}: {receiptNo}
               </h5>
             </Card.Header>
             <Card.Body className="p-4">
               <Row className="g-3 text-center">
                 <Col md={4}>
                   <div className="p-3 bg-light rounded">
-                    <h6 className="text-muted mb-2">Total Bank Interest</h6>
+                    <h6 className="text-muted mb-2">
+                      {t("Total Bank Interest")}
+                    </h6>
                     <h4 className="text-info fw-bold">
                       {formatCurrency(totalBankInterest)}
                     </h4>
@@ -242,7 +254,7 @@ const CustomerBankDetails = () => {
                 <Col md={4}>
                   <div className="p-3 bg-light rounded">
                     <h6 className="text-muted mb-2">
-                      Total Pawnjewelry Interest
+                      {t("Total Pawnjewelry Interest")}
                     </h6>
                     <h4 className="text-success fw-bold">
                       {formatCurrency(pawnInterestTotal)}
@@ -251,7 +263,7 @@ const CustomerBankDetails = () => {
                 </Col>
                 <Col md={4}>
                   <div className="p-3 bg-light rounded">
-                    <h6 className="text-muted mb-2">Profit</h6>
+                    <h6 className="text-muted mb-2">{t("Profit")}</h6>
                     <h4
                       className={`fw-bold ${
                         profit >= 0 ? "text-success" : "text-danger"
@@ -263,7 +275,7 @@ const CustomerBankDetails = () => {
                 </Col>
               </Row>
               {loading && (
-                <div className="text-center mt-3">Loading totals...</div>
+                <div className="text-center mt-3">{t("Loading totals...")}</div>
               )}
             </Card.Body>
           </Card>
@@ -275,7 +287,7 @@ const CustomerBankDetails = () => {
           <ClickButton
             label={
               <>
-                <BiArrowBack className="me-2" /> Back to Customer Details
+                <BiArrowBack className="me-2" /> {t("Back to Customer Details")}
               </>
             }
             onClick={() => navigate(-1)}

@@ -6,22 +6,22 @@ import React, {
     useState, 
     useEffect, 
     useCallback, 
-    useMemo // <-- New Import
+    useMemo 
 } from 'react';
 
 const LanguageContext = createContext();
 export const useLanguage = () => useContext(LanguageContext);
 
+// Toggle flag: Set to true to disable translation fetch calls temporarily
+// const DISABLE_TRANSLATION_FETCH = true;  // <-- Change to false to enable fetches
+
 // --- Global Cache and API Translation Function ---
 const translationCache = new Map();
 
-
 // ✅ HARDCODED FIX: Manually set the correct translation for "Clear" (Reset/Erase)
-// The correct Tamil word is நீக்கு (Nīkku)
 translationCache.set("Clear", "நீக்கு");
 
 const fetchTamilTranslation = async (text) => {
-    // ... (Your existing API fetch logic remains here) ...
     if (!text || typeof text !== 'string') return '';
     const trimmedText = text.trim();
     if (translationCache.has(trimmedText)) {
@@ -42,62 +42,65 @@ const fetchTamilTranslation = async (text) => {
     }
 };
 
-
-// --- Language Provider Component (FIXED) ---
+// --- Language Provider Component ---
 export const LanguageProvider = ({ children }) => {
     const [currentLanguage, setCurrentLanguage] = useState(() => {
         return localStorage.getItem("appLanguage") === "TA" ? "TA" : "EN";
     });
     
-    // ✅ NEW STATE: This version number is incremented to force re-renders
+    // Version number to force re-renders when cache updates
     const [cacheVersion, setCacheVersion] = useState(0); 
     
     const toggleLanguage = () => {
-        // Clear cache when language is toggled to ensure fresh translations
+        // Clear cache when language toggled
         translationCache.clear();
         setCurrentLanguage(prevLang => prevLang === "EN" ? "TA" : "EN");
     };
 
-    // ✅ MODIFIED: The t function is now synchronous, but triggers re-render when API resolves
+    // Translation function with fetch disabling logic
     const t = useCallback((englishText) => {
         const trimmedText = englishText.trim();
         
-        // 1. Immediate return for English or empty text
         if (currentLanguage === 'EN' || !trimmedText) {
             return englishText; 
         }
 
-        // 2. Immediate return if cached (from a previous API call)
         if (translationCache.has(trimmedText)) {
             return translationCache.get(trimmedText); 
         }
-
-        // 3. If not found, asynchronously initiate the fetch
-        fetchTamilTranslation(trimmedText)
+        
+         fetchTamilTranslation(trimmedText)
             .then(() => {
                 // 4. Once the translation is done and cached, force a re-render
                 setCacheVersion(prev => prev + 1);
             })
             .catch(() => {});
+        // Only fetch translation if disabling flag is false
+        // if (!DISABLE_TRANSLATION_FETCH) {
+        //     fetchTamilTranslation(trimmedText)
+        //         .then(() => {
+        //             setCacheVersion(prev => prev + 1);
+        //         })
+        //         .catch(() => {});
+        // }
 
-        // 5. IMPORTANT: While waiting for the API, return the English text as a placeholder
+        // While waiting or if fetch disabled, return English text as fallback
         return englishText; 
     }, [currentLanguage]);
 
-
-    // Effect to update localStorage and body class
+    // Effect to sync language between state and localStorage & document body class
     useEffect(() => {
         localStorage.setItem("appLanguage", currentLanguage);
         document.body.classList.remove('lang-en', 'lang-ta');
         document.body.classList.add(`lang-${currentLanguage.toLowerCase()}`);
     }, [currentLanguage]);
 
-    // ✅ Include 'cacheVersion' in the memoized value so components listen for it
+    // Memoize the context value including cacheVersion for updates
     const value = useMemo(() => ({
         currentLanguage,
         toggleLanguage,
         t,
-        cacheVersion // Used only to trigger updates in consuming components
+        cacheVersion
     }), [currentLanguage, toggleLanguage, t, cacheVersion]);
 
     return (

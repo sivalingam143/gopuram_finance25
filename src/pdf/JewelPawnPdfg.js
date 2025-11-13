@@ -387,8 +387,9 @@ const JewelPawnPdfG = ({ data }) => {
     return result;
   };
 
-  const formattedDate = formatDate(data.pawnjewelryg_date);
-  const formattedDaterecovery = formatDate(data.pawnjewelryg_recovery_date);
+  const formattedDate = formatDate(data.pawnjewelry_date);
+  const formattedDaterecovery = formatDate(data.pawnjewelry_recovery_date);
+  const jewelProducts = Array.isArray(data.jewel_product) ? data.jewel_product : [];
   return (
     <Document>
       <Page size="A4" orientation="potrait" style={styles.page}>
@@ -402,11 +403,11 @@ const JewelPawnPdfG = ({ data }) => {
                 <View style={styles.tableCell}>
                   <Text style={styles.pad}>
                     <Text style={styles.boldText}>ரசீது எண்: </Text>
-                    <Text style={styles.red}>{data.recipt_no}</Text>
+                    <Text style={styles.red}>{data.receipt_no} </Text>
                   </Text>
                   <Text style={styles.pad}>
                     <Text style={styles.boldText}>உரிம எண்: </Text>
-                    <Text style={styles.normalText}>13/97-98</Text>
+                    <Text style={styles.normalText}>13-97-98</Text>
                   </Text>
                 </View>
               </View>
@@ -474,7 +475,7 @@ const JewelPawnPdfG = ({ data }) => {
                   {data.mobile_number != "" ? "6" : "5"}.அடகு பொருளின் விபரம்{" "}
                   <View style={styles.none}>ம்</View> :{" "}
                 </Text>
-                {data.jewel_product.map((item, index) => (
+           {jewelProducts.map((item, index) => (
                   <Text key={index}>
                     {data.group === "தங்கம்"
                       ? "ம.பெ"
@@ -493,7 +494,7 @@ const JewelPawnPdfG = ({ data }) => {
                   {data.mobile_number != "" ? "7" : "6"}.நகை மொத்த எடை :{" "}
                 </Text>
                 <Text>
-                  {data.jewel_product.reduce((totalWeight, item) => {
+                  {jewelProducts.reduce((totalWeight, item) => {
                     return totalWeight + parseFloat(item.weight);
                   }, 0)}{" "}
                   கிராம் மட்டும்
@@ -677,7 +678,7 @@ const JewelPawnPdfG = ({ data }) => {
                   {data.mobile_number != "" ? "6" : "5"}.அடகு பொருளின் விபரம்{" "}
                   <View style={styles.none}>ம்</View> :{" "}
                 </Text>
-                {data.jewel_product.map((item, index) => (
+                {jewelProducts.map((item, index) => (
                   <Text key={index}>
                     {data.group === "தங்கம்"
                       ? "ம.பெ"
@@ -696,7 +697,7 @@ const JewelPawnPdfG = ({ data }) => {
                   {data.mobile_number != "" ? "7" : "6"}.நகை மொத்த எடை :{" "}
                 </Text>
                 <Text>
-                  {data.jewel_product.reduce((totalWeight, item) => {
+                 {jewelProducts.reduce((totalWeight, item) => {
                     return totalWeight + parseFloat(item.weight);
                   }, 0)}{" "}
                   கிராம் மட்டும்

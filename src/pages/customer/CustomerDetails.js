@@ -11,12 +11,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import dayjs from "dayjs";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import InterestStatementPDF from "../../pdf/InterestStatementPDF";
-
-// ✅ MUI Action Menu Component
-// In src/pages/customer/CustomerDetails.js
-// Remember to update the props in the ActionMenu signature as well!
-// const ActionMenu = ({ row, navigate, onInterest, onRecovery, onRePledge, onDownloadPawnAgreement, isAdmin, handleJewelPawningEditClick, handleJewelPawningDeleteClick }) => {
-// Note: You'll need to pass isAdmin, handleJewelPawningEditClick, and handleJewelPawningDeleteClick from the parent CustomerDetails component to the ActionMenu component, and from the pawnColumns Cell property.
+import { useLanguage } from "../../components/LanguageContext";
 
 const ActionMenu = ({
   row,
@@ -26,28 +21,20 @@ const ActionMenu = ({
   onRePledge,
   onDownloadPawnAgreement,
   onBankDetails,
-  // Assuming these are passed as props from the parent:
   isAdmin,
   handleJewelPawningEditClick,
   handleJewelPawningDeleteClick,
 }) => {
-  // 1. HOOKS MUST BE FIRST
+   const { t } = useLanguage();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-
-  // 2. CRITICAL SAFETY CHECK
   if (!row) {
     return null;
   }
-
   const handleOpen = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  // 3. Conditional rendering checks based on your old logic
-  // "நகை மீட்கபட்டது" (Item Recovered) - Prevents Interest/Repledge options
   const isRecovered = row.status === "நகை மீட்கபட்டது";
-
-  // "நகை மீட்கபடவில்லை" (Item Not Recovered) - Prevents Re-pledge option
   const isNotRecovered = row.status === "நகை மீட்கபடவில்லை";
 
   return (
@@ -64,8 +51,7 @@ const ActionMenu = ({
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         slotProps={{ paper: { sx: { zIndex: 1100 } } }}
       >
-        {/* 1. Interest Payment (Conditional: NOT recovered) 
-            Maps to: {rowData?.status !== "நகை மீட்கபட்டது" && (...) onClick={() => customActions?.interest?.(rowData)} */}
+        {/* 1. Interest Payment (Conditional: NOT recovered) } */}
         {!isRecovered && (
           <MenuItem
             onClick={() => {
@@ -73,7 +59,7 @@ const ActionMenu = ({
               onInterest(row); // Use onInterest handler
             }}
           >
-            Interest
+            {t("Interest")}
           </MenuItem>
         )}
         <MenuItem
@@ -82,7 +68,7 @@ const ActionMenu = ({
             onDownloadPawnAgreement(row);
           }}
         >
-          Download Statement PDF
+         {t('Download PDF')}
         </MenuItem>
 
         <MenuItem
@@ -91,7 +77,7 @@ const ActionMenu = ({
             onBankDetails(row);
           }}
         >
-          Bank Details
+         {t('Bank Details')}
         </MenuItem>
 
         <MenuItem
@@ -100,7 +86,7 @@ const ActionMenu = ({
             onRecovery(row);
           }}
         >
-          Recovery
+         {t('Recovery')}
         </MenuItem>
 
         {!isNotRecovered && (
@@ -110,7 +96,7 @@ const ActionMenu = ({
               onRePledge(row);
             }}
           >
-            Re-pledge
+           {t('Re-pledge')}
           </MenuItem>
         )}
 
@@ -121,17 +107,17 @@ const ActionMenu = ({
               handleJewelPawningEditClick(row);
             }}
           >
-            Edit
+           {t('Edit')}
           </MenuItem>
         )}
         {handleJewelPawningDeleteClick && (
           <MenuItem
             onClick={() => {
               handleClose();
-              handleJewelPawningDeleteClick(row.pawnjewelry_id); // Assuming pawnjewelry_id is on the row object
+              handleJewelPawningDeleteClick(row.pawnjewelry_id);
             }}
           >
-            Delete
+           {t('Delete')}
           </MenuItem>
         )}
       </Menu>
@@ -140,6 +126,7 @@ const ActionMenu = ({
 };
 
 const CustomerDetails = () => {
+  const { t, cacheVersion } = useLanguage();
   const location = useLocation();
   const { rowData } = location.state || {};
   const navigate = useNavigate();
@@ -387,37 +374,38 @@ const CustomerDetails = () => {
   const pawnColumns = useMemo(
     () => [
       {
-        header: "S.No",
-        id: "sno",
+        accessorKey: "s_no_key",
+        header: t("S.No"),
+        size: 5,
+        enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1,
-        size: 50,
       },
       {
-        header: "Loan Date",
+        header: t("Loan Date"),
         accessorKey: "pawnjewelry_date",
         Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
         size: 100,
       },
       {
-        header: "Loan No",
+        header: t("Loan No"),
         accessorKey: "receipt_no",
         size: 100,
       },
       {
-        header: "Principal Amount",
+        header: t("Principal Amount"),
         accessorKey: "original_amount",
         Cell: ({ cell }) =>
           ` ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
         size: 80,
       },
       {
-        header: "Interest Rate",
+        header: t("Interest Rate"),
         accessorKey: "interest_rate",
         Cell: ({ cell }) => `${cell.getValue()}%`,
         size: 100,
       },
       {
-        header: "Total Weight",
+        header: t("Total Weight"),
         id: "total_weight",
         accessorFn: (row) =>
           row.jewel_product
@@ -427,7 +415,7 @@ const CustomerDetails = () => {
         size: 100,
       },
       {
-        header: "Existing Pledge Value",
+        header: t("Existing Pledge Value"),
         accessorKey: "original_amount_copy",
         Cell: ({ cell }) =>
           ` ${parseFloat(cell.getValue()).toLocaleString("en-IN")}`,
@@ -435,24 +423,24 @@ const CustomerDetails = () => {
       },
 
       {
-        header: "Pledge Items",
+        header: t("Pledge Items"),
         id: "pledge_items",
         accessorFn: (row) =>
           row.jewel_product
-            .map((p) => `${p.JewelName?.trim() || "N/A"} - ${p.count || 0}`)
+            .map((p) => `${p.JewelName?.trim() || t("N/A")} - ${p.count || 0}`)
             .join(", "),
         size: 200,
         muiTableHeadCellProps: { sx: { textAlign: "center" } },
       },
       {
-        header: "Pending Interest",
+        header: t("Pending Interest"),
         accessorKey: "interest_payment_amount",
         Cell: ({ cell }) =>
           `${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
         size: 140,
       },
       {
-        header: "Total Pledge Value",
+        header: t("Total Pledge Value"),
         id: "total_pledge_value",
         accessorFn: (row) => {
           const principal = parseFloat(row.original_amount || 0);
@@ -464,7 +452,7 @@ const CustomerDetails = () => {
         size: 160,
       },
       {
-        header: "Jewel Pawn Value",
+        header: t("Jewel Pawn Value"),
         accessorKey: "jewel_pawn_value",
         Cell: ({ cell }) =>
           `${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
@@ -472,14 +460,14 @@ const CustomerDetails = () => {
       },
 
       {
-        header: "Status",
+        header: t("Status"),
         accessorKey: "status",
         Cell: ({ cell }) => {
           const statusValue = cell.getValue();
           let color;
-          if (statusValue === "நகை மீட்கபட்டது") {
+          if (statusValue === t("status.redeemed")) {
             color = "success"; // Green color
-          } else if (statusValue === "நகை மீட்கபடவில்லை") {
+          } else if (statusValue === t("status.notRedeemed")) {
             color = "error";
           } else {
             color = "warning";
@@ -496,18 +484,18 @@ const CustomerDetails = () => {
         size: 150,
       },
       {
-        header: "Action",
+        header: t("Action"),
         id: "action",
         // ...
         Cell: ({ row }) => (
           <ActionMenu
             row={row.original}
             navigate={navigate}
-            onInterest={handleInterestClick} // your handleInterestClick
-            onRecovery={handleRecoveryClick} // your handleRecoveryClick
-            onBankDetails={handleBankDetailsClick} // your handleBankDetailsClick
-            onRePledge={handleRePledgeClick} // your handleRePledgeClick
-            onDownloadPawnAgreement={handleDownloadStatement} // your handleDownloadStatement
+            onInterest={handleInterestClick}
+            onRecovery={handleRecoveryClick}
+            onBankDetails={handleBankDetailsClick}
+            onRePledge={handleRePledgeClick}
+            onDownloadPawnAgreement={handleDownloadStatement}
             isAdmin={isAdmin}
             handleJewelPawningEditClick={handleJewelPawningEditClick}
             handleJewelPawningDeleteClick={handleJewelPawningDeleteClick}
@@ -515,7 +503,19 @@ const CustomerDetails = () => {
         ),
       },
     ],
-    [navigate]
+
+    [
+      t,
+      cacheVersion,
+      isAdmin,
+      handleInterestClick,
+      handleRecoveryClick,
+      handleBankDetailsClick,
+      handleRePledgeClick,
+      handleDownloadStatement,
+      handleJewelPawningEditClick,
+      handleJewelPawningDeleteClick,
+    ]
   );
 
   return (
@@ -523,60 +523,60 @@ const CustomerDetails = () => {
       <Container>
         <Row className="regular">
           <Col lg="12" md="12" xs="12" className="py-3">
-            <PageNav pagetitle={"Customer Details"} />
+            <PageNav pagetitle={t("Customer Details")} />
           </Col>
 
           <Row className="mb-4">
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100 d-flex flex-column align-items-center justify-content-center">
-                <h5 className="mb-3 text-center">Customer Image</h5>
+                <h5 className="mb-3 text-center">{t("Customer Image")}</h5>
                 {customerDetailsData?.customer_info?.proof &&
                 customerDetailsData.customer_info.proof.length > 0 ? (
                   <img
                     src={customerDetailsData.customer_info.proof[0]}
-                    alt="Customer Proof"
+                    alt={t("Customer Proof")}
                     className="img-fluid rounded"
                   />
                 ) : (
                   <div className="text-center text-muted">
-                    No Image Available
+                    {t("No Image Available")}
                   </div>
                 )}
               </div>
             </Col>
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100">
-                <h5 className="mb-3">Customer Information</h5>
+                <h5 className="mb-3">{t("Customer Information")}</h5>
                 <ul className="list-unstyled">
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Customer No:</strong>
+                    <strong>{t("Customer No")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info?.customer_no ||
                         rowData.customer_no}
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Name:</strong>
+                    <strong>{t("Name")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info?.name || rowData.name}
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Address:</strong>
+                    <strong>{t("Address")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info?.customer_details ||
                         rowData.customer_details}
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Place:</strong>
+                    <strong>{t("Place")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info?.place ||
                         rowData.place}
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Mobile Number:</strong>
+                    <strong>{t("Mobile Number")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info?.mobile_number ||
                         rowData.mobile_number}
@@ -587,10 +587,10 @@ const CustomerDetails = () => {
             </Col>
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100">
-                <h5 className="mb-3">Summary Details</h5>
+                <h5 className="mb-3">{t("Summary Details")}</h5>
                 <ul className="list-unstyled">
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Total Original Amount:</strong>
+                    <strong>{t("Total Original Amount")}:</strong>
                     <span>
                       ₹
                       {customerDetailsData?.pledges?.total_original_amount?.toLocaleString() ||
@@ -598,13 +598,13 @@ const CustomerDetails = () => {
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Total Pledges:</strong>
+                    <strong>{t("Total Pledges")}:</strong>
                     <span>
                       {customerDetailsData?.pledges?.total_pledges || 0}
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Total Paid:</strong>
+                    <strong>{t("Total Paid")}:</strong>
                     <span>
                       ₹
                       {customerDetailsData?.interests?.total_paid?.toLocaleString() ||
@@ -612,7 +612,7 @@ const CustomerDetails = () => {
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Total Due:</strong>
+                    <strong>{t("Total Due")}:</strong>
                     <span>
                       ₹
                       {customerDetailsData?.interests?.total_due?.toLocaleString() ||
@@ -620,7 +620,7 @@ const CustomerDetails = () => {
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Total Recoveries:</strong>
+                    <strong>{t("Total Recoveries")}:</strong>
                     <span>
                       {customerDetailsData?.recoveries?.total_recoveries || 0}
                     </span>
@@ -633,8 +633,8 @@ const CustomerDetails = () => {
           <Row>
             <Col lg="12" md="12" xs="12" className="text-end py-3">
               <span className="px-1">
-                <ClickButton
-                  label={<>Add New</>}
+                <ClickButton // Translate the button label
+                  label={<>{t("Add New")}</>}
                   onClick={() =>
                     navigate("/console/customer/loancreation", {
                       state: { type: "create", rowData: rowData },
@@ -667,36 +667,36 @@ const CustomerDetails = () => {
           <Row className="mb-4">
             <Col lg={4}>
               <div className="customer-card bg-light border rounded p-3 h-100">
-                <h5 className="mb-3">Bank Details</h5>
+                <h5 className="mb-3">{t("Bank Details")}</h5>
                 <ul className="list-unstyled">
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Account Holder Name:</strong>
+                    <strong>{t("Account Holder Name")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info
                         ?.account_holder_name || "N/A"}
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Bank Name:</strong>
+                    <strong>{t("Bank Name")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info?.bank_name || "N/A"}
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Account Number:</strong>
+                    <strong>{t("Account Number")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info?.account_number ||
                         "N/A"}
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>IFSC Code:</strong>
+                    <strong>{t("IFSC Code")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info?.ifsc_code || "N/A"}
                     </span>
                   </li>
                   <li className="mb-2 d-flex justify-content-between">
-                    <strong>Branch Name:</strong>
+                    <strong>{t("Branch Name")}:</strong>
                     <span>
                       {customerDetailsData?.customer_info?.branch_name || "N/A"}
                     </span>
@@ -708,7 +708,7 @@ const CustomerDetails = () => {
           <Col lg="12">
             <div className="text-center mb-3">
               <ClickButton
-                label={<>Back</>}
+                label={<>{t("Back")}</>}
                 onClick={() => navigate("/console/master/customer")}
               />
             </div>

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
-import { useLanguage } from "../../components/LanguageContext"; // 💡 IMPORT useLanguage
+import { useLanguage } from "../../components/LanguageContext"; 
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
@@ -17,7 +17,7 @@ import { MdOutlineDelete } from "react-icons/md";
 
 const Group = () => {
   const navigate = useNavigate();
-  const { t,cacheVersion } = useLanguage(); // 💡 USE LANGUAGE HOOK
+  const { t,cacheVersion } = useLanguage(); 
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);

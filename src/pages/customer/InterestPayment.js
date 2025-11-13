@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
+import { useLanguage } from "../../components/LanguageContext";
 
 import TableUI from "../../components/Table";
 
@@ -21,6 +22,7 @@ const UserTablehead = [
 ];
 
 const InterestPayment = () => {
+  const { t, cacheVersion } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const { type, rowData } = location.state || {};
@@ -280,30 +282,30 @@ const InterestPayment = () => {
           {/* Read-only Customer Info Container */}
           <Col lg={4}>
             <div className="customer-card bg-light border rounded p-3 h-100">
-              <h5 className="mb-3">Customer Information</h5>
+              <h5 className="mb-3">{t("Customer Information")}</h5>
               <ul className="list-unstyled">
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Customer No:</strong>
+                  <strong>{t("Customer No:")}</strong>
                   <span>{formData.customer_no}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Loan No:</strong>
+                  <strong>{t("Loan No:")}</strong>
                   <span>{formData.receipt_no}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Name:</strong>
+                  <strong>{t("Name:")}</strong>
                   <span>{formData.name}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Address:</strong>
+                  <strong>{t("Address:")}</strong>
                   <span>{formData.customer_details}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Place:</strong>
+                  <strong>{t("Place:")}</strong>
                   <span>{formData.place}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Mobile Number:</strong>
+                  <strong>{t("Mobile Number:")}</strong>
                   <span>{formData.mobile_number}</span>
                 </li>
               </ul>
@@ -313,25 +315,25 @@ const InterestPayment = () => {
           {/* Read-only Loan Info Container */}
           <Col lg={4}>
             <div className="customer-card bg-light border rounded p-3 h-100">
-              <h5 className="mb-3">Loan Information</h5>
+              <h5 className="mb-3">{t("Loan Information")}</h5>
               <ul className="list-unstyled">
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Principal Amount:</strong>
+                  <strong>{t("Principal Amount")}:</strong>
                   <span>
                     ₹
                     {parseFloat(formData.original_amount || 0).toLocaleString()}
                   </span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Interest Rate:</strong>
+                  <strong>{t("Interest Rate")}:</strong>
                   <span>{formData.interest_rate}%</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Outstanding Period:</strong>
+                  <strong>{t("Outstanding Period")}:</strong>
                   <span>{formData.outstanding_period}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Outstanding Amount:</strong>
+                  <strong>{t("Outstanding Amount")}:</strong>
                   <span>
                     ₹
                     {parseFloat(
@@ -346,12 +348,15 @@ const InterestPayment = () => {
           {/* Jewel Product List Container*/}
           <Col lg={4}>
             <div className="customer-card bg-light border rounded p-3 h-100">
-              <h5 className="mb-3">Pledge Items</h5>
+              <h5 className="mb-3">{t("Pledge Items")}</h5>
               <ul className="list-unstyled small">
                 {formData.jewel_product.map((row, index) => (
                   <li key={index} className="mb-2 p-2 border rounded bg-white">
-                    <strong>S.No {index + 1}:</strong> {row.JewelName} -{" "}
-                    {row.count} pcs, {row.weight} gm ({row.remark})
+                    <strong>
+                      {t("S.No")} {index + 1}:
+                    </strong>{" "}
+                    {row.JewelName} - {row.count} {t("pcs")}, {row.weight}{" "}
+                    {t("gm")} ({row.remark})
                   </li>
                 ))}
               </ul>
@@ -361,19 +366,19 @@ const InterestPayment = () => {
           {/* Editable Inputs */}
           <Col lg={12} className="py-3">
             <div className="customer-card bg-light border rounded p-3">
-              <h5 className="mb-3">Payment Details</h5>
+              <h5 className="mb-3">{t("Payment Details")}</h5>
               <Row>
                 <Col lg={3}>
                   <Calender
                     setLabel={(date) => setLabel(date, "interest_receive_date")}
                     initialDate={formData.interest_receive_date}
-                    calenderlabel="Payment Date"
+                    calenderlabel={t("Payment Date")}
                   />
                 </Col>
                 <Col lg={3}>
                   <TextInputForm
-                    placeholder={"Interest Amount"}
-                    labelname={"Interest Amount"}
+                    placeholder={t("Interest Amount")}
+                    labelname={t("Interest Amount")}
                     name="interest_income"
                     value={formData.interest_income}
                     onChange={(e) => handleChange(e, "interest_income")}
@@ -402,11 +407,11 @@ const InterestPayment = () => {
                 <ClickButton
                   label={
                     loading ? (
-                      <>Submitting...</>
+                      <>{t("Submitting...")}</>
                     ) : type === "edit" ? (
-                      <>Update</>
+                      <>{t("Update")}</>
                     ) : (
-                      <>Submit</>
+                      <>{t("Submit")}</>
                     )
                   }
                   onClick={type === "edit" ? handleUpdateSubmit : handleSubmit}
@@ -414,7 +419,7 @@ const InterestPayment = () => {
                 />
               </span>
               <span className="mx-2">
-                <ClickButton label={<>Cancel</>} onClick={handleCancel} />
+               <ClickButton label={<>{t("Cancel")}</>} onClick={handleCancel} />
               </span>
             </div>
           </Col>
@@ -429,7 +434,7 @@ const InterestPayment = () => {
 
           <Col lg={12} className="py-3">
             <div className="customer-card bg-light border rounded p-3">
-              <h5 className="mb-3">Interest Payment History</h5>
+             <h5 className="mb-3">{t("Interest Payment History")}</h5>
 
               {interestHistory.length > 0 ? (
                 <TableUI
@@ -444,7 +449,7 @@ const InterestPayment = () => {
                 />
               ) : (
                 <div className="text-center text-muted py-3">
-                  No interest payments recorded yet.
+                {t("No interest payments recorded yet.")}
                 </div>
               )}
             </div>

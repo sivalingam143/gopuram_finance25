@@ -10,6 +10,7 @@ import LoadingOverlay from "../../components/LoadingOverlay";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import { useLanguage } from "../../components/LanguageContext";
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
@@ -21,12 +22,13 @@ import {
   DialogContent,
   Button,
 } from "@mui/material";
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
 const Customer = () => {
   const navigate = useNavigate();
+  const { t, cacheVersion } = useLanguage();
   const [searchText, setSearchText] = useState("");
   const [customerData, setcustomerData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -51,7 +53,7 @@ const Customer = () => {
     navigate("/console/master/customerdetails", {
       state: { type: "view", rowData: rowData },
     });
-  }; 
+  };
   const handleJewelcustomerEditClick = (rowData) => {
     navigate("/console/master/customer/create", {
       state: { type: "edit", rowData: rowData },
@@ -226,26 +228,29 @@ const Customer = () => {
   const columns = useMemo(
     () => [
       {
-        accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
-        size: 50,
+        accessorKey: "s_no_key",
+        header: t("S.No"),
+        size: 5,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
-
       {
         accessorKey: "proof",
-        header: "Customer Image",
-        size:30,
-       muiTableBodyCellProps: {
-        sx: {
-            textAlign: "center", // Horizontal center
-            
-            justifyContent: "center", // Horizontal center (for flex container)
-            alignItems: "center", // Vertical center (for flex container)
-            height: "100%",      // Take full height for vertical centering
+        size: 10,
+        header: t("Customer Image"),
+        muiTableHeadCellProps: {
+          sx: {
+            justifyContent: "center",
+          },
         },
-    },
+        muiTableBodyCellProps: {
+          sx: {
+            textAlign: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          },
+        },
         Cell: ({ cell }) => {
           const proofArray = cell.getValue();
           const imageUrl =
@@ -254,26 +259,37 @@ const Customer = () => {
           return (
             <Box
               sx={{
+                display: "flex",
+                justifyContent: "center",
                 alignItems: "center",
                 height: "100%",
-                width: "100%",
+                width: "50%",
               }}
             >
               {imageUrl ? (
                 <img
                   src={imageUrl}
-                  alt="Customer Proof"
+                  alt={t("image.customerProofAlt")}
                   className="customer-listing-img"
                   style={{
                     width: "50px",
-                    height: "40px",
+                    height: "50px",
                     borderRadius: "4px",
                     cursor: "pointer",
                   }}
                   onClick={() => handlePreviewOpen(imageUrl)}
                 />
               ) : (
-                <span>-</span>
+                // Center the placeholder text as well
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  -
+                </span>
               )}
             </Box>
           );
@@ -281,56 +297,55 @@ const Customer = () => {
       },
       {
         accessorKey: "customer_no",
-        header: "Customer No",
+        header: t("Customer No"),
         size: 70,
       },
       {
         accessorKey: "name",
-        header: "Customer Name",
+        header: t("customer Name"),
         size: 70,
       },
       {
         accessorKey: "mobile_number",
-        header: "Mobile No.",
+        header: t("Mobile No"),
         size: 70,
       },
       {
         accessorKey: "customer_details",
-        header: "Address",
+        header: t("Address"),
         size: 70,
       },
       {
         accessorKey: "place",
-        header: " Place",
+        header: t(" Place"),
         size: 70,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
         enableSorting: false,
-        
 
         Cell: ({ row }) => (
           <Box
             sx={{
-          justifyContent: "center",
-          gap: "4rem",
+              justifyContent: "center",
+              gap: "4rem",
             }}
           >
-             {/* View Icon */}
-            <Tooltip title="Customer Details">
+            {/* View Icon */}
+            <Tooltip title={t("Customer Details")}>
               <IconButton
                 onClick={() => handleJewelcustomerViewClick(row.original)}
                 sx={{ padding: 0 }}
               >
-                <VisibilityIcon/>
+                <VisibilityIcon />
               </IconButton>
-                 </Tooltip>
+            </Tooltip>
             {/* Edit Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title={t("edit")}>
               <IconButton
                 onClick={() => handleJewelcustomerEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -340,7 +355,7 @@ const Customer = () => {
             </Tooltip>
 
             {/* Delete Icon */}
-            <Tooltip title="Delete">
+            <Tooltip title={t("delete")}>
               <IconButton
                 onClick={() =>
                   handleJewelcustomerDeleteClick(row.original.customer_id)
@@ -354,7 +369,7 @@ const Customer = () => {
         ),
       },
     ],
-    []
+    [t, cacheVersion]
   );
 
   // 4. Update JSX to render MaterialReactTable
@@ -364,12 +379,13 @@ const Customer = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Customer</span>
+              {/* 1. Translate "Customer" */}
+              <span className="nav-list">{t("Customer")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Customer </>}
+              label={<>{t("Add Customer")}</>}
               onClick={() => navigate("/console/master/customer/create")}
             ></ClickButton>
           </Col>
@@ -403,7 +419,7 @@ const Customer = () => {
                     columns={columns}
                     data={customerData}
                     enableColumnActions={false}
-                    enableColumnFilters={true} 
+                    enableColumnFilters={true}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}

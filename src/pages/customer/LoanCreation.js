@@ -18,8 +18,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
 import { MdDeleteForever } from "react-icons/md";
+import { useLanguage } from "../../components/LanguageContext";
 
 const LoanCreation = () => {
+  const { t } = useLanguage();
   const location = useLocation();
   const { type, rowData } = location.state || {};
   const fileInputRef = useRef(null);
@@ -439,7 +441,7 @@ const LoanCreation = () => {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+      console.log("handlesubmit", responseData);
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",
@@ -868,7 +870,7 @@ const LoanCreation = () => {
         <Container fluid>
           <Row className="py-3">
             <Col>
-              <h3>Capture Image</h3>
+              <h3>{t("Capture Image")}</h3>
             </Col>
             <Col className="text-end">
               <ClickButton
@@ -901,7 +903,7 @@ const LoanCreation = () => {
               <div className="mt-3">
                 <ChooseButton label="Capture" onClick={captureImage} />
                 <ChooseButton
-                  label="Cancel"
+                  label={t("Cancel")}
                   onClick={() => {
                     stopWebcam();
                     setShowCapturePage(false);
@@ -909,7 +911,7 @@ const LoanCreation = () => {
                   style={{ marginLeft: "10px" }}
                 />
                 <ChooseButton
-                  label="Gallery"
+                  label={t("Gallery")}
                   onClick={() => {
                     stopWebcam();
                     setShowCapturePage(false);
@@ -1001,19 +1003,20 @@ const LoanCreation = () => {
         <Row className="regular">
           <Col lg="12" md="6" xs="12" className="py-3">
             <PageNav
-              pagetitle={`Loan${
-                type === "edit"
-                  ? " Edit"
+              pagetitle={
+                t("Loan") +
+                (type === "edit"
+                  ? ` ${t("Edit")}`
                   : type === "repledge"
-                  ? " Re-Pledge"
-                  : " Creation"
-              }`}
+                  ? ` ${t("Re-Pledge")}`
+                  : ` ${t("Creation")}`)
+              }
             />
           </Col>
 
           {/* Customer Details Section */}
           <Col lg="12" className="py-3">
-            <h5 className="mb-3">Customer Details</h5>
+            <h5 className="mb-3">{t("Customer Details")}</h5>
             <Row>
               <Col
                 lg="3"
@@ -1023,8 +1026,8 @@ const LoanCreation = () => {
                 style={{ position: "relative" }}
               >
                 <TextInputForm
-                  placeholder={"Customer No"}
-                  labelname={"Customer No"}
+                  placeholder={t("Customer No")}
+                  labelname={t("Customer No")}
                   name="customer_no"
                   value={formData.customer_no}
                   onChange={(e) => handleChange(e, "customer_no")}
@@ -1076,8 +1079,8 @@ const LoanCreation = () => {
                 style={{ position: "relative" }}
               >
                 <TextInputForm
-                  placeholder={"Name"}
-                  labelname={"Name"}
+                  placeholder={t("Name")}
+                  labelname={t("Name")}
                   name="name"
                   value={formData.name}
                   onChange={(e) => handleChange(e, "name")}
@@ -1128,8 +1131,8 @@ const LoanCreation = () => {
                 style={{ position: "relative" }}
               >
                 <TextInputForm
-                  placeholder={"Mobile Number"}
-                  labelname={"Mobile Number"}
+                  placeholder={t("Mobile Number")}
+                  labelname={t("Mobile Number")}
                   name="mobile_number"
                   value={formData.mobile_number}
                   onChange={(e) => handleChange(e, "mobile_number")}
@@ -1174,8 +1177,8 @@ const LoanCreation = () => {
               </Col>
               <Col lg="3" md="4" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Place"}
-                  labelname={"Place"}
+                  placeholder={t("Place")}
+                  labelname={t("Place")}
                   name="place"
                   value={formData.place}
                   onChange={(e) => handleChange(e, "place")}
@@ -1185,11 +1188,11 @@ const LoanCreation = () => {
             <Row>
               <Col lg="3" className="py-3">
                 <label htmlFor="customer_details" className="form-label">
-                  Address
+                  {t("Address")}
                 </label>
                 <textarea
                   className="form-cntrl-bt w-100"
-                  placeholder={"Address"}
+                  placeholder={t("Address")}
                   name="customer_details"
                   value={formData.customer_details}
                   onChange={(e) => handleChange(e, "customer_details")}
@@ -1200,7 +1203,7 @@ const LoanCreation = () => {
 
           {/* Jewel Details Section */}
           <Col lg="12" className="py-3">
-            <h5 className="mb-3">Jewel Details</h5>
+            <h5 className="mb-3">{t("Jewel Details")}</h5>
             <table className="table table-bordered mx-auto">
               <thead>
                 <tr>
@@ -1340,19 +1343,19 @@ const LoanCreation = () => {
 
           {/* Loan Details Section */}
           <Col lg="12" className="py-3">
-            <h5 className="mb-3">Loan Details</h5>
+            <h5 className="mb-3">{t("Loan Details")}</h5>
             <Row>
               <Col lg="3" md="4" xs="12" className="py-3">
                 <Calender
                   setLabel={(date) => setLabel(date, "pawnjewelry_date")}
                   initialDate={formData.pawnjewelry_date}
-                  calenderlabel="Loan Date"
+                  calenderlabel={t("Loan Date")}
                 />
               </Col>
               <Col lg="3" md="4" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Loan No"}
-                  labelname={"Loan No"}
+                  placeholder={t("Loan No")}
+                  labelname={t("Loan No")}
                   name="receipt_no"
                   value={formData.receipt_no}
                   onChange={(e) => handleChange(e, "receipt_no")}
@@ -1361,8 +1364,8 @@ const LoanCreation = () => {
               </Col>
               <Col lg="3" md="4" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Jewel Pawn Value"}
-                  labelname={"Jewel Pawn Value"}
+                  placeholder={t("Jewel Pawn Value")}
+                  labelname={t("Jewel Pawn Value")}
                   name="jewel_pawn_value"
                   value={totalJewelValue}
                   readOnly={true}
@@ -1370,8 +1373,8 @@ const LoanCreation = () => {
               </Col>
               <Col lg="3" md="4" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"principal amount"}
-                  labelname={"principal amount"}
+                  placeholder={t("principal amount")}
+                  labelname={t("principal amount")}
                   name="original_amount"
                   value={formData.original_amount}
                   onChange={(e) => handleChange(e, "original_amount")}
@@ -1379,8 +1382,8 @@ const LoanCreation = () => {
               </Col>
               <Col lg="3" md="4" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Interest Rate"}
-                  labelname={"Interest Rate"}
+                  placeholder={t("Interest Rate")}
+                  labelname={t("Interest Rate")}
                   name="interest_rate"
                   value={formData.interest_rate}
                   onChange={(e) => handleChange(e, "interest_rate")}
@@ -1390,8 +1393,8 @@ const LoanCreation = () => {
             <Row>
               <Col lg="3" md="4" xs="12" className="py-3">
                 <TextInputForm
-                  placeholder={"Jewelry Recovery Agreed Period (Months)"}
-                  labelname={"Jewelry Recovery Agreed Period"}
+                  placeholder={t("Jewelry Recovery Agreed Period (Months)")}
+                  labelname={t("Jewelry Recovery Agreed Period")}
                   name="Jewelry_recovery_agreed_period"
                   value={formData.Jewelry_recovery_agreed_period}
                   onChange={(e) =>
@@ -1404,12 +1407,14 @@ const LoanCreation = () => {
 
           {/* Proof Details Section */}
           <Col lg="12" className="py-3">
-            <h5 className="mb-3">Proof Details</h5>
+            <h5 className="mb-3">{t("Proof Details")}</h5>
             <Row>
               <Col lg="6" md="6" xs="12" className="py-5">
                 <div className="file-upload">
                   <label>
-                    {type === "edit" ? "Preview Ornament" : "Upload Ornament"}
+                    {type === "edit"
+                      ? t("Preview Ornament")
+                      : t("Upload Ornament")}
                   </label>
                   <input
                     type="file"
@@ -1421,7 +1426,7 @@ const LoanCreation = () => {
                     style={{ display: "none" }}
                   />
                   <ChooseButton
-                    label="Choose File"
+                    label={t("Choose File")}
                     onClick={startWebcam}
                     className="choosefilebtn"
                   />
@@ -1508,12 +1513,12 @@ const LoanCreation = () => {
                         </div>
                       )}
                       <ChooseButton
-                        label="Preview"
+                        label={t("Preview")}
                         className="btn btn-primary btn-sm me-2"
                         onClick={() => handlePreview(file)}
                       />
                       <ChooseButton
-                        label="Delete"
+                        label={t("Delete")}
                         className="btn btn-danger btn-sm"
                         onClick={() => handleImageDelete(index, "proof")}
                       />
@@ -1524,7 +1529,9 @@ const LoanCreation = () => {
               <Col lg="6" md="6" xs="12" className="py-5">
                 <div className="file-upload">
                   <label>
-                    {type === "edit" ? "Preview Proof Files" : "Upload Proof"}
+                    {type === "edit"
+                      ? t("Preview Proof Files")
+                      : t("Upload Proof")}
                   </label>
                   <input
                     type="file"
@@ -1538,7 +1545,7 @@ const LoanCreation = () => {
                     style={{ display: "none" }}
                   />
                   <ChooseButton
-                    label="Choose File"
+                    label={t("Choose File")}
                     onClick={() => aadharFileInputRef.current?.click()}
                     className="choosefilebtn"
                   />
@@ -1594,12 +1601,12 @@ const LoanCreation = () => {
                             </div>
                           )}
                           <ChooseButton
-                            label="Preview"
+                            label={t("Preview")}
                             className="btn btn-primary btn-sm me-2"
                             onClick={() => handlePreview(file)}
                           />
                           <ChooseButton
-                            label="Delete"
+                            label={t("Delete")}
                             className="btn btn-danger btn-sm"
                             onClick={() =>
                               handleImageDelete(index, "aadharproof")
@@ -1632,11 +1639,11 @@ const LoanCreation = () => {
                 <ClickButton
                   label={
                     type === "edit" ? (
-                      <>Update</>
+                      <>{t("Update")}</> 
                     ) : loading ? (
-                      <>Submitting...</>
+                      <>{t("Submitting...")}</> 
                     ) : (
-                      <>Submit</>
+                      <>{t("Submit")}</> 
                     )
                   }
                   onClick={type === "edit" ? handleUpdateSubmit : handleSubmit}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Col, Container, Row, Alert } from "react-bootstrap";
 import { TextInputForm, Calender } from "../../components/Forms";
 import { ClickButton } from "../../components/ClickButton";
@@ -8,20 +8,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
 import dayjs from "dayjs";
-
-import TableUI from "../../components/Table";
-
-const UserTablehead = [
-  "No",
-  "Pawn Date",
-  "Recovery Date",
-  "Loan Number",
-  "Name",
-  "Mobile Number",
-  "Action",
-];
+import { useLanguage } from "../../components/LanguageContext";
+import { MaterialReactTable } from "material-react-table";
+import { IconButton, Menu, MenuItem } from '@mui/material'
+import { BiDotsVerticalRounded } from "react-icons/bi";
+import JewelPawnPdfG from "../../pdf/JewelPawnPdfg";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const RecoveryPayment = () => {
+  const { t, cacheVersion } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const { type, rowData } = location.state || {};
@@ -33,6 +28,7 @@ const RecoveryPayment = () => {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [pawnData, setPawnData] = useState(null);
   const user = JSON.parse(localStorage.getItem("user")) || {};
+  const isAdmin = user.role === "Admin";
 
   const getInitialState = () => {
     let jewelProduct = [];
@@ -389,6 +385,157 @@ const RecoveryPayment = () => {
       // Handle delete if needed, but since TableUI handles it, perhaps not here
     }
   };
+  const handleJewelRecoveryEditClick =(rowData) => {
+    navigate("/console/customer/jewelrecovery", {
+      state: { type: "edit", rowData: rowData },
+    });
+  };
+  const handleJewelRecoveryDeleteClick = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/pawnrecovery.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_pawn_recovery_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
+        }),
+      });
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        navigate(-1);
+        // window.location.reload();
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "s_no_key", // Add a unique, stable accessorKey
+        header: t("S.No"),
+        size: 50,
+        enableColumnFilter: false,
+        Cell: ({ row }) => row.index + 1,
+      },
+      {
+        header: t("Pawn Date"),
+        accessorKey: "pawnjewelry_date",
+        Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
+      },
+      {
+        header: t("Recovery Date"),
+        accessorKey: "pawnjewelry_recovery_date",
+        Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
+      },
+      {
+        header: t("Loan Number"),
+        accessorKey: "receipt_no",
+      },
+      {
+        header: t("Name"),
+        accessorKey: "name",
+      },
+      {
+        header: t("Mobile Number"),
+        accessorKey: "mobile_number",
+      },
+    {
+      header: t("Action"),
+      id: "actions",
+      size: 100,
+      enableColumnFilter: false,
+      enableSorting: false,
+      Cell: ({ row }) => {
+        const rowData = row.original;
+        console.log("rowData",rowData);
+        const [anchorEl, setAnchorEl] = React.useState(null); 
+        const open = Boolean(anchorEl);
+
+        const handleClick = (event) => {
+          setAnchorEl(event.currentTarget);
+        };
+
+        const handleClose = () => {
+          setAnchorEl(null);
+        };
+
+        return (
+          <>
+            <IconButton
+              onClick={handleClick}
+              size="small" 
+            >
+              <BiDotsVerticalRounded /> 
+            </IconButton>
+            
+            {/* MUI Menu component */}
+            <Menu
+              id="long-menu"
+              MenuListProps={{
+                'aria-labelledby': 'long-button',
+              }}
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+            >
+              {/* Example of a translated PDF download option (currently commented out) */}
+              
+              <PDFDownloadLink
+            document={<JewelPawnPdfG data={rowData} />}
+            fileName={`${rowData.receipt_no}.pdf`}
+          > 
+            {({ loading, url }) => (
+              // Use a standard <a> tag inside MenuItem,
+              // setting href and download attributes
+              <MenuItem 
+                // Close the menu immediately when the link is clicked
+                onClick={handleClose} 
+                disabled={loading}
+              >
+                <a
+                  href={url}
+                  download={`${rowData.receipt_no}.pdf`}
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                 {("Download Pdf")}
+                </a>
+              </MenuItem>
+            )}
+          </PDFDownloadLink> 
+              
+            {isAdmin && (
+            <MenuItem onClick={() => {handleJewelRecoveryEditClick(row.original);
+                handleClose();
+              }}
+            >
+              {t("Edit")}
+            </MenuItem>
+          )}
+              
+             <MenuItem onClick={() => {handleJewelRecoveryDeleteClick(rowData.pawnjewelry_recovery_id);
+              handleClose();
+            }}
+          >
+            {t("Delete")}
+          </MenuItem>
+            </Menu>
+          </>
+        );
+      },
+    },
+    ],
+    [t, isAdmin, handleJewelRecoveryEditClick, handleJewelRecoveryDeleteClick] 
+  );
 
   return (
     <div>
@@ -401,30 +548,30 @@ const RecoveryPayment = () => {
           {/* Read-only Customer Info Container */}
           <Col lg={4}>
             <div className="customer-card bg-light border rounded p-3 h-100">
-              <h5 className="mb-3">Customer Information</h5>
+              <h5 className="mb-3">{t("Customer Information")}</h5>
               <ul className="list-unstyled">
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Customer No:</strong>
+                  <strong>{t("Customer No")}:</strong>
                   <span>{formData.customer_no}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Loan No:</strong>
+                  <strong>{t("Loan No")}:</strong>
                   <span>{formData.receipt_no}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Name:</strong>
+                  <strong>{t("Name")}:</strong>
                   <span>{formData.name}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Address:</strong>
+                  <strong>{t("Address")}:</strong>
                   <span>{formData.customer_details}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Place:</strong>
+                  <strong>{t("Place")}:</strong>
                   <span>{formData.place}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Mobile Number:</strong>
+                  <strong>{t("Mobile Number")}:</strong>
                   <span>{formData.mobile_number}</span>
                 </li>
               </ul>
@@ -434,36 +581,36 @@ const RecoveryPayment = () => {
           {/* Read-only Loan Info Container */}
           <Col lg={4}>
             <div className="customer-card bg-light border rounded p-3 h-100">
-              <h5 className="mb-3">Loan Information</h5>
+              <h5 className="mb-3">{t("Loan Information")}</h5>
               <ul className="list-unstyled">
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Pawn Date:</strong>
+                  <strong>{t("Pawn Date")}:</strong>
                   <span>{formData.pawnjewelry_date}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Principal Amount:</strong>
+                  <strong>{t("Principal Amount")}:</strong>
                   <span>
                     ₹
                     {parseFloat(formData.original_amount || 0).toLocaleString()}
                   </span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Interest Rate:</strong>
+                  <strong>{t("Interest Rate")}:</strong>
                   <span>{formData.interest_rate}</span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Interest Paid:</strong>
+                  <strong>{t("Interest Paid")}:</strong>
                   <span>
                     ₹{parseFloat(formData.interest_paid || 0).toLocaleString()}
                   </span>
                 </li>
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Payment Periods:</strong>
+                  <strong>{t("Payment Periods")}:</strong>
                   <span>{formData.interest_payment_periods} months</span>
                 </li>
                 {/* Unpaid Interest Amount */}
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Unpaid Interest Amount:</strong>
+                  <strong>{t("Unpaid Interest Amount")}:</strong>
                   <span>
                     ₹
                     {parseFloat(
@@ -473,7 +620,7 @@ const RecoveryPayment = () => {
                 </li>
                 {/* Unpaid Interest Period */}
                 <li className="mb-2 d-flex justify-content-between">
-                  <strong>Unpaid Interest Period:</strong>
+                  <strong>{t("Unpaid Interest Period")}:</strong>
                   <span>{formData.unpaid_interest_period} months</span>
                 </li>
               </ul>
@@ -483,12 +630,15 @@ const RecoveryPayment = () => {
           {/* Jewel Product List Container (Read-only Table) */}
           <Col lg={4}>
             <div className="customer-card bg-light border rounded p-3 h-100">
-              <h5 className="mb-3">Pledge Items</h5>
+              <h5 className="mb-3">{t("Pledge Items")}</h5>
               <ul className="list-unstyled small">
                 {formData.jewel_product.map((row, index) => (
                   <li key={index} className="mb-2 p-2 border rounded bg-white">
-                    <strong>S.No {index + 1}:</strong> {row.JewelName} -{" "}
-                    {row.count} pcs, {row.weight} gm ({row.remark})
+                    <strong>
+                      {t("S.No")} {index + 1}:
+                    </strong>{" "}
+                    {row.JewelName} - {row.count} {t("pcs")}, {row.weight}{" "}
+                    {t("gm")} ({row.remark})
                   </li>
                 ))}
               </ul>
@@ -498,7 +648,7 @@ const RecoveryPayment = () => {
           {/* Editable Inputs */}
           <Col lg={12} className="py-3">
             <div className="customer-card bg-light border rounded p-3">
-              <h5 className="mb-3">Recovery Details</h5>
+              <h5 className="mb-3">{t("Recovery Details")}</h5>
               <Row>
                 <Col lg={3}>
                   <Calender
@@ -506,13 +656,13 @@ const RecoveryPayment = () => {
                       setLabel(date, "pawnjewelry_recovery_date")
                     }
                     initialDate={formData.pawnjewelry_recovery_date}
-                    calenderlabel="Recovery Date"
+                    calenderlabel={t("Recovery Date")}
                   />
                 </Col>
                 <Col lg={3}>
                   <TextInputForm
-                    placeholder={"Refund Amount"}
-                    labelname={"Refund Amount"}
+                    placeholder={t("Refund Amount")}
+                    labelname={t("Refund Amount")}
                     name="refund_amount"
                     value={formData.refund_amount}
                     onChange={(e) => handleChange(e, "refund_amount")}
@@ -521,8 +671,8 @@ const RecoveryPayment = () => {
                 </Col>
                 <Col lg={3}>
                   <TextInputForm
-                    placeholder={"Other Amount"}
-                    labelname={"Other Amount"}
+                    placeholder={t("Other Amount")}
+                    labelname={t("Other Amount")}
                     name="other_amount"
                     value={formData.other_amount}
                     onChange={(e) => handleChange(e, "other_amount")}
@@ -553,11 +703,11 @@ const RecoveryPayment = () => {
                   <ClickButton
                     label={
                       loading ? (
-                        <>Submitting...</>
+                        <>{t("Submitting...")}</>
                       ) : type === "edit" ? (
-                        <>Update</>
+                        <>{t("Update")}</>
                       ) : (
-                        <>Submit</>
+                        <>{t("Submit")}</>
                       )
                     }
                     onClick={
@@ -567,7 +717,10 @@ const RecoveryPayment = () => {
                   />
                 </span>
                 <span className="mx-2">
-                  <ClickButton label={<>Cancel</>} onClick={handleCancel} />
+                  <ClickButton
+                    label={<>{t("Cancel")}</>}
+                    onClick={handleCancel}
+                  />
                 </span>
               </div>
             </Col>
@@ -585,18 +738,33 @@ const RecoveryPayment = () => {
           {recoveryHistory.length > 0 && (
             <Col lg={12} className="py-3">
               <div className="customer-card bg-light border rounded p-3">
-                <h5 className="mb-3">Recovery Payment History</h5>
-
-                <TableUI
-                  headers={UserTablehead}
-                  body={recoveryHistory}
-                  type="jewelRecovery"
-                  pageview="no"
-                  style={{ borderRadius: "5px" }}
-                  customActions={{
-                    edit: handleAction,
-                  }}
-                />
+                <h5 className="mb-3">{t("Recovery Payment History")}</h5>             
+                  <MaterialReactTable
+                    columns={columns}
+                    data={recoveryHistory} 
+                    enableColumnActions={false}
+                    enableColumnFilters={false}
+                    enableDensityToggle={false} 
+                    enableFullScreenToggle={false} 
+                    enableHiding={false} 
+                    enableGlobalFilter={true} 
+                    initialState={{ density: "compact" }}
+                   
+                    muiTableContainerProps={{
+                      sx: {
+                        borderRadius: "5px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                      },
+                    }}
+                    
+                    muiTableHeadCellProps={{
+                      sx: {
+                        fontWeight: "bold",
+                        color: "black"
+                      },
+                    }}
+                  />
+               
               </div>
             </Col>
           )}
