@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useLanguage } from "../../components/LanguageContext";
 
 const CustomerCreations = () => {
-  const { t, cacheVersion } = useLanguage();
+  const { t} = useLanguage();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const { type, rowData } = location.state || {};
@@ -723,13 +723,13 @@ const CustomerCreations = () => {
         <Row className="regular">
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
-              pagetitle={`Customer${
+              pagetitle={
                 type === "view"
-                  ? " View"
+                  ? t("Customer View")
                   : type === "edit"
-                  ? " Edit"
-                  : " Creation"
-              }`}
+                  ? t("Customer Edit")
+                  : t("Customer Creation")
+              }
             />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
@@ -768,8 +768,8 @@ const CustomerCreations = () => {
               labelname={t("Place")}
               name="place"
               value={formData.place}
-              onChange={(e) => handleChange(e, "place")} // ✅ only update state
-              onBlur={handlePlaceBlur} // ✅ fetch pincode only after blur
+              onChange={(e) => handleChange(e, "place")} 
+              onBlur={handlePlaceBlur} 
             />
           </Col>
 
@@ -977,7 +977,7 @@ const CustomerCreations = () => {
                 style={{ display: "none" }}
               />
               <ChooseButton
-                label="Choose File"
+                 label={t("Choose File")}
                 onClick={() => startWebcam("aadharproof")}
                 className="choosefilebtn"
               />
@@ -1027,12 +1027,12 @@ const CustomerCreations = () => {
                       )}
 
                       <ChooseButton
-                        label="Preview"
+                      label={t("Preview")}
                         className="btn btn-primary btn-sm me-2"
                         onClick={() => handlePreview(file)}
                       />
                       <ChooseButton
-                        label="Delete"
+                        label={t("Delete")}
                         className="btn btn-danger btn-sm"
                         onClick={() => handleImageDelete(index, "aadharproof")}
                       />

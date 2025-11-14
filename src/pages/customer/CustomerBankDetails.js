@@ -88,14 +88,16 @@ const CustomerBankDetails = () => {
                   {t("No bank pledge records found for Receipt No:")}{" "}
                   {receiptNo}.
                 </Card.Text>
-                <Button
-                  variant="secondary"
+               <ClickButton 
+                  label={
+                    <>
+                      <BiArrowBack className="me-2" />{" "}
+                      {t("Back to Customer Details")}
+                    </>
+                  }
                   onClick={() => navigate(-1)}
                   className="professional-btn"
-                >
-                  <BiArrowBack className="me-2" />{" "}
-                  {t("Back to Customer Details")}
-                </Button>
+                />
               </Card.Body>
             </Card>
           </Col>

@@ -374,17 +374,8 @@ const RecoveryPayment = () => {
   };
 
   const pageTitle =
-    type === "edit" ? "Edit Recovery Payment" : "Recovery Payment";
+   type === "edit" ? t("Edit Recovery Payment") : t("Recovery Payment");
 
-  const handleAction = (action, recoveryRow) => {
-    if (action === "edit") {
-      navigate("/console/customer/jewelrecovery", {
-        state: { type: "edit", rowData: recoveryRow },
-      });
-    } else if (action === "delete") {
-      // Handle delete if needed, but since TableUI handles it, perhaps not here
-    }
-  };
   const handleJewelRecoveryEditClick =(rowData) => {
     navigate("/console/customer/jewelrecovery", {
       state: { type: "edit", rowData: rowData },

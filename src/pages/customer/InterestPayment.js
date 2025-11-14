@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useMemo } from "react";
 import { Col, Container, Row, Alert } from "react-bootstrap";
 import { TextInputForm, Calender } from "../../components/Forms";
 import { ClickButton } from "../../components/ClickButton";
@@ -8,21 +8,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
 import { useLanguage } from "../../components/LanguageContext";
-
-import TableUI from "../../components/Table";
-
-const UserTablehead = [
-  "No",
-  "Interest Receive Date",
-  "Name",
-  "Loan Number",
-  "Mobile Number",
-  "Interest Amount",
-  "Action",
-];
+import dayjs from "dayjs";
+import { MaterialReactTable } from "material-react-table";
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import { BiDotsVerticalRounded } from "react-icons/bi";
+import ReceiptPDF from "../../pdf/jewelInterestPdf";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const InterestPayment = () => {
-  const { t, cacheVersion } = useLanguage();
+  const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const { type, rowData } = location.state || {};
@@ -33,6 +27,7 @@ const InterestPayment = () => {
   const [interestHistory, setInterestHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const user = JSON.parse(localStorage.getItem("user")) || {};
+  const isAdmin = user.role === "Admin";
 
   const getInitialState = () => {
     if (type === "edit" && rowData) {
@@ -197,7 +192,7 @@ const InterestPayment = () => {
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg);
         setTimeout(() => {
-          navigate(-1);
+          // navigate(-1);
           window.location.reload();
         }, 1000);
       } else {
@@ -259,17 +254,158 @@ const InterestPayment = () => {
   };
 
   const pageTitle =
-    type === "edit" ? "Edit Interest Payment" : "Interest Payment";
+  type === "edit" ? t("Edit Interest Payment") : t("Interest Payment");
+ 
 
-  const handleAction = (action, interestRow) => {
-    if (action === "edit") {
-      navigate("/console/customer/interest", {
-        state: { type: "edit", rowData: interestRow },
+  //Interest Edit and Delete click handling
+  const handleinterestEditClick = (rowData) => {
+    navigate("/console/customer/interest", {
+      state: { type: "edit", rowData: rowData },
+    });
+  };
+  const handleinterestDeleteClick = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/interest.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          delete_interest_id: id,
+          login_id: user.id,
+          user_name: user.user_name,
+        }),
       });
-    } else if (action === "delete") {
-      // Handle delete if needed, but since TableUI handles it, perhaps not here
+      const responseData = await response.json();
+      if (responseData.head.code === 200) {
+        window.location.reload();
+      } else {
+        console.log(responseData.head.msg);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
     }
   };
+  
+//Material React Table
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "s_no_key", // Add a unique, stable accessorKey
+        header: t("S.No"),
+        size: 50,
+        enableColumnFilter: false,
+        Cell: ({ row }) => row.index + 1,
+      },
+      {
+        header: t("Interest Receive Date"),
+        accessorKey: "interest_receive_date",
+        Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
+      },
+      {
+        header: t("Name"),
+        accessorKey: "name",
+       
+      },
+      {
+        header: t("Loan Number"),
+        accessorKey: "receipt_no",
+      },
+
+      {
+        header: t("Mobile Number"),
+        accessorKey: "mobile_number",
+      },
+      {
+        header: t("Interest Amount"),
+        accessorKey: "interest_income",
+      },
+      {
+        header: t("Action"),
+        id: "actions",
+        size: 100,
+        enableColumnFilter: false,
+        enableSorting: false,
+        Cell: ({ row }) => {
+          const rowData = row.original;
+          console.log("rowData", rowData);
+          const [anchorEl, setAnchorEl] = React.useState(null);
+          const open = Boolean(anchorEl);
+
+          const handleClick = (event) => {
+            setAnchorEl(event.currentTarget);
+          };
+
+          const handleClose = () => {
+            setAnchorEl(null);
+          };
+
+          return (
+            <>
+              <IconButton onClick={handleClick} size="small">
+                <BiDotsVerticalRounded />
+              </IconButton>
+
+              {/* MUI Menu component */}
+              <Menu
+                id="long-menu"
+                MenuListProps={{
+                  "aria-labelledby": "long-button",
+                }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+              >
+                <PDFDownloadLink
+                  document={<ReceiptPDF data={rowData} />}
+                  fileName={`${rowData.receipt_no}_interest.pdf`}
+                >
+                  {({ loading, url }) => (
+                    <MenuItem
+                      onClick={handleClose}
+                      disabled={loading}
+                    >
+                      <a
+                        href={url}
+                        download={`${rowData.receipt_no}_interest.pdf`}
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        {"Download Pdf"}
+                      </a>
+                    </MenuItem>
+                  )}
+                </PDFDownloadLink>
+
+                {isAdmin && (
+                  <MenuItem
+                    onClick={() => {
+                      handleinterestEditClick(row.original);
+                      handleClose();
+                    }}
+                  >
+                    {t("Edit")}
+                  </MenuItem>
+                )}
+
+                <MenuItem
+                  onClick={() => {
+                    handleinterestDeleteClick(rowData.interest_id);
+                    handleClose();
+                  }}
+                >
+                  {t("Delete")}
+                </MenuItem>
+              </Menu>
+            </>
+          );
+        },
+      },
+    ],
+    [t, isAdmin ]
+  );
 
   return (
     <div>
@@ -419,7 +555,10 @@ const InterestPayment = () => {
                 />
               </span>
               <span className="mx-2">
-               <ClickButton label={<>{t("Cancel")}</>} onClick={handleCancel} />
+                <ClickButton
+                  label={<>{t("Cancel")}</>}
+                  onClick={handleCancel}
+                />
               </span>
             </div>
           </Col>
@@ -434,22 +573,35 @@ const InterestPayment = () => {
 
           <Col lg={12} className="py-3">
             <div className="customer-card bg-light border rounded p-3">
-             <h5 className="mb-3">{t("Interest Payment History")}</h5>
+              <h5 className="mb-3">{t("Interest Payment History")}</h5>
 
               {interestHistory.length > 0 ? (
-                <TableUI
-                  headers={UserTablehead}
-                  body={interestHistory}
-                  type="interest"
-                  pageview="no"
-                  style={{ borderRadius: "5px" }}
-                  customActions={{
-                    edit: handleAction,
+                <MaterialReactTable
+                  columns={columns}
+                  data={interestHistory}
+                  enableColumnActions={false}
+                  enableColumnFilters={false}
+                  enableDensityToggle={false}
+                  enableFullScreenToggle={false}
+                  enableHiding={false}
+                  enableGlobalFilter={true}
+                  initialState={{ density: "compact" }}
+                  muiTableContainerProps={{
+                    sx: {
+                      borderRadius: "5px",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    },
+                  }}
+                  muiTableHeadCellProps={{
+                    sx: {
+                      fontWeight: "bold",
+                      color: "black",
+                    },
                   }}
                 />
               ) : (
                 <div className="text-center text-muted py-3">
-                {t("No interest payments recorded yet.")}
+                  {t("No interest payments recorded yet.")}
                 </div>
               )}
             </div>

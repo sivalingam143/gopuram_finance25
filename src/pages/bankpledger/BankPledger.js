@@ -82,15 +82,12 @@ const updateGroupedData = (data) => {
  const columns = useMemo(
         () => [
             {
-                // FIX: Use 's_no' as accessor. The Cell function for row.index + 1 is redundant 
-                // if 's_no' is sequential from the backend, but is okay if you prefer it.
                 accessorKey: "s_no", 
                 header: t("S.No"),
                 size: 50,
                 enableColumnFilter: false,
             },
             {
-                // FIX: Must use 'loan_no' (the key present in groupedData)
                 accessorKey: "loan_no", 
                 header: t("Pawn Loan No."), 
                 size: 50,
@@ -112,11 +109,9 @@ const updateGroupedData = (data) => {
                         {/* View Icon */}
                         <Tooltip title={t("View Details")}> 
                             <IconButton
-                                // 🛑 FIX: Pass the NESTED `records` array (the details)
-                                // 🛑 FIX: Use the correct loan number key: `loan_no`
                                 onClick={() => handleViewDetails(
-                                    row.original.records, // Pass the array of detail records
-                                    row.original.loan_no // Pass the grouping loan number
+                                    row.original.records, 
+                                    row.original.loan_no 
                                 )} 
                                 sx={{ padding: 0 }}
                             >
@@ -174,7 +169,7 @@ const updateGroupedData = (data) => {
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa", // Light gray header background
+                        backgroundColor: "#f8f9fa", 
                       },
                     }}
                   />

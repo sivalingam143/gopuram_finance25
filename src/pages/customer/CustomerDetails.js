@@ -25,7 +25,7 @@ const ActionMenu = ({
   handleJewelPawningEditClick,
   handleJewelPawningDeleteClick,
 }) => {
-   const { t } = useLanguage();
+  const { t } = useLanguage();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   if (!row) {
@@ -68,7 +68,7 @@ const ActionMenu = ({
             onDownloadPawnAgreement(row);
           }}
         >
-         {t('Download PDF')}
+          {t("Download PDF")}
         </MenuItem>
 
         <MenuItem
@@ -77,7 +77,7 @@ const ActionMenu = ({
             onBankDetails(row);
           }}
         >
-         {t('Bank Details')}
+          {t("Bank Details")}
         </MenuItem>
 
         <MenuItem
@@ -86,7 +86,7 @@ const ActionMenu = ({
             onRecovery(row);
           }}
         >
-         {t('Recovery')}
+          {t("Recovery")}
         </MenuItem>
 
         {!isNotRecovered && (
@@ -96,7 +96,7 @@ const ActionMenu = ({
               onRePledge(row);
             }}
           >
-           {t('Re-pledge')}
+            {t("Re-pledge")}
           </MenuItem>
         )}
 
@@ -107,7 +107,7 @@ const ActionMenu = ({
               handleJewelPawningEditClick(row);
             }}
           >
-           {t('Edit')}
+            {t("Edit")}
           </MenuItem>
         )}
         {handleJewelPawningDeleteClick && (
@@ -117,7 +117,7 @@ const ActionMenu = ({
               handleJewelPawningDeleteClick(row.pawnjewelry_id);
             }}
           >
-           {t('Delete')}
+            {t("Delete")}
           </MenuItem>
         )}
       </Menu>
@@ -465,9 +465,12 @@ const CustomerDetails = () => {
         Cell: ({ cell }) => {
           const statusValue = cell.getValue();
           let color;
-          if (statusValue === t("status.redeemed")) {
-            color = "success"; // Green color
-          } else if (statusValue === t("status.notRedeemed")) {
+          const redeemedStatus = "நகை மீட்கபட்டது";
+          const notRedeemedStatus = "நகை மீட்கபடவில்லை";
+
+          if (statusValue === redeemedStatus) {
+            color = "success";
+          } else if (statusValue === notRedeemedStatus) {
             color = "error";
           } else {
             color = "warning";
