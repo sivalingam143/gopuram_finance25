@@ -437,6 +437,7 @@ const LoanCreation = () => {
           ),
           login_id: user.id,
           user_name: user.user_name,
+          action:"pawn_creation",
         }),
       });
 

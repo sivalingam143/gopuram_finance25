@@ -42,6 +42,7 @@ const CustomerBankDetails = () => {
         },
         body: JSON.stringify({
           receipt_no: receiptNo,
+          action:"bank_details",
         }),
       });
       const responseData = await response.json();
