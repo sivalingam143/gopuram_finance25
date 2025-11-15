@@ -367,15 +367,15 @@ const BankPledgerCreation = () => {
         <Row className="regular ">
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
-              pagetitle={`Bank Pledger ${
-                isView
-                  ? "View"
-                  : isClosing
-                  ? "Closing"
-                  : isEdit
-                  ? "Edit"
-                  : "Creation"
-              }`}
+              pagetitle={`${t("Bank Pledger")} ${
+    isView
+        ? t("View")
+        : isClosing
+        ? t("Closing")
+        : isEdit
+        ? t("Edit")
+        : t("Creation")
+}`}
             ></PageNav>
           </Col>
           {isClosing || isView ? (

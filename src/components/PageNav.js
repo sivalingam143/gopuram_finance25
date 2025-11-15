@@ -3,8 +3,10 @@ import { MdArrowBack } from "react-icons/md";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Dialog from "./Dialog";
+import { useLanguage } from "./LanguageContext";
 
 const PageNav = ({ pagetitle }) => {
+  const { t } = useLanguage();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const navigate = useNavigate();
 
@@ -31,7 +33,7 @@ const PageNav = ({ pagetitle }) => {
         <div className="nav-list">{pagetitle}</div>
       </div>
       <Dialog
-        DialogTitle="Do You Want to Close the Form?"
+        DialogTitle={t("Do You Want to Close the Form?")}
         isVisible={showConfirmDialog}
         onConfirm={() => handleConfirmClose(true)}
         onCancel={() => handleConfirmClose(false)}

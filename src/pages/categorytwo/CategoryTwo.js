@@ -10,8 +10,10 @@ import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
+import { useLanguage } from '../../components/LanguageContext'; 
 
 const CategoryTwo = () => {
+  const { t,cacheVersion } = useLanguage(); 
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
@@ -85,21 +87,21 @@ const CategoryTwo = () => {
   // 3. Define Material React Table Columns
   const columns = useMemo(
     () => [
-      {
-        accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+       {
+        accessorKey: "s_no_key", // Add a unique, stable accessorKey
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "category_name",
-        header: "Category Name",
+        header: t("Category Name"), 
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -112,7 +114,7 @@ const CategoryTwo = () => {
             }}
           >
             {/* Edit Icon */}
-            <Tooltip title="Edit">
+             <Tooltip title={t("Edit")}>
               <IconButton
                 onClick={() => handlecategoryTwoEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -122,7 +124,7 @@ const CategoryTwo = () => {
             </Tooltip>
 
             {/* Delete Icon */}
-            <Tooltip title="Delete">
+            <Tooltip title={t("Delete")}> 
               <IconButton
                 onClick={() =>
                   handlecategoryTwoDeleteClick(row.original.category_id)
@@ -136,7 +138,7 @@ const CategoryTwo = () => {
         ),
       },
     ],
-    []
+    [t,cacheVersion]
   );
 
   // 4. Update JSX to render MaterialReactTable
@@ -146,12 +148,12 @@ const CategoryTwo = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">Category</span>
+             <span class="nav-list">{t("Category")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Category</>}
+             label={<>{t("Add Category")}</>}
               onClick={() => navigate("/console/expense/category/create")}
             ></ClickButton>
           </Col>

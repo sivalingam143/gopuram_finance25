@@ -1,27 +1,29 @@
-import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { TextInputForm } from "../../components/Forms";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
-import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
-import dayjs from "dayjs";
+
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import { useLanguage } from '../../components/LanguageContext'; 
 import { LiaEditSolid } from "react-icons/lia";
-import { MdOutlineDelete } from "react-icons/md";
+ import { MdOutlineDelete } from "react-icons/md";
 
-const Transaction=()=>{
+const Transaction = () => {
+ const { t,cacheVersion } = useLanguage(); 
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [expenseData, setExpenseData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 1. Handlers for Edit and Delete Actions
-  const handleExpenseEditClick = (rowData) => {
+  // 1. Handlers for view Actions
+   const handleExpenseEditClick = (rowData) => {
     navigate("/console/transaction/create", {
       state: { type: "edit", rowData: rowData },
     });
@@ -83,41 +85,39 @@ const Transaction=()=>{
     fetchData();
   }, [searchText]);
 
-
   // 3. Define Material React Table Columns
-  const columns = useMemo(
+ const columns = useMemo(
     () => [
       {
-        accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+        accessorKey: "s_no_key", // Add a unique, stable accessorKey
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "date",
-        header: "Date",
+        header: t("Date"),
         size: 50,
-         Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
       },
       {
         accessorKey: "expense_name",
-        header: "Transaction Name",
+        header: t("Transaction Name"),
         size: 50,
       },
       {
         accessorKey: "expense_type",
-        header: "Transaction Type",
+        header: t("Transaction Type"),
         size: 50,
       },
       {
         accessorKey: "amount",
-        header: "Amount",
+        header: t("Amount"),
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -130,9 +130,9 @@ const Transaction=()=>{
             }}
           >
             {/* Edit Icon */}
-            <Tooltip title="Edit">
+            <Tooltip title={t("Edit")}>
               <IconButton
-                onClick={() => handleExpenseEditClick(row.original)}
+               onClick={() => handleExpenseEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
               >
                 <LiaEditSolid />
@@ -140,10 +140,9 @@ const Transaction=()=>{
             </Tooltip>
 
             {/* Delete Icon */}
-            <Tooltip title="Delete">
+            <Tooltip title={t("Delete")}>
               <IconButton
-                onClick={() =>  handleExpenseDeleteClick(row.original.expense_id)
-                }
+               onClick={() =>  handleExpenseDeleteClick(row.original.expense_id)}
                 sx={{ color: "#dc3545", padding: 0 }}
               >
                 <MdOutlineDelete />
@@ -153,45 +152,27 @@ const Transaction=()=>{
         ),
       },
     ],
-    []
+    [t, cacheVersion]
   );
+ 
 
   // 4. Update JSX to render MaterialReactTable
   return (
     <div>
       <Container fluid>
         <Row>
+          
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">
-                Transaction
-              </span>
+              <span class="nav-list">{t("Transaction")}</span> 
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              label={<>Add Transaction
-              </>}
+              label={<>{t("Add Transaction")}</>} 
               onClick={() => navigate("/console/transaction/create")}
             ></ClickButton>
           </Col>
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
           {/* 5. Replace TableUI with MaterialReactTable */}
@@ -205,7 +186,7 @@ const Transaction=()=>{
                     columns={columns}
                     data={expenseData}
                     enableColumnActions={false}
-                     enableColumnFilters={false} 
+                    enableColumnFilters={false}
                     enablePagination={true}
                     enableSorting={true}
                     initialState={{ density: "compact" }}
@@ -235,4 +216,3 @@ const Transaction=()=>{
 };
 
 export default Transaction;
-

@@ -12,7 +12,7 @@ import { useLanguage } from "../../components/LanguageContext";
 import { MaterialReactTable } from "material-react-table";
 import { IconButton, Menu, MenuItem } from '@mui/material'
 import { BiDotsVerticalRounded } from "react-icons/bi";
-import JewelPawnPdfG from "../../pdf/JewelPawnPdfg";
+import JewelPawnrecoveryPdf from "../../pdf/jewelpawnRecoverPdf";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const RecoveryPayment = () => {
@@ -482,7 +482,7 @@ const RecoveryPayment = () => {
               {/* Example of a translated PDF download option (currently commented out) */}
               
               <PDFDownloadLink
-            document={<JewelPawnPdfG data={rowData} />}
+            document={<JewelPawnrecoveryPdf data={rowData} />}
             fileName={`${rowData.receipt_no}.pdf`}
           > 
             {({ loading, url }) => (
@@ -525,7 +525,7 @@ const RecoveryPayment = () => {
       },
     },
     ],
-    [t, isAdmin, handleJewelRecoveryEditClick, handleJewelRecoveryDeleteClick] 
+    [t,cacheVersion, isAdmin, handleJewelRecoveryEditClick, handleJewelRecoveryDeleteClick] 
   );
 
   return (

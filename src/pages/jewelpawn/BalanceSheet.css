@@ -32,11 +32,11 @@
 }
 
   .table-header {
-    background-color: #343a40 !important;
-    color: white !important;
+    background-color: #eef1f3 !important;
+    color: rgb(24, 18, 18) !important;
   }
   .table-header1 {
-    color: white !important;
+    color: #a46363
   }
   
   .edit-btn {

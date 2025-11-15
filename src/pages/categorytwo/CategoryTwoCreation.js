@@ -8,8 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import API_DOMAIN from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
+import { useLanguage } from "../../components/LanguageContext";
 
 const CategoryTwoCreation = () => {
+  const { t } = useLanguage();
   const location = useLocation();
   const { type, rowData } = location.state || {};
   const initialState =
@@ -160,20 +162,20 @@ const CategoryTwoCreation = () => {
         <Row className="regular justify-content-center">
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
-              pagetitle={`Category${
+              pagetitle={`${t("Category")}${
                 type === "view"
-                  ? " View "
+                  ? t(" View ")
                   : type === "edit"
-                  ? "  Edit "
-                  : " Creation "
+                  ? t(" Edit ")
+                  : t(" Creation ")
               }`}
             ></PageNav>
           </Col>
 
           <Col lg="4" md="6" xs="12" className="py-3">
             <TextInputForm
-              placeholder={"Category Name"}
-              labelname={"Category Name"}
+              placeholder={t("Category Name")}
+              labelname={t("Category Name")}
               name="category_name"
               value={
                 type === "view" ? rowData.category_name : formData.category_name
@@ -186,7 +188,7 @@ const CategoryTwoCreation = () => {
             <div className="text-center">
               {type === "view" ? (
                 <ClickButton
-                  label={<>back</>}
+                 label={<>{t("back")}</>}
                   onClick={() => navigate("/console/expense")}
                 ></ClickButton>
               ) : (
@@ -207,14 +209,14 @@ const CategoryTwoCreation = () => {
                       />
                       <span className="mx-2">
                         <ClickButton
-                          label={<>Update</>}
+                         label={<>{t("Update")}</>}
                           onClick={handleUpdateSubmit}
                         ></ClickButton>
                       </span>
 
                       <span className="mx-2">
                         <ClickButton
-                          label={<>Cancel</>}
+                         label={<>{t("Cancel")}</>}
                           onClick={() => navigate("/console/expense")}
                         ></ClickButton>
                       </span>
@@ -235,14 +237,14 @@ const CategoryTwoCreation = () => {
                       />
                       <span className="mx-2">
                         <ClickButton
-                          label={loading ? <>Submitting...</> : <> Submit</>}
+                         label={loading ? <>{t("Submitting...")}</> : <>{t("Submit")}</>}
                           onClick={handleSubmit}
                           disabled={loading}
                         ></ClickButton>
                       </span>
                       <span className="mx-2">
                         <ClickButton
-                          label={<>Cancel</>}
+                         label={<>{t("Cancel")}</>}
                           onClick={() => navigate("/console/expense")}
                         ></ClickButton>
                       </span>

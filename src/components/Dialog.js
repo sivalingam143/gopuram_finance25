@@ -1,7 +1,9 @@
 import React from "react";
 import { ClickButton } from "./ClickButton";
+import { useLanguage } from "./LanguageContext";
 
 const Dialog = ({ isVisible, onConfirm, onCancel, DialogTitle }) => {
+  const { t } = useLanguage();
   if (!isVisible) return null;
   return (
     <>
@@ -10,13 +12,12 @@ const Dialog = ({ isVisible, onConfirm, onCancel, DialogTitle }) => {
           <p>{DialogTitle}</p>
           <ClickButton
             onClick={() => onConfirm(true)}
-            //className="table-btn mx-2"
-            label="Yes"
+            label={t("Yes")} 
           />
           <ClickButton
             onClick={() => onCancel(false)}
             className="table-btn mx-2"
-            label="No"
+            label={t("No")} 
           />
         </div>
       </div>

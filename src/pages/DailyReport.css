@@ -1,8 +1,14 @@
+
+.daily-report-container h2 { 
+  padding-top: 20px !important; 
+}
+
 .daily-report-container {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
+
 
 .financial-table {
   width: 100%;

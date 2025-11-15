@@ -6,8 +6,11 @@ import API_DOMAIN from "../../config/config";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { generatePDF, generateExcel } from "./ExpenseReportPdfAndExcel";
+import { useLanguage } from '../../components/LanguageContext';
+import dayjs from 'dayjs'; 
 
 const ExpenseReport = () => {
+   const { t } = useLanguage(); 
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -90,7 +93,7 @@ const ExpenseReport = () => {
         <Row>
           <Col lg="12">
             <div className="page-nav py-3">
-              <span className="nav-list">Expense Report</span>
+              <span className="nav-list">{t("Expense Report")}</span>
             </div>
           </Col>
 
@@ -100,8 +103,8 @@ const ExpenseReport = () => {
               <Col lg="2" md="6" xs="12">
                 <TextInputForm
                   type="date"
-                  placeholder="From Date"
-                  labelname="From Date"
+                  placeholder={t("From Date")}
+                  labelname={t("From Date")}
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
                 />
@@ -109,20 +112,20 @@ const ExpenseReport = () => {
               <Col lg="2" md="6" xs="12">
                 <TextInputForm
                   type="date"
-                  placeholder="To Date"
-                  labelname="To Date"
+                  placeholder={t("To Date")}
+                  labelname={t("To Date")}
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
                 />
               </Col>
               <Col lg="3" md="6" xs="12">
                 <Form.Group controlId="category">
-                  <Form.Label>Category</Form.Label>
+                  <Form.Label>{t("Category")}</Form.Label>
                   <Form.Select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                   >
-                    <option value="">All Categories</option>
+                    <option value="">{t("All Categories")}</option>
                     {categories.map((cat) => (
                       <option key={cat.category_id} value={cat.category_name}>
                         {cat.category_name}
@@ -138,18 +141,20 @@ const ExpenseReport = () => {
                 className="d-flex align-items-end justify-content-start gap-2"
               >
                 <ClickButton
-                  label={loading ? <>Loading...</> : <>Apply Filter</>}
+                  label={
+                    loading ? <>{t("Loading...")}</> : <>{t("Apply Filter")}</>
+                  }
                   onClick={handleFilter}
                   disabled={loading}
                   variant="info"
                 />
                 <ClickButton
-                  label={<>PDF</>}
+                  label={<>{t("PDF")}</>}
                   onClick={handleDownloadPDF}
                   variant="success"
                 />
                 <ClickButton
-                  label={<>Excel</>}
+                  label={<>{t("Excel")}</>}
                   onClick={handleDownloadExcel}
                   variant="primary"
                 />
@@ -168,17 +173,17 @@ const ExpenseReport = () => {
             >
               <thead className="table-dark">
                 <tr>
-                  <th>Date</th>
-                  <th>Category</th>
-                  <th>Description</th>
-                  <th>Amount</th>
+                  <th>{t("Date")}</th>
+                  <th>{t("Category")}</th>
+                  <th>{t("Description")}</th>
+                  <th>{t("Amount")}</th>
                 </tr>
               </thead>
               <tbody>
                 {reportData.length > 0 ? (
                   reportData.map((item, index) => (
                     <tr key={index}>
-                      <td>{item.date}</td>
+                     <td>{dayjs(item.date).format("DD-MM-YYYY")}</td>
                       <td>{item.category_name}</td>
                       <td>{item.description}</td>
                       <td>{item.amount}</td>
@@ -187,7 +192,7 @@ const ExpenseReport = () => {
                 ) : (
                   <tr>
                     <td colSpan="4" className="text-center">
-                      No data found
+                      {t("No data found")}
                     </td>
                   </tr>
                 )}

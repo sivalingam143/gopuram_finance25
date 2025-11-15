@@ -5,8 +5,10 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import GovernmentReportPDF from "./GovernmentReportPDF";
+import { useLanguage } from "../components/LanguageContext";
 
 const GovernmentReport = () => {
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [reportData, setReportData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -226,18 +228,18 @@ const GovernmentReport = () => {
   return (
     <div>
       <h1 style={{ fontSize: "24px", marginBottom: "10px", color: "#222" }}>
-        Government Report
+        {t("Government Report")}
       </h1>
 
       {/* Search Filter */}
       <div style={filterContainerStyle}>
         <label style={labelStyle}>
-          Search (Receipt No / Customer No)
+          {t("Search (Receipt No / Customer No)")}
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Enter Receipt No or Customer No..."
+            placeholder={t("Enter Receipt No or Customer No...")}
             style={inputStyle}
           />
         </label>
@@ -255,7 +257,7 @@ const GovernmentReport = () => {
             onClick={fetchGovernmentData}
             disabled={loading}
           >
-            {loading ? "Loading..." : "Refresh Data"}
+            {loading ? t("Loading...") : t("Refresh Data")}
           </button>
         </div>
         <div>
@@ -269,7 +271,7 @@ const GovernmentReport = () => {
               style={{ marginLeft: "10px" }}
             >
               {({ loading: pdfLoading }) =>
-                pdfLoading ? "Preparing PDF..." : "Download PDF"
+                pdfLoading ? t("Preparing PDF...") : t("Download PDF")
               }
             </PDFDownloadLink>
           )}
@@ -281,7 +283,7 @@ const GovernmentReport = () => {
               onClick={exportToExcel}
               disabled={reportData.length === 0}
             >
-              Export to Excel
+              {t("Export to Excel")}
             </button>
           )}
         </div>
@@ -291,26 +293,26 @@ const GovernmentReport = () => {
       <table style={tableStyle}>
         <thead>
           <tr>
-            <th style={thStyle}>Serial No</th>
-            <th style={thStyle}>Period Start Date</th>
-            <th style={thStyle}>Receipt No</th>
-            <th style={thStyle}>Customer No</th>
-            <th style={thStyle}>Name</th>
-            <th style={thStyle}>Customer Details</th>
-            <th style={thStyle}>Place</th>
-            <th style={thStyle}>Mobile Number</th>
-            <th style={thStyle}>Date of Birth</th>
-            <th style={thStyle}>Principal (₹)</th>
-            <th style={thStyle}>Monthly Interest (₹)</th>
-            <th style={thStyle}>Total Interest (₹)</th>
-            <th style={thStyle}>Total Due (₹)</th>
+            <th style={thStyle}>{t("Serial No")}</th>
+            <th style={thStyle}>{t("Period Start Date")}</th>
+            <th style={thStyle}>{t("Receipt No")}</th>
+            <th style={thStyle}>{t("Customer No")}</th>
+            <th style={thStyle}>{t("Name")}</th>
+            <th style={thStyle}>{t("Customer Details")}</th>
+            <th style={thStyle}>{t("Place")}</th>
+            <th style={thStyle}>{t("Mobile Number")}</th>
+            <th style={thStyle}>{t("Date of Birth")}</th>
+            <th style={thStyle}>{t("Principal (₹)")}</th>
+            <th style={thStyle}>{t("Monthly Interest (₹)")}</th>
+            <th style={thStyle}>{t("Total Interest (₹)")}</th>
+            <th style={thStyle}>{t("Total Due (₹)")}</th>
           </tr>
         </thead>
         <tbody>
           {reportData.length === 0 ? (
             <tr>
               <td colSpan="13" style={{ ...tdStyle, textAlign: "center" }}>
-                No data available
+                {t("No data available")}
               </td>
             </tr>
           ) : (
@@ -350,7 +352,7 @@ const GovernmentReport = () => {
                 colSpan="9"
                 style={{ ...tdStyle, fontWeight: "bold", textAlign: "right" }}
               >
-                Total
+               {t("Total")}
               </td>
               <td style={{ ...tdStyle, fontWeight: "bold" }}>
                 {totalPrincipal.toLocaleString()}

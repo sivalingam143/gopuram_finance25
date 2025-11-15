@@ -15,10 +15,12 @@ import API_DOMAIN from "../../config/config";
 import "./BalanceSheet.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useLanguage } from "../../components/LanguageContext";
 
 const API_URL = `${API_DOMAIN}/balance.php`;
 
 const BalanceSheet = () => {
+  const { t } = useLanguage();
   const [balance, setBalance] = useState(0);
   const [entries, setEntries] = useState([]);
   const [filteredEntries, setFilteredEntries] = useState([]);
@@ -208,11 +210,13 @@ const BalanceSheet = () => {
 
   return (
     <Container className="balance-sheet-container">
-      <h5 className="mt-5 mb-3 text-center">📘 Day-wise Summary</h5>
+      <h5 className="mt-5 mb-3 text-center">📘 {t("Day-wise Summary")}</h5>
 
       {/* Balance Display */}
       <div className="balance-container text-center mb-4">
-        <h5>Current Balance: ₹{balance}</h5>
+        <h5>
+          {t("Current Balance")}: ₹{balance}
+        </h5>
       </div>
 
       {/* Add Balance Button */}
@@ -223,12 +227,12 @@ const BalanceSheet = () => {
       {/* Add Balance Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Add Balance</Modal.Title>
+          <Modal.Title>{t("Add Balance")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>{t("Description")}</Form.Label>
               <Form.Control
                 type="text"
                 value={description}
@@ -236,7 +240,7 @@ const BalanceSheet = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Amount</Form.Label>
+              <Form.Label>{t("Amount")}</Form.Label>
               <Form.Control
                 type="number"
                 value={amount}
@@ -247,20 +251,20 @@ const BalanceSheet = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button className="close-btn " onClick={() => setShowModal(false)}>
-            Close
+            {t("Close")}
           </Button>
           <Button className="custom-btn" onClick={addBalance}>
-            Add
+            {t("Add")}
           </Button>
         </Modal.Footer>
       </Modal>
 
       {/* Date Filter Section */}
-      <Row className="mb-3">
-        <Col md={3 }>
-
+      <Row className="mb-3 d-flex align-items-end">
+        {/* 1. From Date (Reduced to md=2) */}
+        <Col md={2} sm={6} xs={12}>
           <Form.Group>
-            <Form.Label>From Date</Form.Label>
+            <Form.Label>{t("From Date")}</Form.Label>
             <Form.Control
               type="date"
               value={startDate}
@@ -268,9 +272,11 @@ const BalanceSheet = () => {
             />
           </Form.Group>
         </Col>
-        <Col md={3 } >
+
+        {/* 2. To Date (Reduced to md=2) */}
+        <Col md={2} sm={6} xs={12}>
           <Form.Group>
-            <Form.Label>To Date</Form.Label>
+            <Form.Label>{t("To Date")}</Form.Label>
             <Form.Control
               type="date"
               value={endDate}
@@ -278,20 +284,19 @@ const BalanceSheet = () => {
             />
           </Form.Group>
         </Col>
-        <Col md={3 } className="d-flex align-items-end">
-          {/* <Button className="custom-btn" onClick={filterEntries}>
-            Apply Filter
-          </Button> */}
-          <Button className="custom-btn ms-2" onClick={undofilter}>
-            Undo Filter
+        <Col
+          md={4}
+          sm={12}
+          xs={12}
+          className="d-flex align-items-end"
+          style={{ gap: "8px" }}
+        >
+          {/* 3. Undo Filter Button */}
+          <Button className="custom-btn" onClick={undofilter}>
+            {t("Undo Filter")}
           </Button>
-        </Col>
-      </Row>
 
-      {/* Open/Close Balance Toggle with Advanced Design */}
-      <Row className="mb-3 d-flex align-items-center justify-content-between">
-        {/* Download Button */}
-        <Col md={6}>
+          {/* 4. Download PDF Button */}
           <PDFDownloadLink
             document={
               <BalanceSheetPDF
@@ -306,10 +311,10 @@ const BalanceSheet = () => {
             {({ loading }) =>
               loading ? (
                 <Button className="custom-btn" disabled>
-                  Generating PDF...
+                  {t("Generating PDF...")}
                 </Button>
               ) : (
-                <Button className="custom-btn">Download PDF</Button>
+                <Button className="custom-btn">{t("Download PDF")}</Button>
               )
             }
           </PDFDownloadLink>
@@ -319,11 +324,11 @@ const BalanceSheet = () => {
       <Table striped bordered hover responsive className="custom-table mt-3">
         <thead className="table-header">
           <tr>
-            <th className="table-header1">Date</th>
-            <th className="table-header1">Day Opening Balance</th>
-            <th className="table-header1">Total Credit (Varavu)</th>
-            <th className="table-header1">Total Debit (Patru)</th>
-            <th className="table-header1">Day Closing Balance</th>
+            <th className="table-header1">{t("Date")}</th>
+            <th className="table-header1">{t("Day Opening Balance")}</th>
+            <th className="table-header1">{t("Total Credit (Varavu)")}</th>
+            <th className="table-header1">{t("Total Debit (Patru)")}</th>
+            <th className="table-header1">{t("Day Closing Balance")}</th>
           </tr>
         </thead>
         <tbody>
@@ -339,7 +344,8 @@ const BalanceSheet = () => {
                   <td>₹{row.closing.toLocaleString()}</td>
                   <td>
                     <button onClick={() => toggleDate(row.date)}>
-                      {expandedDate === row.date ? "Hide" : "View"} Details
+                      {expandedDate === row.date ? t("Hide") : t("View")}
+                      {t("Details")}
                     </button>
                   </td>
                 </tr>
@@ -378,12 +384,10 @@ const BalanceSheet = () => {
                           >
                             <thead className="table-header">
                               <tr>
-                                <th className="table-header1">Date</th>
-                                <th className="table-header1">Description</th>
-                                <th className="table-header1">
-                                  Credit (Varavu)
-                                </th>
-                                <th className="table-header1">Debit (Patru)</th>
+                                <th className="table-header1">{t("Date")}</th>
+                                <th className="table-header1">{t("Description")}</th>
+                                <th className="table-header1">{t("Credit (Varavu)")}</th>
+                                <th className="table-header1">{t("Debit (Patru)")}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -416,7 +420,7 @@ const BalanceSheet = () => {
                               {/* 🔽 Totals Row */}
                               <tr className="font-weight-bold bg-light">
                                 <td colSpan={2} className="text-end">
-                                  <strong>Total Credit Debit</strong>
+                                  <strong>{t("Total Credit Debit")}</strong>
                                 </td>
                                 <td>
                                   <strong>
@@ -431,7 +435,7 @@ const BalanceSheet = () => {
                               </tr>
                               <tr className="font-weight-bold bg-light">
                                 <td colSpan={3} className="text-end">
-                                  <strong>Day Opening Balance</strong>
+                                  <strong>{t("Day Opening Balance")}</strong>
                                 </td>
                                 <td>
                                   <strong>
@@ -441,7 +445,7 @@ const BalanceSheet = () => {
                               </tr>
                               <tr className="font-weight-bold bg-light">
                                 <td colSpan={3} className="text-end">
-                                  <strong>Day Closing Balance</strong>
+                                 <strong>{t("Day Closing Balance")}</strong>
                                 </td>
                                 <td>
                                   <strong>

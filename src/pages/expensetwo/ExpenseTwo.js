@@ -10,9 +10,11 @@ import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
+import { useLanguage } from '../../components/LanguageContext'; 
 
 const CategoryTwo = () => {
   const navigate = useNavigate();
+  const { t,cacheVersion } = useLanguage(); 
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -83,21 +85,21 @@ const CategoryTwo = () => {
   const columns = useMemo(
     () => [
       {
-        accessorFn: (originalRow) => originalRow.id,
-        header: "S.No",
+        accessorKey: "s_no_key", // Add a unique, stable accessorKey
+        header: t("S.No"),
         size: 50,
         enableColumnFilter: false,
-        Cell: ({ row }) => row.index + 1, // Uses row index for sequential numbering
+        Cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "expense_date",
-        header: "Expense Date",
+        header: t("Expense Date"),
         Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
         size: 50,
       },
       {
         id: "action",
-        header: "Action",
+         header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -134,7 +136,7 @@ const CategoryTwo = () => {
         ),
       },
     ],
-    []
+    [t,cacheVersion]
   );
 
   // 4. Update JSX to render MaterialReactTable

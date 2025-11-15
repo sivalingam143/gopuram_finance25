@@ -6,8 +6,10 @@ import ReportPDF from "./dailyreportPdf";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { useLanguage } from "../components/LanguageContext";
 
 const DailyReport = () => {
+  const { t } = useLanguage();
   const [selectedView, setSelectedView] = useState("FINAL SHEET");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -19,24 +21,24 @@ const DailyReport = () => {
 
   const tableConfig = {
     "FINAL SHEET": {
-      title: "Financial Report",
+      title: t("Financial Report"),
       action: "daily_final_sheet",
       columns: [
-        "Date",
-        "GOLD C",
-        "GOLD D",
-        "GOLD I",
-        "SLIVER C",
-        "SLIVER D",
-        "SLIVER I",
-        "RP GOLD C",
-        "RP GOLD D",
-        "RP GOLD I",
-        "EXPENSE",
-        "CASH",
-        "START BAL",
-        "END BAL",
-        "RESULT",
+        t("Date"),
+        t("GOLD C"),
+        t("GOLD D"),
+        t("GOLD I"),
+        t("SLIVER C"),
+        t("SLIVER D"),
+        t("SLIVER I"),
+        t("RP GOLD C"),
+        t("RP GOLD D"),
+        t("RP GOLD I"),
+        t("EXPENSE"),
+        t("CASH"),
+        t("START BAL"),
+        t("END BAL"),
+        t("RESULT"),
       ],
       numericColumns: [
         "gold_c",
@@ -72,78 +74,78 @@ const DailyReport = () => {
         row.result,
       ],
     },
-  //   "FINAL REPORT": {
-  //   title: "MONTH FINAL REPORT",
-  //   action: "final_report",
-  //   columns: [
-  //     "Month",
-  //     "GOLD C",
-  //     "GOLD D",
-  //     "GOLD I",
-  //     "SLIVER C",
-  //     "SLIVER D",
-  //     "SLIVER I",
-  //     "RP GOLD C",
-  //     "RP GOLD D",
-  //     "RP GOLD I",
-  //     "EXPENSE",
-  //     "CASH",
-  //     "START BAL",
-  //     "END BAL",
-  //     "RESULT",
-  //     "TOTAL CREDIT",
-  //     "TOTAL DEBIT",
-  //   ],
-  //   numericColumns: [
-  //     "gold_c",
-  //     "gold_d",
-  //     "gold_i",
-  //     "silver_c",
-  //     "silver_d",
-  //     "silver_i",
-  //     "rp_gold_c",
-  //     "rp_gold_d",
-  //     "rp_gold_i",
-  //     "expense",
-  //     "cash",
-  //     "start_bal",
-  //     "end_bal",
-  //     "result",
-  //     "total_credit",
-  //     "total_debit",
-  //   ],
-  //   rowMapper: (row) => [
-  //     row.month || `${fromDate} ${toDate}`, // Use fromDate and toDate for display
-  //     row.gold_c,
-  //     row.gold_d,
-  //     row.gold_i,
-  //     row.silver_c,
-  //     row.silver_d,
-  //     row.silver_i,
-  //     row.rp_gold_c,
-  //     row.rp_gold_d,
-  //     row.rp_gold_i,
-  //     row.expense,
-  //     row.cash,
-  //     row.start_bal,
-  //     row.end_bal,
-  //     row.result,
-  //     row.total_credit,
-  //     row.total_debit,
-  //   ],
-  // },
+    //   "FINAL REPORT": {
+    //   title: "MONTH FINAL REPORT",
+    //   action: "final_report",
+    //   columns: [
+    //     "Month",
+    //     "GOLD C",
+    //     "GOLD D",
+    //     "GOLD I",
+    //     "SLIVER C",
+    //     "SLIVER D",
+    //     "SLIVER I",
+    //     "RP GOLD C",
+    //     "RP GOLD D",
+    //     "RP GOLD I",
+    //     "EXPENSE",
+    //     "CASH",
+    //     "START BAL",
+    //     "END BAL",
+    //     "RESULT",
+    //     "TOTAL CREDIT",
+    //     "TOTAL DEBIT",
+    //   ],
+    //   numericColumns: [
+    //     "gold_c",
+    //     "gold_d",
+    //     "gold_i",
+    //     "silver_c",
+    //     "silver_d",
+    //     "silver_i",
+    //     "rp_gold_c",
+    //     "rp_gold_d",
+    //     "rp_gold_i",
+    //     "expense",
+    //     "cash",
+    //     "start_bal",
+    //     "end_bal",
+    //     "result",
+    //     "total_credit",
+    //     "total_debit",
+    //   ],
+    //   rowMapper: (row) => [
+    //     row.month || `${fromDate} ${toDate}`, // Use fromDate and toDate for display
+    //     row.gold_c,
+    //     row.gold_d,
+    //     row.gold_i,
+    //     row.silver_c,
+    //     row.silver_d,
+    //     row.silver_i,
+    //     row.rp_gold_c,
+    //     row.rp_gold_d,
+    //     row.rp_gold_i,
+    //     row.expense,
+    //     row.cash,
+    //     row.start_bal,
+    //     row.end_bal,
+    //     row.result,
+    //     row.total_credit,
+    //     row.total_debit,
+    //   ],
+    // },
     "GOLD LEDGER": {
       title: "GOLD LEDGER",
       action: "gold_ledger",
       columns: [
-        "S.NO",
-        "GOLD TYPE",
-        "GOLD PLEDG NO",
-        "GOLD C",
-        "GC I",
-        "G D",
-        "MONTHS",
-        "GD INTEREST",
+        t("S.NO"),
+        t("GOLD TYPE"),
+        t("GOLD PLEDG NO"),
+        t("GOLD C"),
+        t("GC I"),
+        t("G D"),
+        t("MONTHS"),
+        t("GD INTEREST"),
       ],
       numericColumns: [
         "gold_c",
@@ -167,13 +169,13 @@ const DailyReport = () => {
       title: "RP GOLD LEDGER",
       action: "rp_gold_ledger",
       columns: [
-        "S.NO",
-        "PLEDG NO",
-        "Bank Name",
-        "RP PLEDG NO",
-        "RP GOLD C",
-        "RP GOLD D",
-        "INTEREST",
+        t("S.NO"),
+        t("PLEDG NO"),
+        t("Bank Name"),
+        t("RP PLEDG NO"),
+        t("RP GOLD C"),
+        t("RP GOLD D"),
+        t("INTEREST"),
       ],
       numericColumns: ["rp_gold_c", "rp_gold_d", "rp_gold_i"],
       rowMapper: (row, index) => [
@@ -190,13 +192,13 @@ const DailyReport = () => {
       title: "SLIVER LEDGER",
       action: "sliver_ledger",
       columns: [
-        "S.NO",
-        "PLEDG NO",
-        "SLIVER C",
-        "SLIVER C I",
-        "SLIVER D",
-        "MONTHS",
-        "SD I",
+        t("S.NO"),
+        t("PLEDG NO"),
+        t("SLIVER C"),
+        t("SLIVER C I"),
+        t("SLIVER D"),
+        t("MONTHS"),
+        t("SD I"),
       ],
       numericColumns: [
         "sliver_c",
@@ -218,14 +220,14 @@ const DailyReport = () => {
     "EXPENSE LEDGER": {
       title: "EXPENSE LEDGER",
       action: "expense_ledger",
-      columns: ["EXPENSE TYPE", "EXPENSE VALUE"],
+     columns: [t("EXPENSE TYPE"), t("EXPENSE VALUE")],
       numericColumns: ["expense"],
       rowMapper: (row) => [row.expense_name, row.expense],
     },
     "CASH LEDGER": {
       title: "CASH LEDGER",
       action: "cash_ledger",
-      columns: ["CASH TYPE", "CASH VALUE"],
+     columns: [t("CASH TYPE"), t("CASH VALUE")],
       numericColumns: ["cash"],
       rowMapper: (row) => [row.expense_name, row.expense],
     },
@@ -304,29 +306,30 @@ const DailyReport = () => {
   };
 
   const config = tableConfig[selectedView];
-const handleViewChange = (newView) => {
-  setLoading(true);           // Immediately show loader
-  setReportData([]);          // Clear old data
-  setTotals({});              // Clear old totals
-  setSelectedView(newView);   // Update view, which triggers useEffect
-};
+  const handleViewChange = (newView) => {
+    setLoading(true); // Immediately show loader
+    setReportData([]); // Clear old data
+    setTotals({}); // Clear old totals
+    setSelectedView(newView); // Update view, which triggers useEffect
+  };
 
   return (
     <div className="daily-report-container">
-   <h2>{config?.title === "" ? " " : config?.title ?? "Default Title"}</h2>
-
+      <h2>
+        {config?.title === "" ? " " : config?.title ?? t("Default Title")}
+      </h2>
 
       <div className="filter-container">
         {selectedView === "FINAL REPORT" ? (
           <>
             <div className="filter-group">
-              <label>Month:</label>
+            <label>{t("Month")}:</label>
               <select
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
                 className="form-select"
               >
-                <option value="">Select Month</option>
+                <option value="">{t("Select Month")}</option>
                 {[
                   "January",
                   "February",
@@ -364,7 +367,7 @@ const handleViewChange = (newView) => {
         ) : (
           <>
             <div className="filter-group">
-              <label htmlFor="fromDate">From Date:</label>
+              <label htmlFor="fromDate">{t("From Date")}:</label>
               <input
                 type="date"
                 id="fromDate"
@@ -374,7 +377,7 @@ const handleViewChange = (newView) => {
               />
             </div>
             <div className="filter-group">
-              <label htmlFor="toDate">To Date:</label>
+              <label htmlFor="fromDate">{t("To Date")}:</label>
               <input
                 type="date"
                 id="toDate"
@@ -384,24 +387,23 @@ const handleViewChange = (newView) => {
               />
             </div>
             <button className="clear-button" onClick={clearFilter}>
-              Clear Filter
+              {t("Clear Filter")}
             </button>
           </>
         )}
       </div>
 
-     <select
-  className="form-select"
-  onChange={(e) => handleViewChange(e.target.value)}
-  value={selectedView}
->
-  {Object.keys(tableConfig).map((key) => (
-    <option key={key} value={key}>
-      {key}
-    </option>
-  ))}
-</select>
-
+      <select
+        className="form-select"
+        onChange={(e) => handleViewChange(e.target.value)}
+        value={selectedView}
+      >
+        {Object.keys(tableConfig).map((key) => (
+          <option key={key} value={key}>
+           {t(key)}
+          </option>
+        ))}
+      </select>
 
       {reportData.length > 0 && (
         <div className="export-buttons">
@@ -416,7 +418,7 @@ const handleViewChange = (newView) => {
           </PDFDownloadLink>
 
           <button onClick={exportToExcel} className="excel-button">
-            Download Excel
+            {t("Download Excel")}
           </button>
         </div>
       )}
@@ -427,7 +429,7 @@ const handleViewChange = (newView) => {
       {selectedView === "FINAL REPORT" && (
         <div className="final-report-table mt-30">
           <h3 className="report-heading">
-            MONTH FINAL SHEET {fromDate?.toUpperCase()} {toDate}
+            {t("MONTH FINAL SHEET")} {fromDate?.toUpperCase()} {toDate}
           </h3>
           {reportData.length > 0 ? (
             <>
@@ -435,19 +437,19 @@ const handleViewChange = (newView) => {
                 <tbody>
                   <tr>
                     <td>
-                      <strong>START BALANCE</strong>
+                      <strong>{t("START BALANCE")}</strong>
                     </td>
                     <td className="text-red">
                       <strong>{totals.start_bal}</strong>
                     </td>
                     <td>
-                      <strong>END BALANCE</strong>
+                      <strong>{t("END BALANCE")}</strong>
                     </td>
                     <td className="text-red">
                       <strong>{totals.end_bal}</strong>
                     </td>
                     <td>
-                      <strong>DAY RESULT</strong>
+                      <strong>{t("DAY RESULT")}</strong>
                     </td>
                     <td className="text-red">
                       <strong>{totals.result}</strong>
@@ -458,32 +460,32 @@ const handleViewChange = (newView) => {
 
               <div className="report-flex">
                 <div className="credit-section">
-                  <h4 className="text-red">CREDIT</h4>
+                  <h4 className="text-red">{t("CREDIT")}</h4>
                   <table className="financial-table">
                     <tbody>
                       <tr>
-                        <td>GOLD CREDIT</td>
+                        <td>{t("GOLD CREDIT")}</td>
                         <td className="text-red">{totals.gold_c}</td>
                       </tr>
                       <tr>
-                        <td>SILVER CREDIT</td>
+                        <td>{t("SILVER CREDIT")}</td>
                         <td className="text-red">{totals.silver_c}</td>
                       </tr>
                       <tr>
-                        <td>RP GOLD DEBIT</td>
+                        <td>{t("RP GOLD DEBIT")}</td>
                         <td className="text-red">{totals.rp_gold_d}</td>
                       </tr>
                       <tr>
-                        <td>RP GOLD INTEREST</td>
+                        <td>{t("RP GOLD INTEREST")}</td>
                         <td className="text-red">{totals.rp_gold_i}</td>
                       </tr>
                       <tr>
-                        <td>EXPENSE</td>
+                        <td>{t("EXPENSE")}</td>
                         <td className="text-red">{totals.cash}</td>
                       </tr>
                       <tr>
                         <td className="bg-yellow">
-                          <strong>MONTH CREDIT</strong>
+                          <strong>{t("MONTH CREDIT")}</strong>
                         </td>
                         <td className="bg-yellow">
                           <strong>{totals.total_credit}</strong>
@@ -494,36 +496,36 @@ const handleViewChange = (newView) => {
                 </div>
 
                 <div className="debit-section">
-                  <h4 className="text-green">DEBIT</h4>
+                  <h4 className="text-green">{t("DEBIT")}</h4>
                   <table className="financial-table">
                     <tbody>
                       <tr>
-                        <td>GOLD DEBIT</td>
+                        <td>{t("GOLD DEBIT")}</td>
                         <td className="text-red">{totals.gold_d}</td>
                       </tr>
                       <tr>
-                        <td>GOLD INTEREST</td>
+                        <td>{t("GOLD INTEREST")}</td>
                         <td className="text-red">{totals.gold_i}</td>
                       </tr>
                       <tr>
-                        <td>SILVER DEBIT</td>
+                        <td>{t("SILVER DEBIT")}</td>
                         <td className="text-red">{totals.silver_d}</td>
                       </tr>
                       <tr>
-                        <td>SILVER INTEREST</td>
+                        <td>{t("SILVER INTEREST")}</td>
                         <td className="text-red">{totals.silver_i}</td>
                       </tr>
                       <tr>
-                        <td>RP GOLD CREDIT</td>
+                        <td>{t("RP GOLD CREDIT")}</td>
                         <td className="text-red">{totals.rp_gold_c}</td>
                       </tr>
                       <tr>
-                        <td>ADD ON</td>
+                        <td>{t("ADD ON")}</td>
                         <td className="text-red">{totals.expense}</td>
                       </tr>
                       <tr>
                         <td className="bg-yellow">
-                          <strong>MONTH DEBIT</strong>
+                          <strong>{t("MONTH DEBIT")}</strong>
                         </td>
                         <td className="bg-yellow">
                           <strong>{totals.total_debit}</strong>
@@ -535,7 +537,7 @@ const handleViewChange = (newView) => {
               </div>
             </>
           ) : (
-            <p>No data available for the selected month and year</p>
+            <p>{t("No data available for the selected month and year")}</p>
           )}
         </div>
       )}
@@ -543,12 +545,11 @@ const handleViewChange = (newView) => {
       {selectedView !== "FINAL REPORT" && (
         <table className="financial-table">
           <thead>
-           <tr>
-  {config?.columns && Array.isArray(config.columns)
-    ? config.columns.map((col, i) => <th key={i}>{col}</th>)
-    : null}
-</tr>
-
+            <tr>
+              {config?.columns && Array.isArray(config.columns)
+                ? config.columns.map((col, i) => <th key={i}>{col}</th>)
+                : null}
+            </tr>
           </thead>
           <tbody>
             {reportData.length > 0 ? (
@@ -562,7 +563,7 @@ const handleViewChange = (newView) => {
             ) : (
               <tr>
                 <td colSpan={config?.columns.length} className="no-data">
-                  No data available for the selected date range
+                  {t("No data available for the selected date range")}
                 </td>
               </tr>
             )}
