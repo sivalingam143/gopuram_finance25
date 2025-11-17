@@ -231,6 +231,7 @@ const CustomerDetails = () => {
             const rate = getRate(row.carrat);
             return sum + net * rate;
           }, 0);
+        
 
           return {
             ...user,

@@ -249,7 +249,6 @@ const BankPledgerDetailsCreation = () => {
         <Row className="regular ">
           <Col lg="12" md="12" xs="12" className="py-3">
             <PageNav
-              // ✅ Translated PageNav title
               pagetitle={`${t("Bank Pledger Details")}${
                 type === "edit" ? t(" Edit") : t(" Creation")
               }`}
@@ -258,7 +257,6 @@ const BankPledgerDetailsCreation = () => {
 
           <Col lg="4" md="6" xs="12" className="py-3">
             <TextInputForm
-              // ✅ Translated strings
               placeholder={t("Pledger Name")}
               labelname={t("Pledger Name")}
               name="name"
@@ -268,7 +266,6 @@ const BankPledgerDetailsCreation = () => {
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
             <TextInputForm
-              // ✅ Translated strings
               placeholder={t("Mobile No")}
               labelname={t("Mobile No")}
               name="mobile_no"
@@ -278,7 +275,6 @@ const BankPledgerDetailsCreation = () => {
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
             <TextInputForm
-              // ✅ Translated strings
               placeholder={t("Address")}
               labelname={t("Address")}
               name="address"
@@ -288,21 +284,18 @@ const BankPledgerDetailsCreation = () => {
           </Col>
 
           <Col lg="3" md="6" xs="12" className="py-3">
-            {/* ✅ Translated label */}
             <label htmlFor="bank-select">{t("Select Bank")}</label>
             <Select
               id="bank-select"
               value={selectedOption}
               onChange={handleSelectChange}
               options={options}
-              // ✅ Translated placeholder
               placeholder={t("Select Bank")}
               isSearchable
             />
           </Col>
           <Col lg="3 " md="6" xs="12" className="py-3 ">
             <ClickButton
-              // ✅ Translated button label
               label={<>{t("Add")}</>}
               onClick={addBank}
               disabled={!selectedOption}
@@ -313,7 +306,6 @@ const BankPledgerDetailsCreation = () => {
             <Table responsive bordered>
               <thead>
                 <tr>
-                  {/* ✅ Translated table headers */}
                   <th>{t("S.No")}</th>
                   <th>{t("Bank Name")}</th>
                   <th>{t("Account Limit")}</th>
@@ -325,7 +317,6 @@ const BankPledgerDetailsCreation = () => {
                 {selectedBanks.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center">
-                      {/* ✅ Translated empty state message */}
                       {t("No banks added")}
                     </td>
                   </tr>
@@ -377,7 +368,6 @@ const BankPledgerDetailsCreation = () => {
                     />
                     <span className="mx-2">
                       <ClickButton
-                        // ✅ Translated button label
                         label={<>{t("Update")}</>}
                         onClick={handleUpdateSubmit}
                         disabled={loading}
@@ -386,7 +376,6 @@ const BankPledgerDetailsCreation = () => {
 
                     <span className="mx-2">
                       <ClickButton
-                        // ✅ Translated button label
                         label={<>{t("Cancel")}</>}
                         onClick={() =>
                           navigate("/console/master/bankpledgerdetails")
@@ -410,7 +399,6 @@ const BankPledgerDetailsCreation = () => {
                     />
                     <span className="mx-2">
                       <ClickButton
-                        // ✅ Translated button label (Submitting/Submit)
                         label={
                           loading ? <>{t("Submitting...")}</> : <>{t("Submit")}</>
                         }
@@ -420,7 +408,6 @@ const BankPledgerDetailsCreation = () => {
                     </span>
                     <span className="mx-2">
                       <Delete
-                        // ✅ Translated button label
                         label={<>{t("Cancel")}</>}
                         onClick={() =>
                           navigate("/console/master/bankpledgerdetails")
@@ -435,7 +422,6 @@ const BankPledgerDetailsCreation = () => {
         </Row>
         {error && (
           <Alert variant="danger" className="error-alert">
-            {/* ✅ Translated error message (assuming 'error' holds a translatable string) */}
             {t(error)}
           </Alert>
         )}
@@ -450,17 +436,14 @@ const BankPledgerDetailsCreation = () => {
             src={require("../../components/sidebar/images/output-onlinegiftools.gif")}
             alt="Success GIF"
           />
-          {/* ✅ Translated success message */}
           <p>{t("Pledger saved successfully!")}</p>
         </Modal.Body>
         <Modal.Footer>
           <ClickButton
             variant="secondary"
-            // ✅ Translated button label
             label={<>{t("Close")}</>}
             onClick={() => redirectModal()}
           >
-            {/* The child 'Close' is redundant if 'label' is used, but translating it anyway for completeness if it were rendered */}
             {t("Close")}
           </ClickButton>
         </Modal.Footer>

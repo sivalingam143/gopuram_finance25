@@ -618,29 +618,46 @@ const DashBoard = () => {
       return `${carat} karat Rate = ₹${(value || 0).toLocaleString("en-IN")}`;
     })
     .join(", ");
+
   // Define columns for MaterialReactTable
   const columns = [
     {
       accessorKey: "pawnjewelry_date",
       header: t("Date"),
+      size: 20,
       Cell: ({ cell }) => dayjs(cell.getValue()).format("DD-MM-YYYY"),
     },
-    { accessorKey: "receipt_no", header: t("Loan Number") },
-    { accessorKey: "customer_no", header: t("Customer Number") },
-    { accessorKey: "name", header: t("Customer Name") },
+    {
+      accessorKey: "receipt_no",
+      header: t("Loan Number"),
+      size: 10,
+      muiTableBodyCellProps: {
+        align: "center",
+      },
+    },
+    {
+      accessorKey: "customer_no",
+      header: t("Customer Number"),
+      size: 10,
+      muiTableBodyCellProps: {
+        align: "center",
+      },
+    },
+    { accessorKey: "name", header: t("Customer Name"), size: 20 },
     { accessorKey: "place", header: t("Location") },
     { accessorKey: "mobile_number", header: t("Mobile Number") },
     {
       accessorKey: "original_amount",
       header: t("Principal Amount (₹)"),
-      size: 200,
+      size: 100,
       Cell: ({ cell }) =>
         `₹${parseFloat(cell.getValue() || 0).toLocaleString("en-IN")}`,
     },
-    { accessorKey: "interest_rate", header: t("Interest Rate (%)") },
+    { accessorKey: "interest_rate", header: t("Interest Rate (%)"), size: 20 },
     {
       accessorKey: "jewel_product",
       header: t("Pawned Items"),
+
       Cell: ({ cell }) => {
         try {
           const jewels = Array.isArray(cell.getValue())
@@ -655,6 +672,7 @@ const DashBoard = () => {
     {
       accessorKey: "total_weight",
       header: t("Jewelry Weight (g)"),
+      size: 20,
       Cell: ({ row }) => {
         try {
           const jewels = Array.isArray(row.original.jewel_product)
@@ -673,6 +691,7 @@ const DashBoard = () => {
     {
       accessorKey: "net_weight",
       header: t("Net Weight (g)"),
+      size: 20,
       Cell: ({ row }) => {
         try {
           const jewels = Array.isArray(row.original.jewel_product)
@@ -691,7 +710,7 @@ const DashBoard = () => {
     {
       accessorKey: "jewel_value",
       header: t("Jewelry Value (Pawned)"),
-      size: 300,
+      size: 20,
       Cell: ({ row }) => {
         const jewelList = Array.isArray(row.original.jewel_product)
           ? row.original.jewel_product
@@ -739,6 +758,7 @@ const DashBoard = () => {
     {
       accessorKey: "interest_paid",
       header: t("Interest Paid (₹)"),
+      size: 20,
       Cell: ({ row }) => {
         const months = row.original.interest_payment_periods || "N/A";
         const total = parseFloat(row.original.total_interest_income || 0);
@@ -761,6 +781,7 @@ const DashBoard = () => {
     {
       accessorKey: "total_appraisal",
       header: t("Total Appraisal (₹)"),
+      size: 20,
       muiTableBodyCellProps: {
         align: "center", // aligns all cell values to the right
       },
@@ -774,6 +795,7 @@ const DashBoard = () => {
     {
       accessorKey: "status",
       header: t("Status"),
+      size: 10,
       Cell: ({ cell }) => {
         const value = cell.getValue();
         const isRecovered = value === "நகை மீட்கபட்டது";
@@ -792,7 +814,7 @@ const DashBoard = () => {
     {
       accessorKey: "overdue_months",
       header: t("Interest Overdue (Months)"),
-      size: 300,
+      size: 10,
       muiTableHeadCellProps: {
         align: "center", // centers the header text horizontally
       },
@@ -807,6 +829,7 @@ const DashBoard = () => {
     {
       accessorKey: "alert",
       header: t("Alert"),
+      size: 10,
       muiTableHeadCellProps: {
         align: "center", // centers the header text horizontally
       },
@@ -1177,7 +1200,7 @@ const DashBoard = () => {
                       },
                     }}
                   >
-                   {t("Remove")}
+                    {t("Remove")}
                   </Button>
                 </Col>
               </Row>
@@ -1194,6 +1217,8 @@ const DashBoard = () => {
                   data={filteredData}
                   enableColumnFilters={false}
                   initialState={{ density: "compact" }}
+                  enableSorting={false}
+                  enablePagination={true}
                   enableExpanding
                   enableExpandAll={false} // hides top-left expand-all button
                   displayColumnDefOptions={{
@@ -1255,7 +1280,7 @@ const DashBoard = () => {
                       );
                     }
                     return (
-                      <div style={{ padding: 18 }}>
+                      <div style={{ padding: 18, maxWidth: "1700px" }}>
                         <h6 style={{ marginBottom: 8 }}>
                           {t("Bank Pledge Details")}
                         </h6>
@@ -1275,7 +1300,13 @@ const DashBoard = () => {
                           </thead>
                           <tbody>
                             <tr>
-                              <td>{matchingBank.bank_pledge_date || "-"}</td>
+                              <td>
+                                {matchingBank.bank_pledge_date
+                                  ? dayjs(matchingBank.bank_pledge_date).format(
+                                      "DD-MM-YYYY"
+                                    )
+                                  : "-"}
+                              </td>
                               <td>{matchingBank.bank_loan_no || "-"}</td>
                               <td>{matchingBank.bank_assessor_name || "-"}</td>
                               <td>{matchingBank.bank_name || "-"}</td>
@@ -1600,7 +1631,9 @@ const DashBoard = () => {
                     <Col lg="3" md="6" xs="12" className="mb-2">
                       <Form.Control
                         type="text"
-                        placeholder={t("Search by Loan Number, Customer Name, or Mobile Number")}
+                        placeholder={t(
+                          "Search by Loan Number, Customer Name, or Mobile Number"
+                        )}
                         value={noticeSearchTerm}
                         onChange={(e) => setNoticeSearchTerm(e.target.value)}
                       />
@@ -1661,7 +1694,7 @@ const DashBoard = () => {
                             color: "#777",
                           }}
                         >
-                         {t("No notice alerts found at this time")}.
+                          {t("No notice alerts found at this time")}.
                         </div>
                       )}
                     />
@@ -1675,7 +1708,9 @@ const DashBoard = () => {
                     <Col lg="3" md="6" xs="12" className="mb-2">
                       <Form.Control
                         type="text"
-                        placeholder={t("Search by Loan Number, Customer Name, or Mobile Number")}
+                        placeholder={t(
+                          "Search by Loan Number, Customer Name, or Mobile Number"
+                        )}
                         value={actionSearchTerm}
                         onChange={(e) => setActionSearchTerm(e.target.value)}
                       />
@@ -1692,7 +1727,7 @@ const DashBoard = () => {
                           },
                         }}
                       >
-                       {t("Remove")}
+                        {t("Remove")}
                       </Button>
                     </Col>
                   </Row>
@@ -1733,7 +1768,7 @@ const DashBoard = () => {
                             color: "#777",
                           }}
                         >
-                         {t("No notice alerts found at this time")}.
+                          {t("No notice alerts found at this time")}.
                         </div>
                       )}
                     />
@@ -1796,7 +1831,7 @@ const DashBoard = () => {
                           },
                         }}
                       >
-                       {t("Search")}
+                        {t("Search")}
                       </Button>
                       <Button
                         variant="contained"
@@ -1807,7 +1842,7 @@ const DashBoard = () => {
                           "&:hover": { backgroundColor: "#b02a37 !important" },
                         }}
                       >
-                       {t("Remove")}
+                        {t("Remove")}
                       </Button>
                     </Col>
                     {/* <Col lg={2} className="mb-2">
@@ -1881,7 +1916,7 @@ const DashBoard = () => {
                             color: "#777",
                           }}
                         >
-                         {t("No notice alerts found at this time")}.
+                          {t("No notice alerts found at this time")}.
                         </div>
                       )}
                     />

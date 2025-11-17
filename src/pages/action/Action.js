@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
-import { TextInputForm } from "../../components/Forms";
-import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
-import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { useLanguage } from "../../components/LanguageContext";
 
@@ -79,7 +76,6 @@ const Action = () => {
       const responseData = await response.json();
       setLoading(false);
       if (responseData.head.code === 200) {
-        // Handle case where body.action might be a single object
         const actionArray = Array.isArray(responseData.body.action)
           ? responseData.body.action
           : responseData.body.action
@@ -165,13 +161,11 @@ const Action = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              {/* 🌐 Translate Page Title */}
               <span className="nav-list">{t("Action")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
             <ClickButton
-              // 🌐 Translate Button Label
               label={<>{t("Add Action")}</>}
               onClick={() => navigate("/console/master/action/create")}
             ></ClickButton>
@@ -213,7 +207,7 @@ const Action = () => {
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa", // Light gray header background
+                        backgroundColor: "#f8f9fa",
                       },
                     }}
                   />

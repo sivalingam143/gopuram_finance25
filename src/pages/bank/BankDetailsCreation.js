@@ -8,14 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import API_DOMAIN from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
-
-// ✅ Import the useLanguage hook
 import { useLanguage } from "../../components/LanguageContext";
 
 const BankDetailsCreation = () => {
-  // ✅ Get the translation function 't'
   const { t } = useLanguage();
-
   const location = useLocation();
   const { type, rowData } = location.state || {};
   const initialState =
@@ -320,8 +316,6 @@ const BankDetailsCreation = () => {
         centered
       >
         <Modal.Body className="text-center">
-          {/* Note: If the image path is relative, ensure the path is correct 
-          relative to the component's location. Assuming this path is correct: */}
           <img
             src={require("../../components/sidebar/images/output-onlinegiftools.gif")}
             alt={t("Success GIF")}

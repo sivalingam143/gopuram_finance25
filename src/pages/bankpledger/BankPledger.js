@@ -143,8 +143,6 @@ const updateGroupedData = (data) => {
             ></ClickButton>
           </Col>
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
-
-          {/* 5. Replace TableUI with MaterialReactTable */}
           {loading ? (
             <LoadingOverlay isLoading={loading} />
           ) : (

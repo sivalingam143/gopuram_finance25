@@ -300,21 +300,24 @@ const ActionCreation = () => {
           <Col lg="12" md="6" xs="12" className="py-3">
             <PageNav
               // 3. Translate PageNav Title
-              pagetitle={`Action${type === "edit" ? t(" Edit") : t(" Creation")}`}
+              pagetitle={`${t("Action")}${
+                type === "edit"
+                  ? t(" Edit ")
+                  : t(" Creation ")
+              }`}
+              // pagetitle={`Action${type === "edit" ? t(" Edit") : t(" Creation")}`}
             />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <Calender
               setLabel={(date) => setLabel(date, "action_date")}
               initialDate={type === "edit" ? formData.action_date : undefined}
-              // 4. Translate Calendar Label
               calenderlabel={t("Action Date")}
               disabled={type === "view"}
             />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              // 5. Translate Receipt No Label/Placeholder
               placeholder={t("Receipt No")}
               labelname={t("Receipt No")}
               name="receipt_no"
@@ -324,7 +327,6 @@ const ActionCreation = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              // 6. Translate Name Label/Placeholder
               placeholder={t("Name")}
               labelname={t("Name")}
               name="name"
@@ -370,7 +372,6 @@ const ActionCreation = () => {
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              // 7. Translate Mobile Number Label/Placeholder
               placeholder={t("Mobile Number")}
               labelname={t("Mobile Number")}
               name="mobile_number"
@@ -419,14 +420,13 @@ const ActionCreation = () => {
               <table className="table table-bordered mx-auto">
                 <thead>
                   <tr>
-                    {/* 8. Translate Table Headers (using English keys) */}
                     <th style={{ width: "10%" }}>{t("S.No")}</th>
-                    <th style={{ width: "20%" }}>{t("Jewel Name")}</th> {/* நகை பெயர் */}
-                    <th style={{ width: "10%" }}>{t("Purity")}</th> {/* தரம் */}
-                    <th style={{ width: "10%" }}>{t("Count")}</th> {/* எண்ணிக்கை */}
-                    <th style={{ width: "10%" }}>{t("Gross Weight")}</th> {/* மொத்த எடை */}
-                    <th style={{ width: "10%" }}>{t("Net Weight")}</th> {/* நிகர எடை */}
-                    <th style={{ width: "20%" }}>{t("Remark")}</th> {/* குறிப்பு */}
+                    <th style={{ width: "20%" }}>{t("Jewel Name")}</th>
+                    <th style={{ width: "10%" }}>{t("Purity")}</th> 
+                    <th style={{ width: "10%" }}>{t("Count")}</th> 
+                    <th style={{ width: "10%" }}>{t("Gross Weight")}</th> 
+                    <th style={{ width: "10%" }}>{t("Net Weight")}</th>
+                    <th style={{ width: "20%" }}>{t("Remark")}</th> 
                   </tr>
                 </thead>
                 <tbody>
@@ -463,7 +463,6 @@ const ActionCreation = () => {
                   />
                   <span className="mx-2">
                     <ClickButton
-                      // 9. Translate Update button label
                       label={<>{t("Update")}</>}
                       onClick={handleUpdateSubmit}
                       disabled={loading}
@@ -471,7 +470,6 @@ const ActionCreation = () => {
                   </span>
                   <span className="mx-2">
                     <Delete
-                      // 10. Translate Cancel button label
                       label={<>{t("Cancel")}</>}
                       onClick={() => navigate("/console/master/action")}
                     />
@@ -493,7 +491,6 @@ const ActionCreation = () => {
                   />
                   <span className="px-2">
                     <ClickButton
-                      // 11. Translate Submit/Submitting... button label
                       label={loading ? <>{t("Submitting...")}</> : <>{t("Submit")}</>}
                       onClick={handleSubmit}
                       disabled={loading}
@@ -501,7 +498,6 @@ const ActionCreation = () => {
                   </span>
                   <span className="px-2">
                     <Delete
-                      // 12. Translate Cancel button label
                       label={<>{t("Cancel")}</>}
                       onClick={() => navigate("/console/master/action")}
                       disabled={loading}

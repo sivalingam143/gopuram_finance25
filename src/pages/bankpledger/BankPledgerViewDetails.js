@@ -275,18 +275,16 @@ slotProps={{
           
             >
                 {rowData.status === "Closed" ? (
-                    // 🛑 Fragment removed 
                     <React.Fragment> 
                     <MenuItem onClick={() => { handleBankPledgerViewClick(rowData); handleClose(); }}> {t("View")}</MenuItem>
                     <MenuItem onClick={() => { handleBankPledgerDeleteClick(rowData.bank_pledge_id); handleClose(); }}> {t("Delete")}</MenuItem>
-                    </React.Fragment> // 🛑 Fragment removed
+                    </React.Fragment>
                 ) : (
-                    // 🛑 Fragment removed 
                     <React.Fragment> 
                     {isAdmin && (<MenuItem onClick={() => { handleBankPledgerEditClick(rowData); handleClose(); }}> {t("Edit")}</MenuItem>)}
                     <MenuItem onClick={() => { handleBankPledgerClosingClick(rowData); handleClose(); }}> {t("Closing")}</MenuItem>
                     <MenuItem onClick={() => { handleBankPledgerDeleteClick(rowData.bank_pledge_id); handleClose(); }}> {t("Delete")}</MenuItem>
-                    </React.Fragment> // 🛑 Fragment removed
+                    </React.Fragment> 
                 )}
             </Menu>
 </div>

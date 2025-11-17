@@ -201,10 +201,8 @@ const BankPledgerDetails = () => {
                 enablePagination={true}
                 enableSorting={true}
                 initialState={{ density: "compact" }}
-                // Pass translation to internal text strings
                 localization={{
                     noRecordsToDisplay: t('No records to display'), 
-                    // Add other strings like 'Show' for pagination if needed
                 }}
                 muiTablePaperProps={{
                   sx: {
