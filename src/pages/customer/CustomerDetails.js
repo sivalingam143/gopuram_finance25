@@ -637,7 +637,7 @@ const CustomerDetails = () => {
           <Row>
             <Col lg="12" md="12" xs="12" className="text-end py-3">
               <span className="px-1">
-                <ClickButton // Translate the button label
+                <ClickButton 
                   label={<>{t("Add New")}</>}
                   onClick={() =>
                     navigate("/console/customer/loancreation", {

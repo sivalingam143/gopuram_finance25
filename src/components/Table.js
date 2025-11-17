@@ -118,13 +118,6 @@ const TableUI = ({
     }
   };
  
-
-
-  const handleJewelPawningEditClick = (rowData) => {
-    navigate("/console/customer/loancreation", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
   const handleJewelPawningprintviewClick = (rowData) => {
     navigate("/console/jewelpawn", {
       state: { type: "pdfview", rowData: rowData },
@@ -139,33 +132,6 @@ const TableUI = ({
     navigate("/console/jewelpawnrevery", {
       state: { type: "pdfview", rowData: rowData },
     });
-  };
-  const handleJewelPawningDeleteClick = async (id) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/pawnjewelry.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_pawnjewelry_id: id,
-          login_id: user.id,
-          user_name: user.user_name,
-        }),
-      });
-      const responseData = await response.json();
-      if (responseData.head.code === 200) {
-        navigate("/console/master/customer");
-        window.location.reload();
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
   };
   const handleJewelPawngEditClick = (rowData) => {
     navigate("/console/pawn/jewelpawng/create", {
@@ -361,40 +327,6 @@ const TableUI = ({
     }
   };
 
-  const handleJewelRecoveryEditClick = (rowData) => {
-    navigate("/console/customer/jewelrecovery", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-  const handleJewelRecoveryDeleteClick = async (id) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/pawnrecovery.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_pawn_recovery_id: id,
-          login_id: user.id,
-          user_name: user.user_name,
-        }),
-      });
-      const responseData = await response.json();
-      if (responseData.head.code === 200) {
-        navigate(-1);
-        // window.location.reload();
-      } else {
-        console.log(responseData.head.msg);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
- 
-  
   const handleStreetEditClick = (rowData) => {
     navigate("/console/master/Street/create", {
       state: { type: "edit", rowData: rowData },
@@ -581,164 +513,6 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-                 {type === "jewelPawning" &&
-                                (() => {
-                                  const jewelList = Array.isArray(rowData.jewel_product)
-                                    ? rowData.jewel_product
-                                    : typeof rowData.jewel_product === "string"
-                                    ? JSON.parse(rowData.jewel_product)
-                                    : [];
-                
-                                  const totalWeight = jewelList.reduce(
-                                    (sum, jewel) => sum + parseFloat(jewel.weight || 0),
-                                    0
-                                  );
-                                  const totalNetWeight = jewelList.reduce(
-                                    (sum, jewel) => sum + parseFloat(jewel.net || 0),
-                                    0
-                                  );
-                                  const jewelNames = jewelList
-                                    .map(
-                                      (item) =>
-                                        `${item.JewelName.replace(/ /g, "\u00A0")} - ${
-                                          item.count
-                                        }`
-                                    )
-                                    .join(", ");
-                
-                                  return (
-                                    <>
-                                      <td>{rowIndex + 1}</td>
-                                      <td>{formatDate(rowData.pawnjewelry_date)}</td>
-                                      <td>{rowData.receipt_no}</td>
-                
-                                      <td>{rowData.original_amount}</td>
-                                      <td>{rowData.interest_rate}</td>
-                                      <td>{totalWeight.toFixed(2)}</td>
-                                      <td>{jewelNames}</td>
-                                      <td>{rowData.original_amount}</td>
-                                      <td>
-                                        ₹
-                                        {parseFloat(
-                                          rowData.interest_payment_amount || 0
-                                        ).toLocaleString()}
-                                      </td>
-                                      <td>
-                                        ₹
-                                        {(
-                                          parseFloat(rowData.original_amount || 0) +
-                                          parseFloat(rowData.interest_payment_amount || 0)
-                                        ).toLocaleString("en-IN", {
-                                          minimumFractionDigits: 2,
-                                          maximumFractionDigits: 2,
-                                        })}
-                                      </td>
-                                      <td>₹{parseFloat(rowData.jewel_pawn_value || 0)}</td>
-                
-                                      <td>{rowData.Jewelry_recovery_agreed_period}</td>
-                                      <td>
-                                        <span
-                                          style={{
-                                            display: "inline-block",
-                                            padding: "4px 10px",
-                                            borderRadius: "5px",
-                                            fontWeight: "600",
-                                            fontSize: "0.6rem",
-                                            backgroundColor:
-                                              rowData.status === "நகை மீட்கபட்டது"
-                                                ? "#f21111"
-                                                : rowData.status === "நகை மீட்கபடவில்லை"
-                                                ? "#0bb53b"
-                                                : "#f0f0f0",
-                                            color:
-                                              rowData.status === "நகை மீட்கபட்டது" ||
-                                              rowData.status === "நகை மீட்கபடவில்லை"
-                                                ? "white"
-                                                : "#333",
-                                          }}
-                                        >
-                                          {rowData.status}
-                                        </span>
-                                      </td>
-                                      <td>
-                                        <Dropdown>
-                                          <Dropdown.Toggle as="div">
-                                            <Button className="action">
-                                              <BiDotsVerticalRounded />
-                                            </Button>
-                                          </Dropdown.Toggle>
-                                          <Dropdown.Menu>
-                                            {/* <Dropdown.Item
-                                              onClick={() =>
-                                                handleJewelPawningprintviewClick(rowData)
-                                              }
-                                            >
-                                              CustomerCopy View
-                                            </Dropdown.Item>
-                                            <Dropdown.Item
-                                              onClick={() =>
-                                                handleJewelPawningofficeprintviewClick(rowData)
-                                              }
-                                            >
-                                              OfficeCopy View
-                                            </Dropdown.Item> */}
-                                            {rowData?.status !== "நகை மீட்கபட்டது" && (
-                                              <>
-                                                <Dropdown.Item
-                                                  onClick={() =>
-                                                    customActions?.interest?.(rowData)
-                                                  }
-                                                >
-                                                  Interest
-                                                </Dropdown.Item>
-                                              </>
-                                            )}
-                                            <Dropdown.Item
-                                              onClick={() => handleDownloadStatement(rowData)}
-                                            >
-                                              Download Statement PDF
-                                            </Dropdown.Item>
-                                            <Dropdown.Item
-                                              onClick={() => customActions?.recovery?.(rowData)}
-                                            >
-                                              Recovery
-                                            </Dropdown.Item>
-                                            {rowData?.status !== "நகை மீட்கபடவில்லை" && (
-                                              <>
-                                                <Dropdown.Item
-                                                  onClick={() =>
-                                                    customActions?.repledge?.(rowData)
-                                                  }
-                                                >
-                                                  Re-pledge
-                                                </Dropdown.Item>
-                                              </>
-                                            )}
-                
-                                            {isAdmin && (
-                                              <Dropdown.Item
-                                                onClick={() =>
-                                                  handleJewelPawningEditClick(rowData)
-                                                }
-                                              >
-                                                Edit
-                                              </Dropdown.Item>
-                                            )}
-                                            <Dropdown.Item
-                                              onClick={() =>
-                                                handleJewelPawningDeleteClick(
-                                                  rowData.pawnjewelry_id
-                                                )
-                                              }
-                                            >
-                                              Delete
-                                            </Dropdown.Item>
-                                          </Dropdown.Menu>
-                                        </Dropdown>
-                                      </td>
-                                    </>
-                                  );
-                                })()}
                 {type === "jewelPawng" && (
                   <>
                     {" "}
@@ -798,87 +572,7 @@ const TableUI = ({
                     </td>
                   </>
                 )}
-                {type === "jewelRecovery" && (
-                  <>
-                    {" "}
-                    {/* Fragment shorthand */}
-                    <td>{startIndex + rowIndex + 1}</td>
-                    <td>{formatDate(rowData.pawnjewelry_date)}</td>
-                    <td>{formatDate(rowData.pawnjewelry_recovery_date)}</td>
-                    <td>{rowData.receipt_no}</td>
-                    <td>{rowData.name}</td>
-                    <td>{rowData.mobile_number}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle>
-                          <Button className="action">
-                            <BiDotsVerticalRounded />
-                          </Button>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {/* <Dropdown.Item
-                            onClick={() =>
-                              handleJewelRecoveryprintviewClick(rowData)
-                            }
-                          >
-                            print View
-                          </Dropdown.Item> */}
-                          <PDFDownloadLink
-                            document={<JewelPawnPdfG data={rowData} />}
-                            fileName={`${rowData.recipt_no}.pdf`}
-                          >
-                            {({ blob, url, loading, error }) => (
-                              <a
-                                className="dropdown-item"
-                                role="button"
-                                tabIndex="0"
-                                href={url}
-                                download={`${rowData.recipt_no}.pdf`}
-                              >
-                                Download Pdf
-                              </a>
-                            )}
-                          </PDFDownloadLink>
-                          {/* <PDFDownloadLink
-                            document={<JewelPawnrecoveryPdf data={rowData} />}
-                            fileName={`${rowData.receipt_no}_recovery.pdf`}
-                          >
-                            {({ blob, url, loading, error }) => (
-                              <a
-                                className="dropdown-item"
-                                role="button"
-                                tabIndex="0"
-                                href={url}
-                                download={`${rowData.receipt_no}_recovery.pdf`}
-                              >
-                                Download PDF
-                              </a>
-                            )}
-                          </PDFDownloadLink> */}
-                          {/* <Dropdown.Item onClick={() => handleJewelRecoveryViewClick(rowData)}>View</Dropdown.Item> */}
-                          {isAdmin && ( // Show Edit option only if user is Admin
-                            <Dropdown.Item
-                              onClick={() =>
-                                handleJewelRecoveryEditClick(rowData)
-                              }
-                            >
-                              Edit
-                            </Dropdown.Item>
-                          )}
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleJewelRecoveryDeleteClick(
-                                rowData.pawnjewelry_recovery_id
-                              )
-                            }
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </>
-                )}
+              
                 {type === "jewelEstimate" && (
                   <>
                     {" "}

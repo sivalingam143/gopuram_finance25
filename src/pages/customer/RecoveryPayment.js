@@ -10,7 +10,7 @@ import API_DOMAIN from "../../config/config";
 import dayjs from "dayjs";
 import { useLanguage } from "../../components/LanguageContext";
 import { MaterialReactTable } from "material-react-table";
-import { IconButton, Menu, MenuItem } from '@mui/material'
+import { IconButton, Menu, MenuItem } from "@mui/material";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import JewelPawnrecoveryPdf from "../../pdf/jewelpawnRecoverPdf";
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -374,9 +374,9 @@ const RecoveryPayment = () => {
   };
 
   const pageTitle =
-   type === "edit" ? t("Edit Recovery Payment") : t("Recovery Payment");
+    type === "edit" ? t("Edit Recovery Payment") : t("Recovery Payment");
 
-  const handleJewelRecoveryEditClick =(rowData) => {
+  const handleJewelRecoveryEditClick = (rowData) => {
     navigate("/console/customer/jewelrecovery", {
       state: { type: "edit", rowData: rowData },
     });
@@ -440,92 +440,94 @@ const RecoveryPayment = () => {
         header: t("Mobile Number"),
         accessorKey: "mobile_number",
       },
-    {
-      header: t("Action"),
-      id: "actions",
-      size: 100,
-      enableColumnFilter: false,
-      enableSorting: false,
-      Cell: ({ row }) => {
-        const rowData = row.original;
-        console.log("rowData",rowData);
-        const [anchorEl, setAnchorEl] = React.useState(null); 
-        const open = Boolean(anchorEl);
+      {
+        header: t("Action"),
+        id: "actions",
+        size: 100,
+        enableColumnFilter: false,
+        enableSorting: false,
+        Cell: ({ row }) => {
+          const rowData = row.original;
+          console.log("rowData", rowData);
+          const [anchorEl, setAnchorEl] = React.useState(null);
+          const open = Boolean(anchorEl);
 
-        const handleClick = (event) => {
-          setAnchorEl(event.currentTarget);
-        };
+          const handleClick = (event) => {
+            setAnchorEl(event.currentTarget);
+          };
 
-        const handleClose = () => {
-          setAnchorEl(null);
-        };
+          const handleClose = () => {
+            setAnchorEl(null);
+          };
 
-        return (
-          <>
-            <IconButton
-              onClick={handleClick}
-              size="small" 
-            >
-              <BiDotsVerticalRounded /> 
-            </IconButton>
-            
-            {/* MUI Menu component */}
-            <Menu
-              id="long-menu"
-              MenuListProps={{
-                'aria-labelledby': 'long-button',
-              }}
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-            >
-              {/* Example of a translated PDF download option (currently commented out) */}
-              
-              <PDFDownloadLink
-            document={<JewelPawnrecoveryPdf data={rowData} />}
-            fileName={`${rowData.receipt_no}.pdf`}
-          > 
-            {({ loading, url }) => (
-              // Use a standard <a> tag inside MenuItem,
-              // setting href and download attributes
-              <MenuItem 
-                // Close the menu immediately when the link is clicked
-                onClick={handleClose} 
-                disabled={loading}
+          return (
+            <>
+              <IconButton onClick={handleClick} size="small">
+                <BiDotsVerticalRounded />
+              </IconButton>
+              <Menu
+                id="long-menu"
+                MenuListProps={{
+                  "aria-labelledby": "long-button",
+                }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
               >
-                <a
-                  href={url}
-                  download={`${rowData.receipt_no}.pdf`}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
+                <PDFDownloadLink
+                  document={<JewelPawnrecoveryPdf data={rowData} />}
+                  fileName={`${rowData.receipt_no}.pdf`}
                 >
-                 {("Download Pdf")}
-                </a>
-              </MenuItem>
-            )}
-          </PDFDownloadLink> 
-              
-            {isAdmin && (
-            <MenuItem onClick={() => {handleJewelRecoveryEditClick(row.original);
-                handleClose();
-              }}
-            >
-              {t("Edit")}
-            </MenuItem>
-          )}
-              
-             <MenuItem onClick={() => {handleJewelRecoveryDeleteClick(rowData.pawnjewelry_recovery_id);
-              handleClose();
-            }}
-          >
-            {t("Delete")}
-          </MenuItem>
-            </Menu>
-          </>
-        );
+                  {({ loading, url }) => (
+                    <MenuItem
+                      onClick={handleClose}
+                      disabled={loading}
+                    >
+                      <a
+                        href={url}
+                        download={`${rowData.receipt_no}.pdf`}
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        {"Download Pdf"}
+                      </a>
+                    </MenuItem>
+                  )}
+                </PDFDownloadLink>
+
+                {isAdmin && (
+                  <MenuItem
+                    onClick={() => {
+                      handleJewelRecoveryEditClick(row.original);
+                      handleClose();
+                    }}
+                  >
+                    {t("Edit")}
+                  </MenuItem>
+                )}
+
+                <MenuItem
+                  onClick={() => {
+                    handleJewelRecoveryDeleteClick(
+                      rowData.pawnjewelry_recovery_id
+                    );
+                    handleClose();
+                  }}
+                >
+                  {t("Delete")}
+                </MenuItem>
+              </Menu>
+            </>
+          );
+        },
       },
-    },
     ],
-    [t,cacheVersion, isAdmin, handleJewelRecoveryEditClick, handleJewelRecoveryDeleteClick] 
+    [
+      t,
+      cacheVersion,
+      isAdmin,
+      handleJewelRecoveryEditClick,
+      handleJewelRecoveryDeleteClick,
+    ]
   );
 
   return (
@@ -729,33 +731,30 @@ const RecoveryPayment = () => {
           {recoveryHistory.length > 0 && (
             <Col lg={12} className="py-3">
               <div className="customer-card bg-light border rounded p-3">
-                <h5 className="mb-3">{t("Recovery Payment History")}</h5>             
-                  <MaterialReactTable
-                    columns={columns}
-                    data={recoveryHistory} 
-                    enableColumnActions={false}
-                    enableColumnFilters={false}
-                    enableDensityToggle={false} 
-                    enableFullScreenToggle={false} 
-                    enableHiding={false} 
-                    enableGlobalFilter={true} 
-                    initialState={{ density: "compact" }}
-                   
-                    muiTableContainerProps={{
-                      sx: {
-                        borderRadius: "5px",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                      },
-                    }}
-                    
-                    muiTableHeadCellProps={{
-                      sx: {
-                        fontWeight: "bold",
-                        color: "black"
-                      },
-                    }}
-                  />
-               
+                <h5 className="mb-3">{t("Recovery Payment History")}</h5>
+                <MaterialReactTable
+                  columns={columns}
+                  data={recoveryHistory}
+                  enableColumnActions={false}
+                  enableColumnFilters={false}
+                  enableDensityToggle={false}
+                  enableFullScreenToggle={false}
+                  enableHiding={false}
+                  enableGlobalFilter={true}
+                  initialState={{ density: "compact" }}
+                  muiTableContainerProps={{
+                    sx: {
+                      borderRadius: "5px",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    },
+                  }}
+                  muiTableHeadCellProps={{
+                    sx: {
+                      fontWeight: "bold",
+                      color: "black",
+                    },
+                  }}
+                />
               </div>
             </Col>
           )}
