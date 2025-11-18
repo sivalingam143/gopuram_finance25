@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import API_DOMAIN from "../config/config";
 import "./DailyReport.css";
@@ -8,6 +8,18 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { useLanguage } from "../components/LanguageContext";
 
+// ⬇️ Material React Table Imports
+import { MaterialReactTable } from 'material-react-table';
+import { Typography, TableFooter, TableRow, TableCell } from '@mui/material';
+
+// Helper function to format numeric values for display
+const formatValue = (value) => {
+  const num = parseFloat(value);
+  if (isNaN(num) || value === null) return value;
+  // Format large numbers with commas, and ensure two decimal places
+  return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+
 const DailyReport = () => {
   const { t } = useLanguage();
   const [selectedView, setSelectedView] = useState("FINAL SHEET");
@@ -15,241 +27,179 @@ const DailyReport = () => {
   const [toDate, setToDate] = useState("");
   const [reportData, setReportData] = useState([]);
   const [totals, setTotals] = useState({});
-  console.log(reportData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // --- Configuration Table (Updated with 'keys' for MRT) ---
   const tableConfig = {
     "FINAL SHEET": {
       title: t("Financial Report"),
       action: "daily_final_sheet",
       columns: [
-        t("Date"),
-        t("GOLD C"),
-        t("GOLD D"),
-        t("GOLD I"),
-        t("SLIVER C"),
-        t("SLIVER D"),
-        t("SLIVER I"),
-        t("RP GOLD C"),
-        t("RP GOLD D"),
-        t("RP GOLD I"),
-        t("EXPENSE"),
-        t("CASH"),
-        t("START BAL"),
-        t("END BAL"),
-        t("RESULT"),
+        t("Date"), t("GOLD C"), t("GOLD D"), t("GOLD I"), t("SLIVER C"), t("SLIVER D"),
+        t("SLIVER I"), t("RP GOLD C"), t("RP GOLD D"), t("RP GOLD I"), t("EXPENSE"),
+        t("CASH"), t("START BAL"), t("END BAL"), t("RESULT"),
+      ],
+      keys: [ 
+        "date", "gold_c", "gold_d", "gold_i", "silver_c", "silver_d", 
+        "silver_i", "rp_gold_c", "rp_gold_d", "rp_gold_i", "expense", 
+        "cash", "start_bal", "end_bal", "result" 
       ],
       numericColumns: [
-        "gold_c",
-        "gold_d",
-        "gold_i",
-        "sliver_c",
-        "sliver_d",
-        "sliver_i",
-        "rp_gold_c",
-        "rp_gold_d",
-        "rp_gold_i",
-        "expense",
-        "cash",
-        "start_bal",
-        "end_bal",
-        "result",
+        "gold_c", "gold_d", "gold_i", "silver_c", "silver_d", "silver_i", 
+        "rp_gold_c", "rp_gold_d", "rp_gold_i", "expense", "cash", "start_bal", 
+        "end_bal", "result",
       ],
       rowMapper: (row) => [
-        row.date,
-        row.gold_c,
-        row.gold_d,
-        row.gold_i,
-        row.silver_c,
-        row.silver_d,
-        row.silver_i,
-        row.rp_gold_c,
-        row.rp_gold_d,
-        row.rp_gold_i,
-        row.expense,
-        row.cash,
-        row.start_bal,
-        row.end_bal,
-        row.result,
+        row.date, row.gold_c, row.gold_d, row.gold_i, row.silver_c, row.silver_d, 
+        row.silver_i, row.rp_gold_c, row.rp_gold_d, row.rp_gold_i, row.expense, 
+        row.cash, row.start_bal, row.end_bal, row.result,
       ],
     },
-    //   "FINAL REPORT": {
-    //   title: "MONTH FINAL REPORT",
-    //   action: "final_report",
-    //   columns: [
-    //     "Month",
-    //     "GOLD C",
-    //     "GOLD D",
-    //     "GOLD I",
-    //     "SLIVER C",
-    //     "SLIVER D",
-    //     "SLIVER I",
-    //     "RP GOLD C",
-    //     "RP GOLD D",
-    //     "RP GOLD I",
-    //     "EXPENSE",
-    //     "CASH",
-    //     "START BAL",
-    //     "END BAL",
-    //     "RESULT",
-    //     "TOTAL CREDIT",
-    //     "TOTAL DEBIT",
-    //   ],
-    //   numericColumns: [
-    //     "gold_c",
-    //     "gold_d",
-    //     "gold_i",
-    //     "silver_c",
-    //     "silver_d",
-    //     "silver_i",
-    //     "rp_gold_c",
-    //     "rp_gold_d",
-    //     "rp_gold_i",
-    //     "expense",
-    //     "cash",
-    //     "start_bal",
-    //     "end_bal",
-    //     "result",
-    //     "total_credit",
-    //     "total_debit",
-    //   ],
-    //   rowMapper: (row) => [
-    //     row.month || `${fromDate} ${toDate}`, // Use fromDate and toDate for display
-    //     row.gold_c,
-    //     row.gold_d,
-    //     row.gold_i,
-    //     row.silver_c,
-    //     row.silver_d,
-    //     row.silver_i,
-    //     row.rp_gold_c,
-    //     row.rp_gold_d,
-    //     row.rp_gold_i,
-    //     row.expense,
-    //     row.cash,
-    //     row.start_bal,
-    //     row.end_bal,
-    //     row.result,
-    //     row.total_credit,
-    //     row.total_debit,
-    //   ],
-    // },
     "GOLD LEDGER": {
       title: "GOLD LEDGER",
       action: "gold_ledger",
       columns: [
-        t("S.NO"),
-        t("GOLD TYPE"),
-        t("GOLD PLEDG NO"),
-        t("GOLD C"),
-        t("GC I"),
-        t("G D"),
-        t("MONTHS"),
-        t("GD INTEREST"),
+        t("S.NO"), t("GOLD TYPE"), t("GOLD PLEDG NO"), t("GOLD C"), t("GC I"), 
+        t("G D"), t("MONTHS"), t("GD INTEREST"),
+      ],
+      keys: [
+        "sno", "gold_type", "pledge_no", "gold_c", "gc_interest", "gold_d", "months", "gd_interest"
       ],
       numericColumns: [
-        "gold_c",
-        "gc_interest",
-        "gold_d",
-        "months",
-        "gd_interest",
+        "gold_c", "gc_interest", "gold_d", "months", "gd_interest",
       ],
       rowMapper: (row, index) => [
-        index + 1,
-        row.gold_type,
-        row.pledge_no,
-        row.gold_c,
-        row.gc_interest,
-        row.gold_d,
-        row.months,
-        row.gd_interest,
+        index + 1, row.gold_type, row.pledge_no, row.gold_c, row.gc_interest, 
+        row.gold_d, row.months, row.gd_interest,
       ],
     },
     "RP GOLD LEDGER": {
       title: "RP GOLD LEDGER",
       action: "rp_gold_ledger",
       columns: [
-        t("S.NO"),
-        t("PLEDG NO"),
-        t("Bank Name"),
-        t("RP PLEDG NO"),
-        t("RP GOLD C"),
-        t("RP GOLD D"),
-        t("INTEREST"),
+        t("S.NO"), t("PLEDG NO"), t("Bank Name"), t("RP PLEDG NO"), 
+        t("RP GOLD C"), t("RP GOLD D"), t("INTEREST"),
+      ],
+      keys: [
+        "sno", "pledge_no", "bank_name", "rp_pledge_no", "rp_gold_c", "rp_gold_d", "rp_gold_i"
       ],
       numericColumns: ["rp_gold_c", "rp_gold_d", "rp_gold_i"],
       rowMapper: (row, index) => [
-        index + 1,
-        row.pledge_no,
-        row.bank_name,
-        row.rp_pledge_no,
-        row.rp_gold_c,
-        row.rp_gold_d,
-        row.rp_gold_i,
+        index + 1, row.pledge_no, row.bank_name, row.rp_pledge_no, 
+        row.rp_gold_c, row.rp_gold_d, row.rp_gold_i,
       ],
     },
     "SLIVER LEDGER": {
       title: "SLIVER LEDGER",
       action: "sliver_ledger",
       columns: [
-        t("S.NO"),
-        t("PLEDG NO"),
-        t("SLIVER C"),
-        t("SLIVER C I"),
-        t("SLIVER D"),
-        t("MONTHS"),
-        t("SD I"),
+        t("S.NO"), t("PLEDG NO"), t("SLIVER C"), t("SLIVER C I"), 
+        t("SLIVER D"), t("MONTHS"), t("SD I"),
+      ],
+      keys: [
+        "sno", "pledge_no", "silver_c", "sc_interest", "silver_d", "months", "sd_interest"
       ],
       numericColumns: [
-        "sliver_c",
-        "sliver_i",
-        "sliver_d",
-        "sliver_ledger_month",
-        "sliver_debit_interest",
+        "silver_c", "sc_interest", "silver_d", "months", "sd_interest",
       ],
       rowMapper: (row, index) => [
-        index + 1,
-        row.pledge_no,
-        row.silver_c,
-        row.sc_interest,
-        row.silver_d,
-        row.months,
-        row.sd_interest,
+        index + 1, row.pledge_no, row.silver_c, row.sc_interest, 
+        row.silver_d, row.months, row.sd_interest,
       ],
     },
     "EXPENSE LEDGER": {
       title: "EXPENSE LEDGER",
       action: "expense_ledger",
-     columns: [t("EXPENSE TYPE"), t("EXPENSE VALUE")],
+      columns: [t("EXPENSE TYPE"), t("EXPENSE VALUE")],
+      keys: ["expense_name", "expense"],
       numericColumns: ["expense"],
       rowMapper: (row) => [row.expense_name, row.expense],
     },
     "CASH LEDGER": {
       title: "CASH LEDGER",
       action: "cash_ledger",
-     columns: [t("CASH TYPE"), t("CASH VALUE")],
+      columns: [t("CASH TYPE"), t("CASH VALUE")],
+      keys: ["expense_name", "cash"],
       numericColumns: ["cash"],
-      rowMapper: (row) => [row.expense_name, row.expense],
+      rowMapper: (row) => [row.expense_name, row.cash], 
     },
   };
+
+  const currentConfig = tableConfig[selectedView] || {};
+  const currentKeys = currentConfig.keys || [];
+  
+  // --- MRT Column Definition ---
+  const columns = useMemo(() => {
+    if (!currentConfig.columns || currentConfig.columns.length === 0) return [];
+
+    return currentConfig.columns.map((header, index) => {
+      const accessorKey = currentKeys[index];
+      const isNumeric = currentConfig.numericColumns && currentConfig.numericColumns.includes(accessorKey);
+      
+      return {
+        accessorKey: accessorKey,
+        header: header,
+        size: isNumeric ? 120 : (accessorKey === 'expense_name' || accessorKey === 'pledge_no' ? 200 : 100),
+        
+        Cell: ({ row, cell }) => {
+          const rawValue = cell.getValue();
+          
+          if (accessorKey === 'sno') {
+              return row.index + 1;
+          }
+
+          const displayValue = isNumeric ? formatValue(rawValue) : rawValue;
+
+          return (
+            <Typography 
+              variant="body2" 
+              sx={{ textAlign: isNumeric ? 'right' : 'left' }}
+            >
+              {displayValue}
+            </Typography>
+          );
+        },
+        enableSorting: accessorKey !== 'sno' && accessorKey !== 'date',
+        enableColumnFilter: accessorKey !== 'sno',
+        
+        muiTableBodyCellProps: {
+          align: isNumeric ? 'right' : (accessorKey === 'sno' ? 'center' : 'left'),
+        },
+        muiTableHeadCellProps: {
+          align: isNumeric ? 'right' : (accessorKey === 'sno' ? 'center' : 'left'),
+          minWidth: isNumeric ? 120 : (accessorKey === 'expense_name' || accessorKey === 'pledge_no' ? 200 : 100),
+        },
+      };
+    });
+  }, [selectedView, t, currentConfig, currentKeys]);
+
 
   const fetchReportData = async () => {
     setLoading(true);
     setError(null);
+    if (!tableConfig[selectedView]) {
+        setLoading(false);
+        return;
+    }
     try {
       const response = await axios.post(`${API_DOMAIN}/account_report.php`, {
         action: tableConfig[selectedView].action,
-        fromDate: fromDate ? formatDateToYYYYMMDD(fromDate) : null,
-        toDate: toDate ? formatDateToYYYYMMDD(toDate) : null,
+        fromDate: fromDate || null,
+        toDate: toDate || null,
       });
       if (response.data.head.code === 200) {
-        setReportData(response.data.body.data);
-        setTotals(response.data.body.totals);
+        setReportData(response.data.body.data || []);
+        setTotals(response.data.body.totals || {});
       } else {
         setError(response.data.head.msg);
+        setReportData([]);
+        setTotals({});
       }
     } catch (err) {
       setError("Failed to fetch data from server");
+      setReportData([]);
+      setTotals({});
     } finally {
       setLoading(false);
     }
@@ -259,37 +209,65 @@ const DailyReport = () => {
     fetchReportData();
   }, [selectedView, fromDate, toDate]);
 
-  const formatDateToYYYYMMDD = (dateStr) => {
-    if (!dateStr) return "";
-    const [year, month, day] = dateStr.split("-");
-    return `${year}-${month}-${day}`;
-  };
-
   const clearFilter = () => {
     setFromDate("");
     setToDate("");
   };
 
   const exportToExcel = () => {
+    if (reportData.length === 0) {
+        alert(t("No data available to export."));
+        return;
+    }
     const config = tableConfig[selectedView];
-    const worksheetData = reportData.map((row, index) => {
-      const mappedRow = config.rowMapper(row, index);
-      const rowObj = {};
-      config.columns.forEach((col, i) => {
-        rowObj[col] = mappedRow[i];
-      });
-      return rowObj;
+    const headerRow = config.columns;
+    
+    // Prepare data rows
+    let worksheetData = reportData.map((row, index) => {
+        const rowObject = {};
+        const mappedRow = config.rowMapper(row, index); 
+        headerRow.forEach((header, i) => {
+            const accessorKey = config.keys[i];
+            const isNumeric = config.numericColumns.includes(accessorKey);
+            let value = mappedRow[i];
+            
+            if (isNumeric && typeof value !== 'string') {
+                value = formatValue(value);
+            }
+            rowObject[header] = value;
+        });
+        return rowObject;
     });
 
-    const totalRow = {};
-    const mappedTotals = config.rowMapper(
-      { ...totals, date: "Total", expense_type: "Total", cash_type: "Total" },
-      -1
-    );
-    config.columns.forEach((col, i) => {
-      totalRow[col] = mappedTotals[i];
+    // Add totals row
+    const totalsRow = {
+        ...totals,
+        date: "Total",
+        gold_type: "Total",
+        expense_name: "Total",
+        pledge_no: "Total",
+        sno: "Total",
+    };
+    
+    const totalRowObject = {};
+    
+    headerRow.forEach((header, i) => {
+        const accessorKey = config.keys[i];
+        const isNumeric = config.numericColumns.includes(accessorKey);
+        let totalValue;
+
+        if (isNumeric) {
+           totalValue = formatValue(totals[accessorKey] || 0); 
+        } else if (i === 0) {
+           totalValue = t("Total"); 
+        } else {
+           totalValue = "";
+        }
+        
+        totalRowObject[header] = totalValue;
     });
-    worksheetData.push(totalRow);
+    
+    worksheetData.push(totalRowObject);
 
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
     const workbook = XLSX.utils.book_new();
@@ -307,11 +285,53 @@ const DailyReport = () => {
 
   const config = tableConfig[selectedView];
   const handleViewChange = (newView) => {
-    setLoading(true); // Immediately show loader
-    setReportData([]); // Clear old data
-    setTotals({}); // Clear old totals
-    setSelectedView(newView); // Update view, which triggers useEffect
+    setLoading(true);
+    setReportData([]);
+    setTotals({});
+    setSelectedView(newView);
   };
+
+  // --- Custom Footer for Material React Table (Totals Row) ---
+  const renderTotalsFooter = ({ table }) => {
+    if (reportData.length === 0 || !currentConfig.rowMapper) return null;
+
+    return (
+        <TableFooter sx={{ backgroundColor: '#f0f0f0', borderTop: '2px solid #ccc' }}>
+            <TableRow>
+                {currentConfig.keys.map((accessorKey, i) => {
+                    const isNumeric = currentConfig.numericColumns.includes(accessorKey);
+                    
+                    let textAlign = 'left';
+                    if (isNumeric) textAlign = 'right';
+                    if (i === 0) textAlign = 'center'; 
+
+                    let displayValue = '';
+                    if (isNumeric) {
+                        displayValue = formatValue(totals[accessorKey] || 0);
+                    } else if (i === 0) {
+                        displayValue = t("Total");
+                    }
+                    
+                    return (
+                        <TableCell 
+                            key={`total-${i}`} 
+                            sx={{ 
+                                fontWeight: 'bold', 
+                                textAlign: textAlign,
+                                minWidth: columns[i] ? columns[i].size : '100px', 
+                                padding: '12px',
+                            }}
+                        >
+                            <Typography fontWeight="bold" variant="body2">{displayValue}</Typography>
+                        </TableCell>
+                    );
+                })}
+            </TableRow>
+        </TableFooter>
+    );
+  };
+  // --- End Custom Footer ---
+
 
   return (
     <div className="daily-report-container">
@@ -320,84 +340,38 @@ const DailyReport = () => {
       </h2>
 
       <div className="filter-container">
-        {selectedView === "FINAL REPORT" ? (
-          <>
-            <div className="filter-group">
-            <label>{t("Month")}:</label>
-              <select
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="form-select"
-              >
-                <option value="">{t("Select Month")}</option>
-                {[
-                  "January",
-                  "February",
-                  "March",
-                  "April",
-                  "May",
-                  "June",
-                  "July",
-                  "August",
-                  "September",
-                  "October",
-                  "November",
-                  "December",
-                ].map((month) => (
-                  <option key={month} value={month}>
-                    {month}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="filter-group">
-              <label>Year:</label>
-              <input
-                type="number"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="date-input"
-                placeholder="Enter Year"
-              />
-            </div>
-            <button className="clear-button" onClick={clearFilter}>
-              Clear Filter
-            </button>
-          </>
-        ) : (
-          <>
-            <div className="filter-group">
-              <label htmlFor="fromDate">{t("From Date")}:</label>
-              <input
-                type="date"
-                id="fromDate"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="date-input"
-              />
-            </div>
-            <div className="filter-group">
-              <label htmlFor="fromDate">{t("To Date")}:</label>
-              <input
-                type="date"
-                id="toDate"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="date-input"
-              />
-            </div>
-            <button className="clear-button" onClick={clearFilter}>
-              {t("Clear Filter")}
-            </button>
-          </>
-        )}
+        {/* Date Filters (Simplified: FINAL REPORT check removed) */}
+        <div className="filter-group mb-3">
+          <label htmlFor="fromDate" className="form-label">{t("From Date")}:</label>
+          <input
+            type="date"
+            id="fromDate"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="form-control"
+          />
+        </div>
+        <div className="filter-group mb-3">
+          <label htmlFor="toDate" className="form-label">{t("To Date")}:</label>
+          <input
+            type="date"
+            id="toDate"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="form-control"
+          />
+        </div>
+        <button className="clear-button" onClick={clearFilter}>
+          {t("Clear Filter")}
+        </button>
       </div>
 
       <select
-        className="form-select"
+        className="form-select mb-4"
         onChange={(e) => handleViewChange(e.target.value)}
         value={selectedView}
       >
+        {/* Dropdown now only contains keys from tableConfig */}
         {Object.keys(tableConfig).map((key) => (
           <option key={key} value={key}>
            {t(key)}
@@ -426,173 +400,37 @@ const DailyReport = () => {
       {loading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
 
-      {selectedView === "FINAL REPORT" && (
-        <div className="final-report-table mt-30">
-          <h3 className="report-heading">
-            {t("MONTH FINAL SHEET")} {fromDate?.toUpperCase()} {toDate}
-          </h3>
-          {reportData.length > 0 ? (
-            <>
-              <table className="financial-table">
-                <tbody>
-                  <tr>
-                    <td>
-                      <strong>{t("START BALANCE")}</strong>
-                    </td>
-                    <td className="text-red">
-                      <strong>{totals.start_bal}</strong>
-                    </td>
-                    <td>
-                      <strong>{t("END BALANCE")}</strong>
-                    </td>
-                    <td className="text-red">
-                      <strong>{totals.end_bal}</strong>
-                    </td>
-                    <td>
-                      <strong>{t("DAY RESULT")}</strong>
-                    </td>
-                    <td className="text-red">
-                      <strong>{totals.result}</strong>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div className="report-flex">
-                <div className="credit-section">
-                  <h4 className="text-red">{t("CREDIT")}</h4>
-                  <table className="financial-table">
-                    <tbody>
-                      <tr>
-                        <td>{t("GOLD CREDIT")}</td>
-                        <td className="text-red">{totals.gold_c}</td>
-                      </tr>
-                      <tr>
-                        <td>{t("SILVER CREDIT")}</td>
-                        <td className="text-red">{totals.silver_c}</td>
-                      </tr>
-                      <tr>
-                        <td>{t("RP GOLD DEBIT")}</td>
-                        <td className="text-red">{totals.rp_gold_d}</td>
-                      </tr>
-                      <tr>
-                        <td>{t("RP GOLD INTEREST")}</td>
-                        <td className="text-red">{totals.rp_gold_i}</td>
-                      </tr>
-                      <tr>
-                        <td>{t("EXPENSE")}</td>
-                        <td className="text-red">{totals.cash}</td>
-                      </tr>
-                      <tr>
-                        <td className="bg-yellow">
-                          <strong>{t("MONTH CREDIT")}</strong>
-                        </td>
-                        <td className="bg-yellow">
-                          <strong>{totals.total_credit}</strong>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="debit-section">
-                  <h4 className="text-green">{t("DEBIT")}</h4>
-                  <table className="financial-table">
-                    <tbody>
-                      <tr>
-                        <td>{t("GOLD DEBIT")}</td>
-                        <td className="text-red">{totals.gold_d}</td>
-                      </tr>
-                      <tr>
-                        <td>{t("GOLD INTEREST")}</td>
-                        <td className="text-red">{totals.gold_i}</td>
-                      </tr>
-                      <tr>
-                        <td>{t("SILVER DEBIT")}</td>
-                        <td className="text-red">{totals.silver_d}</td>
-                      </tr>
-                      <tr>
-                        <td>{t("SILVER INTEREST")}</td>
-                        <td className="text-red">{totals.silver_i}</td>
-                      </tr>
-                      <tr>
-                        <td>{t("RP GOLD CREDIT")}</td>
-                        <td className="text-red">{totals.rp_gold_c}</td>
-                      </tr>
-                      <tr>
-                        <td>{t("ADD ON")}</td>
-                        <td className="text-red">{totals.expense}</td>
-                      </tr>
-                      <tr>
-                        <td className="bg-yellow">
-                          <strong>{t("MONTH DEBIT")}</strong>
-                        </td>
-                        <td className="bg-yellow">
-                          <strong>{totals.total_debit}</strong>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </>
-          ) : (
-            <p>{t("No data available for the selected month and year")}</p>
-          )}
-        </div>
-      )}
-
-      {selectedView !== "FINAL REPORT" && (
-        <table className="financial-table">
-          <thead>
-            <tr>
-              {config?.columns && Array.isArray(config.columns)
-                ? config.columns.map((col, i) => <th key={i}>{col}</th>)
-                : null}
-            </tr>
-          </thead>
-          <tbody>
-            {reportData.length > 0 ? (
-              reportData.map((row, index) => (
-                <tr key={index}>
-                  {config.rowMapper(row, index).map((cell, i) => (
-                    <td key={i}>{cell}</td>
-                  ))}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={config?.columns.length} className="no-data">
-                  {t("No data available for the selected date range")}
-                </td>
-              </tr>
-            )}
-          </tbody>
-          {reportData.length > 0 && (
-            <tfoot>
-              <tr className="total-row">
-                {config
-                  .rowMapper(
-                    {
-                      ...totals,
-                      date: "Total",
-                      expense_type: "Total",
-                      cash_type: "Total",
-                    },
-                    -1
-                  )
-                  .map((total, i) => (
-                    <td key={i}>
-                      {config.columns[i] === "S.NO" && total === 0
-                        ? "Total"
-                        : total}
-                    </td>
-                  ))}
-              </tr>
-            </tfoot>
-          )}
-        </table>
-      )}
+      {/* --- Material React Table (Unconditional for the remaining views) --- */}
+      <MaterialReactTable
+        columns={columns}
+        data={reportData}
+        state={{ isLoading: loading }}
+        enableSorting
+        enableColumnFilters
+        enableGlobalFilter
+        enablePagination
+        enableDensityToggle={false}
+        enableFullScreenToggle={false}
+        enableHiding={false}
+        initialState={{ density: 'compact' }}
+        localization={{
+            noRecordsFound: t('No data available for the selected date range'),
+        }}
+        muiTablePaperProps={{
+          elevation: 0,
+          sx: {
+            border: '1px solid #dee2e6',
+          },
+        }}
+        muiTableHeadCellProps={{
+          sx: {
+            backgroundColor: '#343a40',
+            color: 'white',
+            fontWeight: 'bold',
+          },
+        }}
+        renderBottomToolbarCustomActions={renderTotalsFooter}
+      />
     </div>
   );
 };

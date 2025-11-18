@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import API_DOMAIN from "../config/config";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
@@ -7,6 +7,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./BankPledgeReport.css";
 import dayjs from "dayjs";
 import { useLanguage } from "../components/LanguageContext";
+// ⬇️ Material React Table Imports
+import { MaterialReactTable } from 'material-react-table';
+import { Box, Typography } from '@mui/material';
+
 
 const BankPledgeReport = () => {
   const { t } = useLanguage();
@@ -15,9 +19,10 @@ const BankPledgeReport = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
+  // Custom sorting and pagination states removed, as MRT handles them
+  // const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const recordsPerPage = 10;
 
   // Fetch data from API
   const fetchReportData = async () => {
@@ -57,7 +62,7 @@ const BankPledgeReport = () => {
     }
   };
 
-  // Apply filters and sorting
+  // Apply filters (No longer applies sorting or pagination)
   const applyFilters = (data, from, to, status) => {
     let filtered = [...data];
 
@@ -80,30 +85,11 @@ const BankPledgeReport = () => {
       );
     }
 
-    // Apply sorting
-    if (sortConfig.key) {
-      filtered.sort((a, b) => {
-        const aValue = a[sortConfig.key] || "";
-        const bValue = b[sortConfig.key] || "";
-        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-        return 0;
-      });
-    }
-
     setFilteredData(filtered);
-    setCurrentPage(1); // Reset to first page after filtering
+    // Removed: setCurrentPage(1); // MRT handles page reset
   };
 
-  // Handle sorting
-  const handleSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    setSortConfig({ key, direction });
-    applyFilters(reportData, fromDate, toDate, statusFilter);
-  };
+  // Removed: handleSort function, MRT handles sorting.
 
   // Handle filter changes
   const handleFilterChange = () => {
@@ -125,6 +111,7 @@ const BankPledgeReport = () => {
       duedate: row.duedate,
       "Additional Charges": row.additionalCharges,
       Location: row.location,
+      Status: row.status,
     }));
     const csv = Papa.unparse(csvData);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -157,6 +144,7 @@ const BankPledgeReport = () => {
           "Due Date",
           "Additional Charges",
           "Location",
+          "Status"
         ],
       ],
       body: filteredData.map((row) => [
@@ -164,7 +152,7 @@ const BankPledgeReport = () => {
         row.date,
         row.loanNo,
         row.name,
-        row.bankPledgeDate,
+        dayjs(row.bankPledgeDate).format("DD-MM-YYYY"), // Apply formatting
         row.bankAssessorName,
         row.bankName,
         row.interest,
@@ -172,6 +160,7 @@ const BankPledgeReport = () => {
         row.duedate,
         row.additionalCharges,
         row.location,
+        row.status
       ]),
       theme: "grid",
       styles: {
@@ -190,19 +179,115 @@ const BankPledgeReport = () => {
     doc.save("bank_pledge_report.pdf");
   };
 
-  // Pagination logic
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredData.slice(
-    indexOfFirstRecord,
-    indexOfLastRecord
-  );
-  const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+  // Removed: Pagination logic
 
   // Fetch data on mount
   useEffect(() => {
     fetchReportData();
   }, []);
+  
+  // ⬇️ Material React Table Columns Definition
+  const columns = useMemo(() => [
+    {
+      accessorKey: 'sNo',
+      header: t('S.No'),
+      size: 50,
+      enableColumnFilter: false,
+    },
+    {
+      accessorKey: 'date',
+      header: t('Date'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+      size: 100,
+       Cell: ({ cell }) =>
+              cell.getValue() ? dayjs(cell.getValue()).format("DD-MM-YYYY") : "-", // YYYY-MM-DD is ISO, so no change needed
+        
+    },
+    {
+      accessorKey: 'loanNo',
+      header: t('Loan No'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+      size: 100,
+    },
+    {
+      accessorKey: 'name',
+      header: t('Name'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+      size: 150,
+    },
+    {
+      accessorKey: 'bankPledgeDate',
+      header: t('Bank Pledge Date'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+      size: 120,
+      Cell: ({ cell }) => (
+        // Uses dayjs to format the date
+        cell.getValue() !== '-' ? dayjs(cell.getValue()).format("DD-MM-YYYY") : 'Invalid Date'
+      ),
+    },
+    {
+      accessorKey: 'bankAssessorName',
+      header: t('Bank Assessor Name'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+      size: 150,
+    },
+    {
+      accessorKey: 'bankName',
+      header: t('Bank Name'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+      size: 150,
+    },
+    {
+      accessorKey: 'interest',
+      header: t('Interest'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+      size: 80,
+    },
+    {
+      accessorKey: 'loanAmount',
+      header: t('Loan Amount'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'center' },
+      size: 50,
+     
+    },
+    {
+      accessorKey: 'duedate',
+      header: t('Due date'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'center' },
+      size: 10,
+      Cell: ({ cell }) => (
+        // Uses dayjs to format the date
+        cell.getValue() !== '-' ? dayjs(cell.getValue()).format("DD-MM-YYYY") : 'Invalid Date'
+      ),
+    },
+    {
+      accessorKey: 'additionalCharges',
+      header: t('Additional Charges'),
+       muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'center' },
+      size: 20,
+    },
+    {
+      accessorKey: 'location',
+      header: t('Location'), 
+      size: 100,
+    },
+    {
+      accessorKey: 'status',
+      header: t('Status'),
+      size: 100,
+    },
+  ], [t]);
+
 
   return (
     <div className="container py-4">
@@ -259,140 +344,39 @@ const BankPledgeReport = () => {
         </button>
       </div>
 
-      {/* Table */}
-      <div className="table-responsive">
-        <table className="table table-bordered table-hover table-striped">
-          <thead className="table-dark">
-            <tr>
-              {[
-                "sNo",
-                "date",
-                "loanNo",
-                "name",
-                "bankPledgeDate",
-                "bankAssessorName",
-                "bankName",
-                "interest",
-                "loanAmount",
-                "duedate",
-                "additionalCharges",
-                "location",
-              ].map((key) => (
-                <th
-                  key={key}
-                  onClick={() => handleSort(key)}
-                  className="p-3 text-left cursor-pointer sort-header"
-                >
-                  {key === "sNo"
-                    ? t("S.No")
-                    : key === "date"
-                    ? t("Date")
-                    : key === "loanNo"
-                    ? t("Loan No")
-                    : key === "name"
-                    ? t("Name")
-                    : key === "bankPledgeDate"
-                    ? t("Bank Pledge Date")
-                    : key === "bankAssessorName"
-                    ? t("Bank Assessor Name")
-                    : key === "bankName"
-                    ? t("Bank Name")
-                    : key === "interest"
-                    ? t("Interest")
-                    : key === "loanAmount"
-                    ? t("Loan Amount")
-                    : key === "duedate"
-                    ? t("Due date")
-                    : key === "location"
-                    ? t("Loan No") // Note: This key seems to map to "Loan No" again.
-                    : t("Additional Charges")}
-                  {sortConfig.key === key ? (
-                    <span className="ms-2">
-                      {sortConfig.direction === "asc" ? "↑" : "↓"}
-                    </span>
-                  ) : null}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {currentRecords.length > 0 ? (
-              currentRecords.map((row) => (
-                <tr key={row.sNo}>
-                  <td className="p-3">{row.sNo}</td>
-                  <td className="p-3">{row.date}</td>
-                  <td className="p-3">{row.loanNo}</td>
-                  <td className="p-3">{row.name}</td>
-                  <td className="p-3">
-                    {dayjs(row.bankPledgeDate).format("DD-MM-YYYY")}
-                  </td>
-                  <td className="p-3">{row.bankAssessorName}</td>
-                  <td className="p-3">{row.bankName}</td>
-                  <td className="p-3">{row.interest}</td>
-                  <td className="p-3">{row.loanAmount}</td>
-                  <td className="p-3">{row.duedate}</td>
-                  <td className="p-3">{row.additionalCharges}</td>
-                  <td className="p-3">{row.location}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="10" className="p-3 text-center text-muted">
-                  {t("No data available")}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* ⬇️ Material React Table */}
+      <MaterialReactTable
+        columns={columns}
+        data={filteredData} // MRT automatically handles sorting and pagination on this data
+        enableColumnActions={true}
+        enableSorting={true}
+        enableGlobalFilter={true}
+        enableDensityToggle={false}
+        enableFullScreenToggle={false}
+        enableHiding={false}
+        initialState={{ density: 'compact' }}
+        localization={{
+            noRecordsFound: t('No data available'),
+            // Other localization settings can be added here
+        }}
+        // Adding styles to simulate Bootstrap's table-dark header and bordered table
+        muiTablePaperProps={{
+          elevation: 0,
+          sx: {
+            border: '1px solid #dee2e6', // table-bordered
+          },
+        }}
+        muiTableHeadCellProps={{
+          sx: {
+            backgroundColor: '#343a40', // table-dark
+            color: 'white',
+          },
+        }}
+        
+      />
+      {/* ⬆️ End Material React Table */}
 
-      {/* Pagination */}
-      <div className="d-flex justify-content-between align-items-center mt-4">
-        <span className="text-muted">
-          {t("Showing")} {indexOfFirstRecord + 1} {t("to")}{" "}
-          {Math.min(indexOfLastRecord, filteredData.length)} of{" "}
-          {filteredData.length} {t("records")}
-        </span>
-        <nav>
-          <ul className="pagination mb-0">
-            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <button
-                className="btn-cus"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              >
-               {t("Previous")}
-              </button>
-            </li>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <li
-                key={i + 1}
-                className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
-              >
-                <button
-                  className="btn-cus"
-                  onClick={() => setCurrentPage(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              </li>
-            ))}
-            <li
-              className={`page-item ${
-                currentPage === totalPages ? "disabled" : ""
-              }`}
-            >
-              <button
-                className="btn-cus"
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-              >
-              {t("Next")}
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      {/* Custom pagination removed */}
     </div>
   );
 };

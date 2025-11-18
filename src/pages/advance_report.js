@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import API_DOMAIN from "../config/config";
-import "./advance_report.css"; // Assuming you have a CSS file for additional styles
+import "./advance_report.css";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import AdvanceReportPDF from "./AdvanceReportPDF";
 import { useLanguage } from "../components/LanguageContext";
+
+// ⬇️ Material React Table Imports
+import { MaterialReactTable } from 'material-react-table';
+import { Box, Typography, TableFooter, TableRow, TableCell } from '@mui/material';
 
 const AdvanceReport = () => {
   const { t } = useLanguage();
@@ -15,6 +19,16 @@ const AdvanceReport = () => {
   const [toDate, setToDate] = useState("");
   const [reportData, setReportData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const formatDate = (date) => {
+    if (!date) return "—";
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const fetchInterestData = async () => {
     try {
       const response = await fetch(`${API_DOMAIN}/interest.php`, {
@@ -108,7 +122,7 @@ const AdvanceReport = () => {
             totalAmount:
               parseFloat(item.refund_amount) + parseFloat(item.other_amount),
             pawnjewelry_recovery_date: item.pawnjewelry_recovery_date,
-            status: "closing",
+            status: "Closing",
           };
         });
 
@@ -132,6 +146,7 @@ const AdvanceReport = () => {
       console.error("Error fetching data:", error.message);
     }
   };
+
   useEffect(() => {
     handleSubmit();
   }, []);
@@ -257,9 +272,7 @@ const AdvanceReport = () => {
         baseRow["Net Weight (g)"] = parseFloat(
           item.totalnetWeight || 0
         ).toFixed(2);
-        baseRow["Interest"] = parseFloat(item.interestRateLabel || 0).toFixed(
-          2
-        );
+        baseRow["Interest"] = item.interestRateLabel || "";
         baseRow["Amount (₹)"] = parseFloat(item.totalAmount || 0).toFixed(2);
       }
 
@@ -296,7 +309,7 @@ const AdvanceReport = () => {
     } else {
       totalRow["Total Weight (g)"] = totalWeight.toFixed(2);
       totalRow["Net Weight (g)"] = totalnetWeight.toFixed(2);
-
+      totalRow["Interest"] = "";
       totalRow["Amount (₹)"] = totalAmount.toFixed(2);
     }
 
@@ -322,19 +335,10 @@ const AdvanceReport = () => {
       }.xlsx`
     );
   };
-
-  const formatDate = (date) => {
-    if (!date) return "—"; // Return a placeholder if no date is provided
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
-    const year = d.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
-  // Styles
+  
+  // Styles for the container and buttons (retained from original component for layout)
   const containerStyle = {
-    maxWidth: "1000px",
+    maxWidth: "1500px",
     margin: "auto",
     padding: "10px",
     fontFamily: "Segoe UI, sans-serif",
@@ -381,29 +385,127 @@ const AdvanceReport = () => {
     backgroundColor: "#45a049",
   };
 
-  const tableStyle = {
-    width: "100%",
-    borderCollapse: "collapse",
-    backgroundColor: "#fff",
-    borderRadius: "8px",
-    overflow: "hidden",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-  };
+  // ⬇️ Material React Table Columns Definition
+  const columns = useMemo(() => {
+    // Base columns that are always present
+    const baseColumns = [
+      {
+        accessorFn: (row, index) => index + 1, // Custom function for serial number
+        id: 'serialNo',
+        header: t('Serial No'),
+        size: 20,
+        enableSorting: false,
+        enableColumnFilter: false,
+        // muiTableBodyCellProps: { align: 'center' },
+        // muiTableHeadCellProps: { align: 'center' },
+        Cell: ({ row }) => (
+            // MRT indexing starts from 0, so we use row.index + 1
+            <Typography variant="body2">{row.index + 1}</Typography>
+        ),
+      },
+      {
+        // Dynamic date accessor based on reportType
+        accessorFn: (row) => {
+          if (reportType === "interest") return row.interest_receive_date;
+          if (reportType === "closing") return row.pawnjewelry_recovery_date;
+          return row.pawnjewelry_date;
+        },
+        id: 'date',
+        header: t('Date'),
+        size: 100,
+        Cell: ({ cell }) => (
+            <Typography variant="body2">{formatDate(cell.getValue())}</Typography>
+        ),
+      },
+      {
+        accessorKey: 'loanNo',
+        header: t('Loan No'),
+        size: 80,
+      },
+      {
+        accessorKey: 'name',
+        header: t('Name'),
+        size: 100,
+      },
+    ];
 
-  const thStyle = {
-    backgroundColor: "#f0f0f0",
-    color: "#333",
-    fontWeight: "bold",
-    padding: "12px",
-    borderBottom: "1px solid #ddd",
-    textAlign: "left",
-  };
+    // Report-specific columns
+    if (reportType === "interest") {
+      baseColumns.push(
+        {
+          accessorKey: 'interestAmount',
+          header: `${t('Interest Amount')} (₹)`,
+          size: 150,
+          muiTableBodyCellProps: { align: 'right' },
+          muiTableHeadCellProps: { align: 'right' },
+          Cell: ({ cell }) => (
+            <Typography variant="body2">
+              {typeof cell.getValue() === "number"
+                ? parseFloat(cell.getValue()).toFixed(2)
+                : "0.00"}
+            </Typography>
+          ),
+        },
+      );
+    } else {
+      baseColumns.push(
+        {
+          accessorKey: 'totalWeight',
+          header: `${t('Total Weight')} (g)`,
+          size: 50,
+          muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+          Cell: ({ cell }) => cell.getValue() ?? '—',
+        },
+        {
+          accessorKey: 'totalnetWeight',
+          header: `${t('Net Weight')} (g)`,
+          size: 50,
+          muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+          Cell: ({ cell }) => cell.getValue() ?? '—',
+        },
+        {
+          accessorKey: 'interestRateLabel',
+          header: t('Interest Rate'),
+          size: 50,
+          muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+          Cell: ({ cell }) => cell.getValue() ?? '—',
+        },
+        {
+          accessorKey: 'totalAmount',
+          header: `${t('Amount')} (₹)`,
+          size: 50,
+          muiTableBodyCellProps: { align: 'center' },
+          muiTableHeadCellProps: { align: 'left' },
+          Cell: ({ cell }) => (
+            <Typography variant="body2">
+              {cell.getValue() != null
+                ? parseFloat(cell.getValue()).toLocaleString()
+                : "—"}
+            </Typography>
+          ),
+        },
+      );
+    }
 
-  const tdStyle = {
-    padding: "12px",
-    borderBottom: "1px solid #eee",
-  };
+    // Status column, always last
+    baseColumns.push({
+      accessorKey: 'status',
+      header: t('Status'),
+      size: 120,
+    });
 
+    return baseColumns;
+  }, [reportType, t]); // Recalculate columns when reportType changes
+
+
+  // Calculate Totals for the custom footer (retaining original logic)
+  const totalInterest = reportData.reduce(
+    (sum, item) => sum + parseFloat(item.interestAmount || 0),
+    0
+  );
   const totalWeight = reportData.reduce(
     (sum, item) => sum + parseFloat(item.totalWeight || 0),
     0
@@ -430,7 +532,7 @@ const AdvanceReport = () => {
         {t("Advance Report")}
       </h1>
 
-      {/* Filters */}
+      {/* Filters (Unchanged) */}
       <div style={filterContainerStyle}>
         <label style={labelStyle}>
           {t("Report Type")}
@@ -519,118 +621,72 @@ const AdvanceReport = () => {
         </div>
       </div>
 
-      {/* Table */}
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th style={thStyle}>{t("Serial No")}</th>
-            <th style={thStyle}>{t("Date")}</th>
-            <th style={thStyle}>{t("Loan No")}</th>
-            <th style={thStyle}>{t("Name")}</th>
-            {reportType === "interest" ? (
-              <>
-                <th style={thStyle}>{t("Interest Amount")} (₹)</th>
-              </>
-            ) : (
-              <>
-                <th style={thStyle}>{t("Total Weight")} (g)</th>
-                <th style={thStyle}>{t("Net Weight")} (g)</th>
-                <th style={thStyle}>{t("Interest Rate")}</th>
-                <th style={thStyle}>{t("Amount")} (₹)</th>
-              </>
-            )}
-            <th style={thStyle}>{t("Status")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reportData.length === 0 ? (
-            <tr>
-              <td colSpan="6" style={{ ...tdStyle, textAlign: "center" }}>
-               {t("No data available")}
-              </td>
-            </tr>
-          ) : (
-            reportData.map((item, index) => (
-              <tr key={index}>
-                <td style={tdStyle}>{index + 1}</td>
-                <td style={tdStyle}>
-                  {reportType === "interest"
-                    ? formatDate(item.interest_receive_date)
-                    : reportType === "closing"
-                    ? formatDate(item.pawnjewelry_recovery_date)
-                    : formatDate(item.pawnjewelry_date)}
-                </td>
-                <td style={tdStyle}>{item.loanNo}</td>
-                <td style={tdStyle}>{item.name}</td>
-                {reportType === "interest" ? (
-                  <>
-                    <td style={tdStyle}>
-                      {typeof item.interestAmount === "number"
-                        ? item.interestAmount.toFixed(2)
-                        : "0.00"}
-                    </td>
-                  </>
-                ) : (
-                  <>
-                    {reportType !== "interest" && (
-                      <>
-                        <td style={tdStyle}>{item.totalWeight ?? "—"}</td>
-                        <td style={tdStyle}>{item.totalnetWeight ?? "—"}</td>
-                        <td style={tdStyle}>{item.interestRateLabel ?? "—"}</td>
-                        <td style={tdStyle}>
-                          {item.totalAmount != null
-                            ? parseFloat(item.totalAmount).toLocaleString()
-                            : "—"}
-                        </td>
-                      </>
-                    )}
-                  </>
-                )}
-                <td style={tdStyle}>{item.status}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-        {reportData.length > 0 && (
-          <tfoot>
-            <tr>
-              <td
-                colSpan="4"
-                style={{ ...tdStyle, fontWeight: "bold", textAlign: "right" }}
-              >
-                {t("Total")}
-              </td>
-              {reportType === "interest" ? (
-                <>
-                  <td style={{ ...tdStyle, fontWeight: "bold" }}>
-                    {reportData
-                      .reduce(
-                        (sum, item) =>
-                          sum + parseFloat(item.interestAmount || 0),
-                        0
-                      )
-                      .toFixed(2)}
-                  </td>
-                </>
-              ) : (
-                <>
-                  <td style={{ ...tdStyle, fontWeight: "bold" }}>
-                    {totalWeight.toFixed(2)}
-                  </td>
-                  <td style={{ ...tdStyle, fontWeight: "bold" }}>
-                    {totalnetWeight.toFixed(2)}
-                  </td>
-                  <td style={{ ...tdStyle, fontWeight: "bold" }}></td>
-                  <td style={{ ...tdStyle, fontWeight: "bold" }}>
-                    {totalAmount.toLocaleString()}
-                  </td>
-                </>
-              )}
-              <td></td>
-            </tr>
-          </tfoot>
-        )}
-      </table>
+      {/* ⬇️ Material React Table Component */}
+      <MaterialReactTable
+        columns={columns}
+        data={reportData}
+        enableColumnActions={true}
+        enableColumnFilterModes={false}
+        enableGlobalFilter={true}
+        enableDensityToggle={true}
+        enableFullScreenToggle={false}
+        enableSorting={false}
+        enableHiding={false}
+        initialState={{ density: 'compact' }}
+        state={{
+          isLoading: loading,
+          // No need for custom filtering/sorting state as reportData is pre-filtered
+        }}
+        localization={{
+            noRecordsFound: t('No data available'),
+            // Add other localization strings as needed
+        }}
+        
+        // Custom Footer to display Totals
+        renderBottomToolbarCustomActions={({ table }) => {
+            if (reportData.length === 0) return null;
+
+            const baseColSpan = 10; // Serial No, Date, Loan No, Name
+            let totalCells = [];
+
+            if (reportType === "interest") {
+                // Interest report has 1 dynamic column + Status
+                totalCells = [
+                    <TableCell key="interest" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
+                        {totalInterest.toFixed(2)}
+                    </TableCell>,
+                    <TableCell key="status" sx={{ textAlign: 'left', minWidth: '120px' }}></TableCell> // Status column spacer
+                ];
+            } else {
+                // Other reports have 4 dynamic columns + Status
+                totalCells = [
+                    <TableCell key="totalWeight" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
+                        {totalWeight.toFixed(2)}
+                    </TableCell>,
+                    <TableCell key="netWeight" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
+                        {totalnetWeight.toFixed(2)}
+                    </TableCell>,
+                    <TableCell key="interestRate" sx={{ textAlign: 'center', minWidth: '100px' }}></TableCell>, // Interest Rate spacer
+                    <TableCell key="amount" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
+                        {totalAmount.toLocaleString()}
+                    </TableCell>,
+                    <TableCell key="status" sx={{ textAlign: 'left', minWidth: '120px' }}></TableCell> // Status column spacer
+                ];
+            }
+
+            return (
+                <TableFooter sx={{ backgroundColor: '#f0f0f0' }}>
+                    <TableRow>
+                        <TableCell colSpan={baseColSpan} sx={{ textAlign: 'right', fontWeight: 'bold' }}>
+                            {t("Total")}
+                        </TableCell>
+                        {totalCells}
+                    </TableRow>
+                </TableFooter>
+            );
+        }}
+      />
+      {/* ⬆️ End Material React Table Component */}
     </div>
   );
 };

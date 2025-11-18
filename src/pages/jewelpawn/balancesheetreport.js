@@ -1,13 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Table,
-  Button,
-  Form,
-  Row,
-  Col,
-  Modal,
-} from "react-bootstrap";
+import React, { useEffect, useState, useMemo } from "react";
+import { Container, Button, Form, Row, Col, Modal } from "react-bootstrap";
 import axios from "axios";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import BalanceSheetPDF from "./BalanceSheetPDF";
@@ -16,6 +8,19 @@ import "./BalanceSheet.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLanguage } from "../../components/LanguageContext";
+
+// ⬇️ Material React Table Imports
+import { MaterialReactTable } from "material-react-table";
+import {
+  Box,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Typography,
+} from "@mui/material";
+import { CalendarToday } from "@mui/icons-material";
 
 const API_URL = `${API_DOMAIN}/balance.php`;
 
@@ -28,18 +33,10 @@ const BalanceSheet = () => {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
 
-  console.log(filteredEntries);
   // Date Filter States
-
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [expandedDate, setExpandedDate] = useState(null);
-  console.log(expandedDate);
-
-  const toggleDate = (date) => {
-    console.log(date);
-    setExpandedDate((prev) => (prev === date ? null : date));
-  };
+  // Removed: const [expandedDate, setExpandedDate] = useState(null);
 
   useEffect(() => {
     fetchBalance();
@@ -64,7 +61,6 @@ const BalanceSheet = () => {
       });
       if (response.data.head.code === 200) {
         setEntries(response.data.body.transactions);
-        console.log(response.data.body.transactions);
         setFilteredEntries(response.data.body.transactions); // Default to all entries
       }
     } catch (error) {
@@ -74,7 +70,12 @@ const BalanceSheet = () => {
 
   // Filter function
   const filterEntries = () => {
-    if (!startDate || !endDate) return;
+    if (!startDate || !endDate) {
+      if (!startDate && !endDate) {
+        setFilteredEntries(entries);
+      }
+      return;
+    }
 
     const filtered = entries.filter((entry) => {
       const entryDateStr = entry.transaction_date.split(" ")[0];
@@ -83,12 +84,17 @@ const BalanceSheet = () => {
 
     setFilteredEntries(filtered);
   };
+
+  useEffect(() => {
+    filterEntries();
+  }, [startDate, endDate, entries]); // Depend on entries too in case they are fetched later
+
   const undofilter = () => {
     setEndDate("");
     setStartDate("");
   };
 
-  // Add Balance Function
+  // Add Balance Function (remains the same)
   const addBalance = async () => {
     if (!description || !amount) {
       alert("Please enter description and amount");
@@ -100,7 +106,7 @@ const BalanceSheet = () => {
         action: "add_transaction",
         description: description,
         amount: parseFloat(amount),
-        type: "varavu", // Adding balance (Income)
+        type: "varavu",
       });
 
       if (response.data.head.code === 200) {
@@ -120,23 +126,22 @@ const BalanceSheet = () => {
 
   const generateDaybookSummary = (allEntries, startDate, endDate) => {
     if (!allEntries || allEntries.length === 0) return [];
-
-    // Step 0: Sort entries by date
     const sortedEntries = [...allEntries].sort(
       (a, b) => new Date(a.transaction_date) - new Date(b.transaction_date)
     );
 
-    // Step 1: Determine full range if dates are missing
+    const filteredForRange = sortedEntries.filter((entry) => {
+      const date = entry.transaction_date.slice(0, 10);
+      return (!startDate || date >= startDate) && (!endDate || date <= endDate);
+    });
+
     const allDates = sortedEntries.map((entry) =>
       entry.transaction_date.slice(0, 10)
     );
-    const minDate = allDates[0];
-    const maxDate = allDates[allDates.length - 1];
-
+    const minDate = allDates.length > 0 ? allDates[0] : "";
+    const maxDate = allDates.length > 0 ? allDates[allDates.length - 1] : "";
     const start = startDate || minDate;
-    const end = endDate || maxDate;
 
-    // Step 2: Calculate Opening Balance before start date
     let openingBalance = 0;
 
     sortedEntries.forEach((entry) => {
@@ -148,16 +153,14 @@ const BalanceSheet = () => {
       }
     });
 
-    // Step 3: Filter entries within start-end range
-    const filteredEntries = sortedEntries.filter((entry) => {
+    const entriesInDateRange = filteredEntries.filter((entry) => {
       const date = entry.transaction_date.slice(0, 10);
-      return date >= start && date <= end;
+      return date >= start && date <= (endDate || maxDate);
     });
 
-    // Step 4: Group by date
     const summaryMap = new Map();
 
-    filteredEntries.forEach((entry) => {
+    entriesInDateRange.forEach((entry) => {
       const date = entry.transaction_date.slice(0, 10);
       if (!summaryMap.has(date)) {
         summaryMap.set(date, { date, varavu: 0, patru: 0 });
@@ -169,7 +172,6 @@ const BalanceSheet = () => {
       else if (entry.type === "patru") summary.patru += amount;
     });
 
-    // Step 5: Generate result with balances
     let previousClosing = openingBalance;
 
     const result = Array.from(summaryMap.entries())
@@ -191,14 +193,11 @@ const BalanceSheet = () => {
     return result;
   };
 
+  // ⬇️ summaryData calculation
   let summaryData = [];
   if (Array.isArray(entries) && entries.length) {
     summaryData = generateDaybookSummary(entries, startDate, endDate);
-  } else {
-    summaryData = [];
   }
-
-  console.table(summaryData);
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -208,23 +207,87 @@ const BalanceSheet = () => {
     return `${day}/${month}/${year}`;
   };
 
+  // ⬇️ Material React Table Columns
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "date",
+        header: t("Date"),
+        size: 150,
+        enableGrouping: true,
+        Cell: ({ cell }) => (
+          <Box display="flex" alignItems="center">
+            <CalendarToday fontSize="small" sx={{ mr: 1 }} />
+            <Typography variant="body2">
+              {new Date(cell.getValue()).toLocaleDateString("en-GB")}
+            </Typography>
+          </Box>
+        ),
+      },
+      {
+        accessorKey: "opening",
+        header: t("Day Opening Balance"),
+        size: 200,
+        muiTableBodyCellProps: { align: "right" },
+        muiTableHeadCellProps: { align: "right" },
+        Cell: ({ cell }) => (
+          <Typography variant="body2">
+            ₹{cell.getValue().toLocaleString()}
+          </Typography>
+        ),
+      },
+      {
+        accessorKey: "varavu",
+        header: t("Total Credit (Varavu)"),
+        size: 200,
+        muiTableBodyCellProps: { align: "right", sx: { color: "green" } },
+        muiTableHeadCellProps: { align: "right" },
+        Cell: ({ cell }) => (
+          <Typography variant="body2">
+            ₹{cell.getValue().toLocaleString()}
+          </Typography>
+        ),
+      },
+      {
+        accessorKey: "patru",
+        header: t("Total Debit (Patru)"),
+        size: 200,
+        muiTableBodyCellProps: { align: "right", sx: { color: "red" } },
+        muiTableHeadCellProps: { align: "right" },
+        Cell: ({ cell }) => (
+          <Typography variant="body2">
+            ₹{cell.getValue().toLocaleString()}
+          </Typography>
+        ),
+      },
+      {
+        accessorKey: "closing",
+        header: t("Day Closing Balance"),
+        size: 200,
+        muiTableBodyCellProps: { align: "right" },
+        muiTableHeadCellProps: { align: "right" },
+        Cell: ({ cell }) => (
+          <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+            ₹{cell.getValue().toLocaleString()}
+          </Typography>
+        ),
+      },
+    ],
+    [t]
+  );
+
   return (
     <Container className="balance-sheet-container">
       <h5 className="mt-5 mb-3 text-center">📘 {t("Day-wise Summary")}</h5>
 
       {/* Balance Display */}
       <div className="balance-container text-center mb-4">
-        <h5>
+        <h5 sx={{ verticalAlign: "middle", mr: 0.5 }}>
           {t("Current Balance")}: ₹{balance}
         </h5>
       </div>
 
-      {/* Add Balance Button */}
-      {/* <Button className="custom-btn mb-4" onClick={() => setShowModal(true)}>
-        Add Balance
-      </Button> */}
-
-      {/* Add Balance Modal */}
+      {/* Add Balance Modal (Unchanged) */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{t("Add Balance")}</Modal.Title>
@@ -261,7 +324,7 @@ const BalanceSheet = () => {
 
       {/* Date Filter Section */}
       <Row className="mb-3 d-flex align-items-end">
-        {/* 1. From Date (Reduced to md=2) */}
+        {/* 1. From Date */}
         <Col md={2} sm={6} xs={12}>
           <Form.Group>
             <Form.Label>{t("From Date")}</Form.Label>
@@ -273,7 +336,7 @@ const BalanceSheet = () => {
           </Form.Group>
         </Col>
 
-        {/* 2. To Date (Reduced to md=2) */}
+        {/* 2. To Date */}
         <Col md={2} sm={6} xs={12}>
           <Form.Group>
             <Form.Label>{t("To Date")}</Form.Label>
@@ -321,148 +384,132 @@ const BalanceSheet = () => {
         </Col>
       </Row>
 
-      <Table striped bordered hover responsive className="custom-table mt-3">
-        <thead className="table-header">
-          <tr>
-            <th className="table-header1">{t("Date")}</th>
-            <th className="table-header1">{t("Day Opening Balance")}</th>
-            <th className="table-header1">{t("Total Credit (Varavu)")}</th>
-            <th className="table-header1">{t("Total Debit (Patru)")}</th>
-            <th className="table-header1">{t("Day Closing Balance")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.isArray(summaryData) &&
-            summaryData.map((row, index) => (
-              <React.Fragment key={index}>
-                <tr>
-                  <td>{new Date(row.date).toLocaleDateString("en-GB")}</td>
+      {/* ⬇️ Material React Table Component */}
+      <MaterialReactTable
+        columns={columns}
+        data={summaryData}
+        enableExpanding
+        enableExpandAll={false}
+        enablePagination={true}
+        enableSorting={true}
+        enableColumnActions={false}
+        enableBottomToolbar={true}
+        initialState={{ density: "compact" }}
+        displayColumnDefOptions={{
+          "mrt-row-expand": { header: "", size: 0 }, // removes "Expand" text
+        }}
+        renderDetailPanel={({ row }) => {
+          const rowData = row.original;
 
-                  <td>₹{row.opening.toLocaleString()}</td>
-                  <td>₹{row.varavu.toLocaleString()}</td>
-                  <td>₹{row.patru.toLocaleString()}</td>
-                  <td>₹{row.closing.toLocaleString()}</td>
-                  <td>
-                    <button onClick={() => toggleDate(row.date)}>
-                      {expandedDate === row.date ? t("Hide") : t("View")}
-                      {t("Details")}
-                    </button>
-                  </td>
-                </tr>
+          // Filter transactions for the selected date
+          const entriesForDate = filteredEntries.filter(
+            (entry) => entry.transaction_date.slice(0, 10) === rowData.date
+          );
 
-                {/* ✅ Conditional breakdown row */}
-                {expandedDate === row.date &&
-                  (() => {
-                    const entriesForDate = filteredEntries.filter(
-                      (entry) =>
-                        entry.transaction_date.slice(0, 10) === row.date
-                    );
+          // Calculate totals for the nested table
+          const totalVaravu = entriesForDate
+            .filter((entry) => entry.type === "varavu")
+            .reduce((sum, entry) => sum + parseFloat(entry.amount), 0);
 
-                    const totalVaravu = entriesForDate
-                      .filter((entry) => entry.type === "varavu")
-                      .reduce(
-                        (sum, entry) => sum + parseFloat(entry.amount),
-                        0
-                      );
+          const totalPatru = entriesForDate
+            .filter((entry) => entry.type === "patru")
+            .reduce((sum, entry) => sum + parseFloat(entry.amount), 0);
 
-                    const totalPatru = entriesForDate
-                      .filter((entry) => entry.type === "patru")
-                      .reduce(
-                        (sum, entry) => sum + parseFloat(entry.amount),
-                        0
-                      );
-
-                    return (
-                      <tr>
-                        <td colSpan={6}>
-                          <Table
-                            striped
-                            bordered
-                            hover
-                            responsive
-                            className="custom-table mt-3"
-                          >
-                            <thead className="table-header">
-                              <tr>
-                                <th className="table-header1">{t("Date")}</th>
-                                <th className="table-header1">{t("Description")}</th>
-                                <th className="table-header1">{t("Credit (Varavu)")}</th>
-                                <th className="table-header1">{t("Debit (Patru)")}</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {entriesForDate.map((entry, idx) => (
-                                <tr key={idx}>
-                                  <td>{formatDate(entry.transaction_date)}</td>
-                                  <td>
-                                    {entry.description}{" "}
-                                    {entry.type === "patru"
-                                      ? "(பற்று)"
-                                      : "(வரவு)"}
-                                  </td>
-                                  <td>
-                                    {entry.type === "varavu"
-                                      ? `₹${parseFloat(
-                                          entry.amount
-                                        ).toLocaleString()}`
-                                      : "-"}
-                                  </td>
-                                  <td>
-                                    {entry.type === "patru"
-                                      ? `₹${parseFloat(
-                                          entry.amount
-                                        ).toLocaleString()}`
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              ))}
-
-                              {/* 🔽 Totals Row */}
-                              <tr className="font-weight-bold bg-light">
-                                <td colSpan={2} className="text-end">
-                                  <strong>{t("Total Credit Debit")}</strong>
-                                </td>
-                                <td>
-                                  <strong>
-                                    ₹{totalVaravu.toLocaleString()}
-                                  </strong>
-                                </td>
-                                <td>
-                                  <strong>
-                                    ₹{totalPatru.toLocaleString()}
-                                  </strong>
-                                </td>
-                              </tr>
-                              <tr className="font-weight-bold bg-light">
-                                <td colSpan={3} className="text-end">
-                                  <strong>{t("Day Opening Balance")}</strong>
-                                </td>
-                                <td>
-                                  <strong>
-                                    ₹{row.opening.toLocaleString()}
-                                  </strong>
-                                </td>
-                              </tr>
-                              <tr className="font-weight-bold bg-light">
-                                <td colSpan={3} className="text-end">
-                                 <strong>{t("Day Closing Balance")}</strong>
-                                </td>
-                                <td>
-                                  <strong>
-                                    ₹{row.closing.toLocaleString()}
-                                  </strong>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </Table>
-                        </td>
-                      </tr>
-                    );
-                  })()}
-              </React.Fragment>
-            ))}
-        </tbody>
-      </Table>
+          return (
+            <Box
+              sx={{
+                margin: "10px 0",
+                padding: "15px",
+                background: "#f8f8f8",
+                borderRadius: "4px",
+              }}
+            >
+              <Typography variant="h6" gutterBottom component="div">
+                {t("Transaction Details for")}:{" "}
+                {new Date(rowData.date).toLocaleDateString("en-GB")}
+              </Typography>
+              <Table size="small">
+                <TableHead>
+                  <TableRow sx={{ background: "#e0e0e0" }}>
+                    <TableCell>{t("Date")}</TableCell>
+                    <TableCell>{t("Description")}</TableCell>
+                    <TableCell align="right">{t("Credit (Varavu)")}</TableCell>
+                    <TableCell align="right">{t("Debit (Patru)")}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {entriesForDate.map((entry, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>
+                        {formatDate(entry.transaction_date)}
+                      </TableCell>
+                      <TableCell>
+                        {entry.description}{" "}
+                        <Box
+                          component="span"
+                          sx={{
+                            fontSize: "0.8em",
+                            color: entry.type === "patru" ? "red" : "green",
+                          }}
+                        >
+                          {entry.type === "patru" ? "(பற்று)" : "(வரவு)"}
+                        </Box>
+                      </TableCell>
+                      <TableCell align="right" sx={{ color: "green" }}>
+                        {entry.type === "varavu"
+                          ? `₹${parseFloat(entry.amount).toLocaleString()}`
+                          : "-"}
+                      </TableCell>
+                      <TableCell align="right" sx={{ color: "red" }}>
+                        {entry.type === "patru"
+                          ? `₹${parseFloat(entry.amount).toLocaleString()}`
+                          : "-"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {/* Totals Row */}
+                  <TableRow
+                    sx={{ fontWeight: "bold", backgroundColor: "#e8e8e8" }}
+                  >
+                    <TableCell colSpan={2} align="right">
+                      <strong>{t("Total Credit Debit")}</strong>
+                    </TableCell>
+                    <TableCell align="right">
+                      <strong>₹{totalVaravu.toLocaleString()}</strong>
+                    </TableCell>
+                    <TableCell align="right">
+                      <strong>₹{totalPatru.toLocaleString()}</strong>
+                    </TableCell>
+                  </TableRow>
+                  {/* Opening Balance Row */}
+                  <TableRow
+                    sx={{ fontWeight: "bold", backgroundColor: "#e8e8e8" }}
+                  >
+                    <TableCell colSpan={3} align="right">
+                      <strong>{t("Day Opening Balance")}</strong>
+                    </TableCell>
+                    <TableCell align="right">
+                      <strong>₹{rowData.opening.toLocaleString()}</strong>
+                    </TableCell>
+                  </TableRow>
+                  {/* Closing Balance Row */}
+                  <TableRow
+                    sx={{ fontWeight: "bold", backgroundColor: "#d0d0d0" }}
+                  >
+                    <TableCell colSpan={3} align="right">
+                      <strong>{t("Day Closing Balance")}</strong>
+                    </TableCell>
+                    <TableCell align="right">
+                      <strong>₹{rowData.closing.toLocaleString()}</strong>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </Box>
+          );
+        }}
+      />
+      {/* ⬆️ End Material React Table Component */}
 
       <ToastContainer />
     </Container>
