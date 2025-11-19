@@ -23,7 +23,8 @@ import {
   Button,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { LiaEditSolid } from "react-icons/lia";
+// import { LiaEditSolid } from "react-icons/lia";
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import { MdOutlineDelete } from "react-icons/md";
 
 const Customer = () => {
@@ -234,23 +235,36 @@ const Customer = () => {
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1,
       },
-      {
-        accessorKey: "proof",
-        size: 10,
-        header: t("Customer Image"),
-        muiTableHeadCellProps: {
-          sx: {
-            justifyContent: "center",
-          },
-        },
-        muiTableBodyCellProps: {
-          sx: {
-            textAlign: "center",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-          },
-        },
+     
+
+{
+  accessorKey: "proof",
+  size: 140, // <-- Set a small size (e.g., 50px).
+  header: t("Customer Image"),
+  
+  // This helps center the header text itself
+  muiTableHeadCellProps: {
+    sx: {
+      justifyContent: "center",
+      textAlign: "center",
+      // Optionally, add maxWidth to the header cell itself
+      maxWidth: '140%',
+      backgroundColor:"black",
+      color:"white",
+    },
+  },
+  
+  // Use a SINGLE definition for the body cell props
+  muiTableBodyCellProps: {
+    sx: {
+      textAlign: "center",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "80%",
+      // Ensure the cell itself has a narrow max width
+      maxWidth: '140%', 
+    },
+  },
         Cell: ({ cell }) => {
           const proofArray = cell.getValue();
           const imageUrl =
@@ -272,9 +286,9 @@ const Customer = () => {
                   alt={t("image.customerProofAlt")}
                   className="customer-listing-img"
                   style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "4px",
+                    width: "70px",
+                    height: "70px",
+                    borderRadius: "50%",
                     cursor: "pointer",
                   }}
                   onClick={() => handlePreviewOpen(imageUrl)}
@@ -327,19 +341,25 @@ const Customer = () => {
         enableColumnFilter: false,
         enableColumnOrdering: false,
         enableSorting: false,
+      //   muiTableBodyCellProps: {
+      
+      //   justifyContent: "center ! important",
+        
+      // },
 
         Cell: ({ row }) => (
           <Box
             sx={{
-              justifyContent: "center",
-              gap: "4rem",
-            }}
+      display: "flex", // <-- ADD THIS LINE
+      justifyContent: "left",
+      gap: "0.5rem",
+    }}
           >
             {/* View Icon */}
             <Tooltip title={t("Customer Details")}>
               <IconButton
                 onClick={() => handleJewelcustomerViewClick(row.original)}
-                sx={{ padding: 0 }}
+                sx={{color: "grey", padding: 0 }}
               >
                 <VisibilityIcon />
               </IconButton>
@@ -348,9 +368,10 @@ const Customer = () => {
             <Tooltip title={t("edit")}>
               <IconButton
                 onClick={() => handleJewelcustomerEditClick(row.original)}
-                sx={{ color: "#0d6efd", padding: 0 }}
+                sx={{ color: "rgb(22 59 140)", padding: 0 }}
               >
-                <LiaEditSolid />
+                {/* <LiaEditSolid /> */}
+                <DriveFileRenameOutlineIcon  />
               </IconButton>
             </Tooltip>
 
@@ -360,7 +381,7 @@ const Customer = () => {
                 onClick={() =>
                   handleJewelcustomerDeleteClick(row.original.customer_id)
                 }
-                sx={{ color: "#dc3545", padding: 0 }}
+                sx={{ color: "#991212", padding: 0 }}
               >
                 <MdOutlineDelete />
               </IconButton>
@@ -433,7 +454,9 @@ const Customer = () => {
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa", // Light gray header background
+                        backgroundColor: "black",
+                        color:"white", 
+                        alignItems: "center",// Light gray header background
                       },
                     }}
                   />
