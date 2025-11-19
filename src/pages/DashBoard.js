@@ -1271,6 +1271,7 @@ const DashBoard = () => {
                             justifyContent: "center", // center horizontally
                             alignItems: "center", // center vertically
                             height: "100px",
+                           
                             fontWeight: 500,
                             color: "#777",
                           }}
@@ -1280,8 +1281,8 @@ const DashBoard = () => {
                       );
                     }
                     return (
-                      <div style={{ padding: 18, maxWidth: "1700px" }}>
-                        <h6 style={{ marginBottom: 8 }}>
+                      <div style={{ padding: 18, maxWidth: "1700px", backgroundColor:"white" }}>
+                        <h6 style={{ marginBottom: 8, }}>
                           {t("Bank Pledge Details")}
                         </h6>
                         <table className="table table-sm">

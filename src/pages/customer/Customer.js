@@ -21,11 +21,14 @@ import {
   Dialog,
   DialogContent,
   Button,
+  Menu, // <-- New component
+  MenuItem,
 } from "@mui/material";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import VisibilityIcon from "@mui/icons-material/Visibility";
-// import { LiaEditSolid } from "react-icons/lia";
+
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import { MdOutlineDelete } from "react-icons/md";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const Customer = () => {
   const navigate = useNavigate();
@@ -334,61 +337,102 @@ const Customer = () => {
         header: t(" Place"),
         size: 70,
       },
-      {
-        id: "action",
-        header: t("Action"),
-        size: 100,
-        enableColumnFilter: false,
-        enableColumnOrdering: false,
-        enableSorting: false,
-      //   muiTableBodyCellProps: {
-      
-      //   justifyContent: "center ! important",
-        
-      // },
+     {
+  id: "action",
+  header: t("Action"),
+  size: 50, // Set size smaller since the content is now just one icon
+  enableColumnFilter: false,
+  enableColumnOrdering: false,
+  enableSorting: false,
 
-        Cell: ({ row }) => (
-          <Box
-            sx={{
-      display: "flex", // <-- ADD THIS LINE
-      justifyContent: "left",
-      gap: "0.5rem",
-    }}
+  Cell: ({ row }) => {
+    // 1. State for managing the menu anchor element (where the menu pops up from)
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+
+    // 2. Handlers for opening and closing the menu
+    const handleMenuClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+      setAnchorEl(null);
+    };
+    
+    // 3. Wrapper function for action clicks that also closes the menu
+    const handleActionClick = (actionHandler) => {
+        actionHandler();
+        handleMenuClose(); // Close the menu after clicking an action
+    };
+
+
+    return (
+      // The Box now only needs to center the single menu icon
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center", // Center the single icon
+        }}
+      >
+        {/* 4. The main IconButton to open the menu */}
+        <Tooltip title={t("Actions")}>
+          <IconButton
+            aria-label="more actions"
+            aria-controls={open ? 'action-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleMenuClick}
+            sx={{ padding: 0 }}
           >
-            {/* View Icon */}
-            <Tooltip title={t("Customer Details")}>
-              <IconButton
-                onClick={() => handleJewelcustomerViewClick(row.original)}
-                sx={{color: "grey", padding: 0 }}
-              >
-                <VisibilityIcon />
-              </IconButton>
-            </Tooltip>
-            {/* Edit Icon */}
-            <Tooltip title={t("edit")}>
-              <IconButton
-                onClick={() => handleJewelcustomerEditClick(row.original)}
-                sx={{ color: "rgb(22 59 140)", padding: 0 }}
-              >
-                {/* <LiaEditSolid /> */}
-                <DriveFileRenameOutlineIcon  />
-              </IconButton>
-            </Tooltip>
+            <MoreVertIcon />
+          </IconButton>
+        </Tooltip>
 
-            {/* Delete Icon */}
-            <Tooltip title={t("delete")}>
-              <IconButton
-                onClick={() =>
-                  handleJewelcustomerDeleteClick(row.original.customer_id)
-                }
-                sx={{ color: "#991212", padding: 0 }}
-              >
-                <MdOutlineDelete />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        ),
-      },
+        {/* 5. The Menu Component */}
+        <Menu
+          id="action-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleMenuClose}
+          // The anchorOrigin helps position the menu correctly relative to the icon
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          {/* View Action */}
+          <MenuItem 
+            onClick={() => handleActionClick(() => handleJewelcustomerViewClick(row.original))}
+          >
+            <VisibilityIcon sx={{ mr: 1, color: "grey" }} />
+            {t("view")}
+          </MenuItem>
+
+          {/* Edit Action */}
+          <MenuItem 
+            onClick={() => handleActionClick(() => handleJewelcustomerEditClick(row.original))}
+          >
+            <DriveFileRenameOutlineIcon sx={{ size:8, mr: 1, color: "rgb(22 59 140)" }} />
+            {t("Edit")}
+          </MenuItem>
+
+          {/* Delete Action */}
+          <MenuItem 
+            onClick={() => handleActionClick(() => handleJewelcustomerDeleteClick(row.original.customer_id))}
+          >
+            {/* USE THE OFFICIAL MUI ICON NAME */}
+            <DeleteOutlineIcon sx={{ mr: 1, color: "#991212" }} /> 
+            {t("Delete")}
+          </MenuItem>
+        </Menu>
+      </Box>
+    );
+  },
+}
     ],
     [t, cacheVersion]
   );

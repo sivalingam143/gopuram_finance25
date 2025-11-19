@@ -118,8 +118,8 @@ const CustomerBankDetails = () => {
       <Row>
         <Col lg={12}>
           <Card className="shadow-sm border-0 professional-card">
-            <Card.Header>
-              <h5 className="mb-0 fw-bold">
+            <Card.Header className="bg-dark text-white">
+              <h5 className="mb-0 fw-bold ">
                 {t("Bank Pledge Summary - Customer No")}: {customerNo}
               </h5>
             </Card.Header>
@@ -131,7 +131,7 @@ const CustomerBankDetails = () => {
                   hover
                   className="mb-0 professional-table"
                 >
-                  <thead className="table-dark">
+                  <thead className="table-light">
                     <tr>
                       <th className="text-center fw-bold">{t("S.No")}</th>
                       <th className="fw-bold">{t("Bank Name")}</th>
@@ -237,7 +237,7 @@ const CustomerBankDetails = () => {
       <Row className="mt-4">
         <Col lg={12}>
           <Card className="shadow-sm border-0 professional-card">
-            <Card.Header className="bg-primary text-white">
+            <Card.Header className="bg-dark text-white">
               <h5 className="mb-0 fw-bold">
                 {t("Interest Summary for Receipt No")}: {receiptNo}
               </h5>
