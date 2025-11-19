@@ -208,7 +208,8 @@ const Products = () => {
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa", // Light gray header background
+                        backgroundColor: "#020202ff",
+                        color: "white", // Light gray header background
                       },
                     }}
                   />

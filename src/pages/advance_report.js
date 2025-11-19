@@ -640,6 +640,12 @@ const AdvanceReport = () => {
         localization={{
             noRecordsFound: t('No data available'),
         }}
+        muiTableHeadCellProps={{
+          sx: {
+            backgroundColor: '#343a40', // table-dark
+            color: 'white',
+          },
+        }}
         
         // Custom Footer to display Totals
         renderBottomToolbarCustomActions={({ table }) => {

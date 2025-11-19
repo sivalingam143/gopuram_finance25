@@ -214,7 +214,8 @@ const BankPledgerDetails = () => {
                 muiTableHeadCellProps={{
                   sx: {
                     fontWeight: "bold",
-                    backgroundColor: "#f8f9fa",
+                    backgroundColor: "black",
+                    color:"white"
                   },
                 }}
               />

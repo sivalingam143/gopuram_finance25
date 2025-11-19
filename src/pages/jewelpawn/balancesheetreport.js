@@ -398,6 +398,12 @@ const BalanceSheet = () => {
         displayColumnDefOptions={{
           "mrt-row-expand": { header: "", size: 0 }, // removes "Expand" text
         }}
+         muiTableHeadCellProps={{
+          sx: {
+            backgroundColor: '#343a40', // table-dark
+            color: 'white',
+          },
+        }}
         renderDetailPanel={({ row }) => {
           const rowData = row.original;
 

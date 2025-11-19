@@ -159,7 +159,8 @@ const Company = () => {
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa",
+                        backgroundColor: "#0c0d0eff",
+                        color: "white",
                       },
                     }}
                   />

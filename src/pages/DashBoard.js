@@ -1249,7 +1249,7 @@ const DashBoard = () => {
                   muiTableHeadCellProps={{
                     sx: {
                       fontWeight: "1000", // extra bold
-                      fontSize: "17px", // larger font
+                      fontSize: "14px", // larger font
                       backgroundColor: "#000000", // PURE Black background
                       color: "#fff", // White text
                       textAlign: "center",

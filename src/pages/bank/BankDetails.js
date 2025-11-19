@@ -198,7 +198,8 @@ const Bank = () => {
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa", // Light gray header background
+                        backgroundColor: "black", 
+                        color:"white "// Light gray header background
                       },
                     }}
                   />
