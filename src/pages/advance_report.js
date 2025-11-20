@@ -677,32 +677,21 @@ const AdvanceReport = () => {
         ];
     }
 
-    // Determine the number of control/prefixed columns (e.g., selection/expansion)
-    // You may need to adjust this number based on your MRT configuration.
-    // Assuming 'mrt-row-select' is enabled.
-    const controlColumns = 10; // Change to 0, 1, or 2 based on your table setup
-
-    // The data columns are S.No, Date, Loan No, Name
-    // We want the total to appear in the 'Name' column's position (4th data column).
+    const controlColumns = 10; 
 
     return (
         <TableFooter sx={{ backgroundColor: '#f0f0f0' }}>
             <TableRow>
-                {/* 1. Spacer for Control Columns (if any) */}
                 {Array.from({ length: controlColumns }).map((_, index) => (
                     <TableCell key={`spacer-control-${index}`}></TableCell>
                 ))}
 
-                {/* 2. Spacer for S.No, Date, Loan No */}
-                <TableCell></TableCell> {/* S.No */}
-                <TableCell></TableCell> {/* Date */}
-                <TableCell></TableCell> {/* Loan No */}
-                
-                {/* 3. The "Total" label goes into the Name column's position */}
+                <TableCell></TableCell> 
+                <TableCell></TableCell>
+                <TableCell></TableCell>
                 <TableCell 
                     key="total-label"
                     sx={{ 
-                        // Align Total to the right side of the Name column
                         textAlign: 'right', 
                         fontWeight: 'bold',
                         paddingRight: '50px' 
@@ -710,57 +699,13 @@ const AdvanceReport = () => {
                 >
                     {t("Total")}
                 </TableCell>
-                
-                {/* 4. The actual total values */}
                 {totalCells}
             </TableRow>
         </TableFooter>
     );
 }}
-        // renderBottomToolbarCustomActions={({ table }) => {
-        //     if (reportData.length === 0) return null;
-
-        //     const baseColSpan = 6; // Serial No, Date, Loan No, Name
-        //     let totalCells = [];
-
-        //     if (reportType === "interest") {
-        //         // Interest report has 1 dynamic column + Status
-        //         totalCells = [
-        //             <TableCell key="interest" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
-        //                 {totalInterest.toFixed(2)}
-        //             </TableCell>,
-        //             <TableCell key="status" sx={{ textAlign: 'left', minWidth: '120px' }}></TableCell> // Status column spacer
-        //         ];
-        //     } else {
-        //         // Other reports have 4 dynamic columns + Status
-        //         totalCells = [
-        //             <TableCell key="totalWeight" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
-        //                 {totalWeight.toFixed(2)}
-        //             </TableCell>,
-        //             <TableCell key="netWeight" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
-        //                 {totalnetWeight.toFixed(2)}
-        //             </TableCell>,
-        //             <TableCell key="interestRate" sx={{ textAlign: 'center', minWidth: '100px' }}></TableCell>, // Interest Rate spacer
-        //             <TableCell key="amount" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
-        //                 {totalAmount.toLocaleString()}
-        //             </TableCell>,
-        //             <TableCell key="status" sx={{ textAlign: 'left', minWidth: '120px' }}></TableCell> // Status column spacer
-        //         ];
-        //     }
-
-        //     return (
-        //         <TableFooter sx={{ backgroundColor: '#f0f0f0' }}>
-        //             <TableRow>
-        //                 <TableCell colSpan={baseColSpan} sx={{ textAlign: 'right', fontWeight: 'bold',paddingRight:'20px' }}>
-        //                     {t("Total")}
-        //                 </TableCell>
-        //                 {totalCells}
-        //             </TableRow>
-        //         </TableFooter>
-        //     );
-        // }}
       />
-      {/* ⬆️ End Material React Table Component */}
+     
     </div>
   );
 };
